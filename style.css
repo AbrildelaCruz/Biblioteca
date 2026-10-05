@@ -17,7 +17,7 @@
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
   justify-content: center;  /* Centrado horizontal */
   align-items: center;      /* Centrado vertical (si el contenedor tiene altura) */
-  width: 63%;             /* Asegura que ocupe todo el ancho disponible */
+  width: 30%;             /* Asegura que ocupe todo el ancho disponible */
   margin: 20px 0;          /* Espaciado arriba y abajo (opcional) */
 }
 
