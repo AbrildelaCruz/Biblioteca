@@ -67,7 +67,7 @@
 .burbuja:nth-child(8) { left: 80%; width: 110px; height: 110px; animation-duration: 20s; animation-delay: 2s; filter: blur(1px); }
 /*préstamo-alumnos*/
 .TituloAlumnos{
-    
+    font-style:text-align= center;
 }
 /*préstamo-profesores*/
 
