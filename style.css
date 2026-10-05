@@ -145,17 +145,20 @@ h1{
 
 /*préstamo-alumnos*/
 .TituloAlumnos{
-    font-style:text-align= center;
+    text-align: center !important; 
+  display: block !important;     /* Asegura que ocupe todo el ancho disponible */
+  margin-top: 0;                 /* Elimina espacios extras arriba si quieres que esté pegado al borde */
+  width: 100%;  
 }
 /*préstamo-profesores*/
 
 /*inventario*/
 .TituloInventario{
     
-    display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: flex-start; /* Lo mantiene arriba del todo */
-    width: 100%;      
+    text-align: center !important; /* Fuerza el centrado horizontal */
+  display: block !important;     /* Asegura que ocupe todo el ancho disponible */
+  margin-top: 0;                 /* Elimina espacios extras arriba si quieres que esté pegado al borde */
+  width: 100%;       
 }
 
 
