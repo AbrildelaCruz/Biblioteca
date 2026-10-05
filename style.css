@@ -1,3 +1,4 @@
+/*BIENVENIDA*/
 .body1{
     background-image: url('FONDOSULLIVAN.jpg');
     background-repeat: no-repeat;
@@ -19,6 +20,7 @@
   height: 100vh;           /* Toma todo el alto de la pantalla (opcional) */
 }
 
+/*LOGIN*/
 .body2{
     background: linear-gradient(-45deg, #7a9cec, #382ebd, #7353ca, #194ab3);
     background-size: 400% 2500%;
@@ -63,7 +65,11 @@
 .burbuja:nth-child(6) { left: 85%; width: 30px; height: 30px; animation-duration: 8s; animation-delay: 3s; }
 .burbuja:nth-child(7) { left: 50%; width: 50px; height: 50px; animation-duration: 13s; animation-delay: 7s; }
 .burbuja:nth-child(8) { left: 80%; width: 110px; height: 110px; animation-duration: 20s; animation-delay: 2s; filter: blur(1px); }
-
-.h1{
+/*préstamo-alumnos*/
+/*préstamo-profesores*/
+/*inventario*/
+.TituloInventario{
     align-items: center;
+    background-position: center;
+    justify-content: center;
 }
