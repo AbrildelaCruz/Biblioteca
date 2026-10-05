@@ -74,6 +74,56 @@
 /*inventario*/
 .TituloInventario{
     align-items: center;
-    background-position: center;
-    justify-content: center;
+}
+.buttion{
+   width: 280px;
+   padding: 20px;
+   margin: auto;
+   border-radius: 10PX;
+}
+h1{
+    margin: 20px;
+    text-align: center;
+}
+.bton-1{
+        width: 100%;
+            padding: 14px 28px;     
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px; 
+            margin-right: 15px;
+            text-align: center;
+            margin: 20px;;
+}
+
+
+
+.bton-2{
+         width: 100%;
+            padding: 14px 28px;     
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px; 
+            margin-right: 15px;
+            margin: 20px;
+            text-align: center;
+
+}
+
+
+.bton-3{
+           width: 100%;
+            padding: 14px 28px;     
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px; 
+            margin-right: 15px;
+            text-align: center;
+            margin: 20px;
 }
