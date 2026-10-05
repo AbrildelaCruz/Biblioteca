@@ -68,3 +68,8 @@
 /*préstamo-alumnos*/
 /*préstamo-profesores*/
 /*inventario*/
+.TituloInventario{
+    align-items: center;
+    background-position: center;
+    justify-content: center;
+}
