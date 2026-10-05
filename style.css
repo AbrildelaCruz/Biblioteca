@@ -90,9 +90,11 @@
 
 /*inventario*/
 .TituloInventario{
-    text-align: center;
-    display: block; 
-    Width: 100%;
+    
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: flex-start; /* Lo mantiene arriba del todo */
+    width: 100%;      
 }
 .buttion{
    width: 280px;
