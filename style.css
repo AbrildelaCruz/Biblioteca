@@ -144,21 +144,10 @@ h1{
 
 
 /*préstamo-alumnos*/
-.TituloAlumnos{
-    text-align: center !important; 
-  display: block !important;     /* Asegura que ocupe todo el ancho disponible */
-  margin-top: 0;                 /* Elimina espacios extras arriba si quieres que esté pegado al borde */
-  width: 100%;  
-}
+
 /*préstamo-profesores*/
 
 /*inventario*/
-.TituloInventario{
-    
-    text-align: center !important; /* Fuerza el centrado horizontal */
-  display: block !important;     /* Asegura que ocupe todo el ancho disponible */
-  margin-top: 0;                 /* Elimina espacios extras arriba si quieres que esté pegado al borde */
-  width: 100%;       
-}
+
 
 
