@@ -90,7 +90,9 @@
 
 /*inventario*/
 .TituloInventario{
-    align-items: center;
+    text-align: center;
+    display: block; 
+    Width: 100%;
 }
 .buttion{
    width: 280px;
