@@ -1,3 +1,4 @@
+BIENVENIDA
 .body1{
     background-image: url('FONDOSULLIVAN.jpg');
     background-repeat: no-repeat;
@@ -19,6 +20,7 @@
   height: 100vh;           /* Toma todo el alto de la pantalla (opcional) */
 }
 
+LOGIN
 .body2{
     background: linear-gradient(-45deg, #7a9cec, #382ebd, #7353ca, #194ab3);
     background-size: 400% 2500%;
