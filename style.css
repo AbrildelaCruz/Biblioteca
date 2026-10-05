@@ -103,9 +103,18 @@ h1{
             margin-right: 15px;
             text-align: center;
             margin: 20px;
-            background-color: #000;
-}
+            background-color:#D9DDDC;
+            transition: .3s ease;
 
+}
+.btn1:hover{
+    background-color: #0056b3;
+
+}
+.btn1:focus{
+    background-color: gold;
+
+}
 
 
 .bton-2{
