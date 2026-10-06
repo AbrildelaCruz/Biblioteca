@@ -17,22 +17,23 @@
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
   justify-content: center;  /* Centrado horizontal */
   align-items: center; 
-  font-size: 50px;
+  font-size: 30px;
 }
 
 .A_uno {
   display: inline-block;
-  padding: 15px 25px;
-  color: white;             /* Color del texto */
+  padding: 10px 20px;
+  color: #FFECC2;             /* Color del texto */
   text-decoration: none;     /* Quita el subrayado */
-  border-radius: 5px;        /* Bordes redondeados (opcional) */
+  border-radius: 6px;       /* Bordes redondeados (opcional) */
   font-weight: bold;         /* Texto en negrita (opcional) */
   transition: background-color 0.2s;
   
 }
 
 .A_uno:hover {
-  background-color:orange;
+  background-color:rgb(250, 174, 33);
+  color: white;
  /* Color al pasar el cursor */
 }
 
@@ -90,7 +91,11 @@
 }
 
 .bton-1{
-        width: 100%;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center;
+            width: 100%;
             padding: 14px 28px;     
             border: none;
             font-size: 16px;
@@ -102,7 +107,8 @@
             margin: 20px;
             background-color:#D9DDDC;
             transition: .3s ease;
-
+            display: flex;
+            gap: 15px;
 }
 .btn1:hover{
     background-color: #0056b3;
@@ -115,7 +121,11 @@
 
 
 .bton-2{
-         width: 100%;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center;
+            width: 100%;
             padding: 14px 28px;     
             border: none;
             font-size: 16px;
@@ -126,12 +136,17 @@
             margin: 20px;
             text-align: center;
             background-color: 	#D3D3D3;
-
+            display: flex;
+            gap: 15px;
 }
 
 
 .bton-3{
-           width: 100%;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center;
+            width: 100%;
             padding: 14px 28px;     
             border: none;
             font-size: 16px;
@@ -141,7 +156,9 @@
             margin-right: 15px;
             text-align: center;
             margin: 20px;
-        background-color: 	#D3D3D3;
+            background-color: 	#D3D3D3;
+            display: flex;
+            gap: 15px;
 }
 
 h1{
@@ -151,15 +168,50 @@ h1{
 
 
 
-/*préstamo-alumnos*/
-.al{
-    background-color: #0056b3;
-    
+/*PRÉSTAMO-ALUMNOS*/
+/* Estilo para la Tabla HTML */
+.tabla-datos {
+  width: 100%;
+  max-width: 600px;    /* Ancho máximo de la tabla */
+  margin-top: 40px;     /* Separación con el formulario de arriba */
+  border-collapse: collapse; /* Une los bordes en una sola línea */
+  background-color: black;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;    /* Aplica el redondeado a las esquinas */
+  border: 1px solid black; /* 👈 Define: grosor (1px), estilo (sólido) y color (negro) */
+
 }
+
+/* Encabezado de la tabla (Fila oscura) */
+.tabla-datos th {
+  background-color: #333;
+  color: black;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+}
+
+/* Celdas del cuerpo de la tabla */
+.tabla-datos td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+}
+
+/* Efecto cebra (filas intercaladas de color gris claro) */
+.tabla-datos tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Efecto al pasar el mouse por encima de una fila */
+.tabla-datos tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
 
 /*préstamo-profesores*/
 
 /*inventario*/
-
 
 
