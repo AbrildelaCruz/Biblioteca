@@ -152,11 +152,46 @@ h1{
 
 
 
-/*préstamo-alumnos*/
+/*PRÉSTAMO-ALUMNOS*/
+/* Estilo para la Tabla HTML */
+.tabla-datos {
+  width: 100%;
+  max-width: 600px;    /* Ancho máximo de la tabla */
+  margin-top: 40px;     /* Separación con el formulario de arriba */
+  border-collapse: collapse; /* Une los bordes en una sola línea */
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;    /* Aplica el redondeado a las esquinas */
+}
 
+/* Encabezado de la tabla (Fila oscura) */
+.tabla-datos th {
+  background-color: #333;
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+}
+
+/* Celdas del cuerpo de la tabla */
+.tabla-datos td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+}
+
+/* Efecto cebra (filas intercaladas de color gris claro) */
+.tabla-datos tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Efecto al pasar el mouse por encima de una fila */
+.tabla-datos tbody tr:hover {
+  background-color: #f1f1f1;
+}
 /*préstamo-profesores*/
 
 /*inventario*/
-
 
 
