@@ -120,7 +120,10 @@
 
 
 .bton-2{
-         width: 100%;
+            display: inline-flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center;
+            width: 100%;
             padding: 14px 28px;     
             border: none;
             font-size: 16px;
@@ -137,6 +140,9 @@
 
 
 .bton-3{
+            display: inline-flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center;
             width: 100%;
             padding: 14px 28px;     
             border: none;
