@@ -211,6 +211,15 @@ h1{
 
 
 /*préstamo-profesores*/
+<<<<<<< HEAD
+ table{
+  width: 200px;
+  text-align: left;
+  margin: none;
+  justify-content: center;
+  
+ }
+=======
 .p1{
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
   justify-content: center;  /* Centrado horizontal */
@@ -234,6 +243,10 @@ h1{
   color: white; 
 }
 
+.p2{
+  background-color:chocolate;
+  color: white;           /* Color al pasar el cursor */
+}
 
 /*inventario*/
 .q1{
