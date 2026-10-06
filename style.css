@@ -23,7 +23,7 @@
 .A_uno {
   display: inline-block;
   padding: 15px 25px;
-  color: #FFCD99;             /* Color del texto */
+  color: #FFE6B3;             /* Color del texto */
   text-decoration: none;     /* Quita el subrayado */
   border-radius: 5px;        /* Bordes redondeados (opcional) */
   font-weight: bold;         /* Texto en negrita (opcional) */
@@ -32,7 +32,7 @@
 }
 
 .A_uno:hover {
-  background-color:orange;
+  background-color:rgb(250, 174, 33);
   color: white;
  /* Color al pasar el cursor */
 }
