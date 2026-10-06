@@ -91,6 +91,7 @@
 }
 
 .bton-1{
+            text-decoration: none;
             display: inline-flex;
             justify-content: center; /* Centra horizontalmente */
             align-items: center;
@@ -120,6 +121,7 @@
 
 
 .bton-2{
+            text-decoration: none;
             display: inline-flex;
             justify-content: center; /* Centra horizontalmente */
             align-items: center;
@@ -140,6 +142,7 @@
 
 
 .bton-3{
+            text-decoration: none;
             display: inline-flex;
             justify-content: center; /* Centra horizontalmente */
             align-items: center;
@@ -172,19 +175,18 @@ h1{
   max-width: 600px;    /* Ancho máximo de la tabla */
   margin-top: 40px;     /* Separación con el formulario de arriba */
   border-collapse: collapse; /* Une los bordes en una sola línea */
-  background-color: white;
+  background-color: black;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;    /* Aplica el redondeado a las esquinas */
-
-/*préstamo-alumnos*/
+  border: 1px solid black; /* 👈 Define: grosor (1px), estilo (sólido) y color (negro) */
 
 }
 
 /* Encabezado de la tabla (Fila oscura) */
 .tabla-datos th {
   background-color: #333;
-  color: white;
+  color: black;
   padding: 12px 15px;
   text-align: left;
   font-weight: bold;
@@ -206,6 +208,8 @@ h1{
 .tabla-datos tbody tr:hover {
   background-color: #f1f1f1;
 }
+
+
 /*préstamo-profesores*/
 .p1{
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
