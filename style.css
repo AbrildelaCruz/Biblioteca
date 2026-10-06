@@ -91,6 +91,7 @@
 }
 
 .bton-1{
+            text-decoration: none;
             display: inline-flex;
             justify-content: center; /* Centra horizontalmente */
             align-items: center;
@@ -120,6 +121,7 @@
 
 
 .bton-2{
+            text-decoration: none;
             display: inline-flex;
             justify-content: center; /* Centra horizontalmente */
             align-items: center;
@@ -140,6 +142,7 @@
 
 
 .bton-3{
+            text-decoration: none;
             display: inline-flex;
             justify-content: center; /* Centra horizontalmente */
             align-items: center;
