@@ -17,13 +17,13 @@
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
   justify-content: center;  /* Centrado horizontal */
   align-items: center; 
-  font-size: 50px;
+  font-size: 35px;
 }
 
 .A_uno {
   display: inline-block;
   padding: 15px 25px;
-  color: white;             /* Color del texto */
+  color: #FFCD99;             /* Color del texto */
   text-decoration: none;     /* Quita el subrayado */
   border-radius: 5px;        /* Bordes redondeados (opcional) */
   font-weight: bold;         /* Texto en negrita (opcional) */
@@ -33,6 +33,7 @@
 
 .A_uno:hover {
   background-color:orange;
+  color: white;
  /* Color al pasar el cursor */
 }
 
