@@ -17,15 +17,15 @@
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
   justify-content: center;  /* Centrado horizontal */
   align-items: center; 
-  font-size: 35px;
+  font-size: 30px;
 }
 
 .A_uno {
   display: inline-block;
-  padding: 15px 25px;
-  color: #FFE6B3;             /* Color del texto */
+  padding: 10px 20px;
+  color: #FFECC2;             /* Color del texto */
   text-decoration: none;     /* Quita el subrayado */
-  border-radius: 5px;        /* Bordes redondeados (opcional) */
+  border-radius: 6px;       /* Bordes redondeados (opcional) */
   font-weight: bold;         /* Texto en negrita (opcional) */
   transition: background-color 0.2s;
   
