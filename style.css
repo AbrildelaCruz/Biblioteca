@@ -175,7 +175,7 @@ h1{
   max-width: 600px;    /* Ancho máximo de la tabla */
   margin-top: 40px;     /* Separación con el formulario de arriba */
   border-collapse: collapse; /* Une los bordes en una sola línea */
-  background-color: white;
+  background-color: black;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;    /* Aplica el redondeado a las esquinas */
