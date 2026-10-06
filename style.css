@@ -12,19 +12,17 @@
     background-position: center;   /* Mantiene el centro de la imagen visible en cualquier pantalla */
     background-attachment: fixed;
 }
-
+      /* Estilo del boton ENTRAR */
 .btn1 {
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
   justify-content: center;  /* Centrado horizontal */
-  align-items: center;      /* Centrado vertical (si el contenedor tiene altura) */
-  width: 30%;             /* Asegura que ocupe todo el ancho disponible */
-  margin: 20px 0;          /* Espaciado arriba y abajo (opcional) */
+  align-items: center; 
+  font-size: 50px;
 }
 
 .A_uno {
   display: inline-block;
-  padding: 10px 20px;
-  background-color: #27ADF5; /* Color de fondo del botón */
+  padding: 15px 25px;
   color: white;             /* Color del texto */
   text-decoration: none;     /* Quita el subrayado */
   border-radius: 5px;        /* Bordes redondeados (opcional) */
@@ -34,7 +32,8 @@
 }
 
 .A_uno:hover {
-  background-color: #0056b3; /* Color al pasar el cursor */
+  background-color:orange;
+ /* Color al pasar el cursor */
 }
 
 /*LOGIN*/
@@ -103,7 +102,8 @@
             margin: 20px;
             background-color:#D9DDDC;
             transition: .3s ease;
-
+            display: flex;
+            gap: 15px;
 }
 .btn1:hover{
     background-color: #0056b3;
@@ -127,7 +127,8 @@
             margin: 20px;
             text-align: center;
             background-color: 	#D3D3D3;
-
+            display: flex;
+            gap: 15px;
 }
 
 
@@ -142,7 +143,9 @@
             margin-right: 15px;
             text-align: center;
             margin: 20px;
-        background-color: 	#D3D3D3;
+            background-color: 	#D3D3D3;
+            display: flex;
+            gap: 15px;
 }
 
 h1{
@@ -163,6 +166,9 @@ h1{
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;    /* Aplica el redondeado a las esquinas */
+
+/*préstamo-alumnos*/
+
 }
 
 /* Encabezado de la tabla (Fila oscura) */
