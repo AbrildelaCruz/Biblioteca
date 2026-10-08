@@ -13,6 +13,9 @@ include 'conexion.php';
 </head>
 <body>
     <h1>Préstamo a profesores</h1>
+    <div class="p1">
+            <a class="p2" href="registro.html">REGRESAR</a>
+        </div>
 </body>
 
 <table >
@@ -28,6 +31,7 @@ include 'conexion.php';
 
         </tr>
     </thead
+<<<<<<< HEAD
     <tr>
             <td ><td>
             <td ></td>
@@ -36,5 +40,14 @@ include 'conexion.php';
         <tbody>
 
     </tbody>
+=======
+    <body>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </body>
+>>>>>>> 6f63689d0c38161f665c9080b510518afef65e34
 </table>
 </html>

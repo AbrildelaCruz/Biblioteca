@@ -19,7 +19,7 @@ $resultado = $conexion->query($sql);
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Tabla Vinculada a MySQL</title>
+  <title>Préstamos alumnos</title>
   <style>
     .tabla-datos {
       width: 100%;
@@ -42,8 +42,10 @@ $resultado = $conexion->query($sql);
 </head>
 <body>
 
-  <h2 style="text-align: center;">Datos en Tiempo Real desde XAMPP</h2>
-
+  <h2 style="text-align: center;">Préstamos a Alumnos</h2>
+  <div class="z1">
+        <a class="z2" href="registro.html">REGRESAR</a>
+  </div>
   <table class="tabla-datos">
     <thead>
       <tr>

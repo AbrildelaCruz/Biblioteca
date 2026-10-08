@@ -179,7 +179,7 @@ h1{
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;    /* Aplica el redondeado a las esquinas */
-  border: 1px solid black; /* 👈 Define: grosor (1px), estilo (sólido) y color (negro) */
+  border: 1px solid black; 
 
 }
 
@@ -209,12 +209,46 @@ h1{
   background-color: #f1f1f1;
 }
 
+<<<<<<< HEAD
 /*prestamo profesores*/
  .tab{
   width: 100px;
   border-collapse: collapse;
   text-align: center;
   border: 1px solid black;
+=======
+.z1{
+  display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
+  justify-content: center;  /* Centrado horizontal */
+  align-items: center; 
+  font-size: 18px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.z2{
+  display: inline-block;
+  padding: 10px 20px;
+  color: #FFECC2;             /* Color del texto */
+  text-decoration: none;     /* Quita el subrayado */
+  border-radius: 6px;       /* Bordes redondeados (opcional) */
+  font-weight: bold;         /* Texto en negrita (opcional) */
+  transition: background-color 0.2s;
+  background-color:chocolate; /* Color al pasar el cursor */
+  color: white; 
+}
+
+/*préstamo-profesores*/
+
+ table{
+  width: 200px;
+  text-align: left;
+  margin: none;
+  justify-content: center;
+  
+>>>>>>> 6f63689d0c38161f665c9080b510518afef65e34
  }
 
 .p1{
@@ -265,10 +299,6 @@ h1{
   border-radius: 6px;       /* Bordes redondeados (opcional) */
   font-weight: bold;         /* Texto en negrita (opcional) */
   transition: background-color 0.2s;
-
-}
-
-.q2:hover{
-   background-color:chocolate; /* Color al pasar el cursor */
+  background-color:chocolate; /* Color al pasar el cursor */
   color: white
 }
