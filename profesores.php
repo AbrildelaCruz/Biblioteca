@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Préstamo-Profesores</title>
+    <title>Préstamo-Prefesores</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,11 +12,8 @@
             text-align: center;
             }
         </style>
-        <h1>Préstamo a profesores</h1>
-        <div class="p1">
-            <a class="p2" href="registro.html">REGRESAR</a>
-        </div>
 
+    <h1>Préstamo a profesores</h1>
 </body>
 <form action="prestamo.php" name="" method="POST">
 <table>
@@ -29,12 +26,6 @@
     </thead
     <body>
         <tr>
-            <td>1</td>
-            <td>Martha</td>
-            <td>Español</td>
-            <td></td>
-            <td></td>
-            <td></td>
             <td></td>
             <td></td>
             <td></td>

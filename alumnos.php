@@ -19,7 +19,11 @@ $resultado = $conexion->query($sql);
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+<<<<<<< HEAD
   <title>Préstamos alumnos</title>
+=======
+  <title>Tabla Vinculada a MySQL</title>
+>>>>>>> 83b639c55050fd85ae9914262b74cd9615674de1
   <style>
     .tabla-datos {
       width: 100%;
