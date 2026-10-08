@@ -47,7 +47,9 @@ $resultado = $conexion->query($sql);
 <body>
 
   <h2 style="text-align: center;">Préstamos a Alumnos</h2>
-
+  <div class="z1">
+        <a class="z2" href="registro.html">REGRESAR</a>
+  </div>
   <table class="tabla-datos">
     <thead>
       <tr>
