@@ -14,6 +14,9 @@
         </style>
 
     <h1>Préstamo a profesores</h1>
+    <div class="p1">
+            <a class="p2" href="registro.html">REGRESAR</a>
+        </div>
 </body>
 <form action="prestamo.php" name="" method="POST">
 <table>
