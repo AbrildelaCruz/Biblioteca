@@ -179,7 +179,7 @@ h1{
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;    /* Aplica el redondeado a las esquinas */
-  border: 1px solid black; /* 👈 Define: grosor (1px), estilo (sólido) y color (negro) */
+  border: 1px solid black; 
 
 }
 
