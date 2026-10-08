@@ -24,13 +24,13 @@
             <th>Materia</th>
         </tr>
     </thead
-    <tbody>
+    <body>
         <tr>
             <td></td>
             <td></td>
             <td></td>
         </tr>
-    </tbody>
+    </body>
 </table>
 </form>
 </html>
