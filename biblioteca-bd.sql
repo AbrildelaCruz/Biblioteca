@@ -100,17 +100,17 @@ CREATE TABLE `prestamos` (
 -- Estructura de tabla para la tabla `profesores`
 --
 
-CREATE TABLE `profesores` (
-  `id_Profesores` INT(11) NOT NULL,
-  `Nombre` VARCHAR(100) NOT NULL,
-  `Materia` VARCHAR(100) DEFAULT NULL,
-  `Libro` VARCHAR(100) NOT NULL,
-  `Cantidad` INT(11) NOT NULL,
-  `Fecha_de_prestamo` DATE NOT NULL,
+CREATE TABLE `profesores` (  
+  `id_Profesores` INT(11) NOT NULL AUTO_INCREMENT,  
+  `Nombre` VARCHAR(100) NOT NULL,  
+  `Materia` VARCHAR(100) DEFAULT NULL,  
+  `Libro` VARCHAR(100) NOT NULL,  
+  `Cantidad` INT(11) NOT NULL,  
+  `Fecha_de_prestamo` DATE NOT NULL,  
   `Fecha_de_entrega` DATE NOT NULL,
-  PRIMARY KEY (`id_Profesores`))
- ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
---
+  PRIMARY KEY (`id_Profesores`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Índices para tablas volcadas
 --
 
