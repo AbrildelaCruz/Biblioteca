@@ -95,6 +95,10 @@ CREATE TABLE `profesores` (
   `id_Profesores` int(11) NOT NULL,
   `Nombre` varchar(100) NOT NULL,
   `Materia` varchar(100) DEFAULT NULL
+  'Libro '   VARCHAR(100) not NULL
+  `Cantidad` int(100) NOT NULL,
+  'Fecha de prestamo '   VARCHAR(100) not NULL
+  'Fecha de entrega '   VARCHAR(100) not NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
