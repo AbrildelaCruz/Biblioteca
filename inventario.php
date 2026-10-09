@@ -1,6 +1,7 @@
 <?php
-require_once __DIR__ . '/conexion.php';
+include 'conexion.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,9 +12,7 @@ require_once __DIR__ . '/conexion.php';
 </head>
 <body>
      <style>
-            h1 {
-            text-align: center;
-            }
+        
         </style>
 
     <h1>Inventario</h1>
