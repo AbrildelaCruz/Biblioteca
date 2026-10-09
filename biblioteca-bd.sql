@@ -101,15 +101,15 @@ CREATE TABLE `prestamos` (
 --
 
 CREATE TABLE `profesores` (
-  `id_Profesores` int(11) NOT NULL,
-  `Nombre` varchar(100) NOT NULL,
-  `Materia` varchar(100) DEFAULT NULL,
-  `Cantidad` int(11) NOT NULL,
-  `Fecha_de_préstamo` date NOT NULL,
-  `Nombre_del_Libro` varchar(100) NOT NULL,
-  `Fecha_de_entrega` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+  `id_Profesores` INT(11) NOT NULL,
+  `Nombre` VARCHAR(100) NOT NULL,
+  `Materia` VARCHAR(100) DEFAULT NULL,
+  `Libro` VARCHAR(100) NOT NULL,
+  `Cantidad` INT(11) NOT NULL,
+  `Fecha_de_prestamo` DATE NOT NULL,
+  `Fecha_de_entrega` DATE NOT NULL,
+  PRIMARY KEY (`id_Profesores`))
+ ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 --
 -- Índices para tablas volcadas
 --
