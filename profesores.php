@@ -1,6 +1,3 @@
-<?php
-include 'conexion.php';
-?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -8,18 +5,16 @@ include 'conexion.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Préstamo-Prefesores</title>
-     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" type="text/css" href="css/styess">
     
 </head>
 <body>
-    <h1>Préstamo a profesores</h1>
-    <div class="p1">
-            <a class="p2" href="registro.html">REGRESAR</a>
-        </div>
-</body>
-
-<table >
-    <thead >
+     <h1>Préstamo a profesores</h1>
+     <div class="p1">
+        <a class="p2" href="registro.html">REGRESAR</a>
+  </div>
+  <table class="tabla-datos">
+    <thead>
         <tr>
             <th >id.profesor</th>
             <th >Nombre</th>
@@ -30,24 +25,13 @@ include 'conexion.php';
             <th>fecha de entrega</th>
 
         </tr>
-    </thead
-<<<<<<< HEAD
+      
+    </thead>
     <tr>
             <td ><td>
             <td ></td>
             <td ></td>
         </tr>
-        <tbody>
 
-    </tbody>
-=======
-    <body>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </body>
->>>>>>> 6f63689d0c38161f665c9080b510518afef65e34
 </table>
 </html>
