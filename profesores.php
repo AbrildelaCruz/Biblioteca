@@ -86,8 +86,13 @@ $resultado = $conexion->query(
     <table class="tabla-datos">
         <thead>
             <tr>
-                <th>ID</th><th>Nombre</th><th>Materia</th><th>Libro</th>
-                <th>Cantidad</th><th>Fecha de préstamo</th><th>Fecha de entrega</th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Materia</th>
+                <th>Libro</th>
+                <th>Cantidad</th>
+                <th>Fecha de préstamo</th>
+                <th>Fecha de entrega</th>
             </tr>
         </thead>
         <tbody>
