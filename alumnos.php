@@ -7,31 +7,8 @@ include 'conexion.php';
 <head>
   <meta charset="UTF-8">
   <title>Préstamos alumnos</title>
-  <style>
-    .tabla-datos {
-      width: 100%;
-      max-width: 800px;
-      margin: 20px auto;
-      border-collapse: collapse;
-      font-family: Arial, sans-serif;
-    }
-    .tabla-datos th, .tabla-datos td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: left;
-    }
-    .tabla-datos th {
-      background-color: #2c3e50;
-      color: white;
-    }
-    .tabla-datos tr:nth-child(even) { background-color: #f9f9f9; }
-    .formulario { max-width: 800px; margin: 20px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-    .formulario label { display: flex; flex-direction: column; gap: 5px; }
-    .formulario button { padding: 10px; cursor: pointer; }
-    .mensaje { max-width: 800px; margin: 16px auto; }
-    .error { color: #b00020; }
-    .exito { color: #16753b; }
-  </style>
+  <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+
 </head>
 <body>
 
