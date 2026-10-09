@@ -70,3 +70,48 @@ $resultado = $conexion->query(
       ?>
 ?>
 /*conexion-profesores.php*/
+<?php
+require_once __DIR__ . '/conexion.php';
+
+$mensaje = '';
+$tipoMensaje = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = trim($_POST['Nombre'] ?? '');
+    $materia = trim($_POST['Materia'] ?? '');
+    $libro = trim($_POST['Nombre del Libro'] ?? '');
+    $cantidad = filter_input(INPUT_POST, 'Cantidad', FILTER_VALIDATE_INT);
+    $fechaPrestamo = $_POST['Fecha_prestamo'] ?? '';
+    $fechaEntrega = $_POST['Fecha_entrega'] ?? '';
+
+    if ($nombre === '' || $libro === '' || $cantidad === false || $cantidad === null || $cantidad < 1 || $fechaPrestamo === '' || $fechaEntrega === '') {
+        $mensaje = 'Completa todos los campos obligatorios. La cantidad debe ser mayor que cero.';
+        $tipoMensaje = 'error';
+    } elseif ($fechaEntrega < $fechaPrestamo) {
+        $mensaje = 'La fecha de entrega no puede ser anterior a la fecha de préstamo.';
+        $tipoMensaje = 'error';
+    } else {
+        $stmt = $conexion->prepare(
+            'INSERT INTO profesores (Nombre, Materia, Nombre del Libro, Cantidad, Fecha_prestamo, Fecha_entrega) VALUES (?, ?, ?, ?, ?, ?)'
+        );
+        if (!$stmt) {
+            $mensaje = 'No se pudo preparar el guardado: ' . $conexion->error;
+            $tipoMensaje = 'error';
+        } else {
+            $stmt->bind_param('sssiss', $nombre, $materia, $libro, $cantidad, $fechaPrestamo, $fechaEntrega);
+            if ($stmt->execute()) {
+                $mensaje = 'Datos guardados en la tabla profesores.';
+                $tipoMensaje = 'exito';
+            } else {
+                $mensaje = 'No se guardaron los datos en profesores: ' . $stmt->error;
+                $tipoMensaje = 'error';
+            }
+            $stmt->close();
+        }
+    }
+}
+
+$resultado = $conexion->query(
+    'SELECT id_Profesores, Nombre, Materia, Nombre del Libro, Cantidad, Fecha_prestamo, Fecha_entrega FROM profesores ORDER BY id_Profesores DESC'
+);
+?>
