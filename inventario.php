@@ -21,12 +21,19 @@ include 'conexion.php';
          if ($mensaje !== ''): ?>
         <p class="mensaje <?= htmlspecialchars($tipoMensaje, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') ?></p>
          <?php endif; ?>
+
+         <form class="formulario" method="post" action="inventario.php">
+          <label>id_inventario<input type="text" name=""
+          <label>id_libro
+          <label>Estado_conservación
+         </form>
+
     <table class="tab">
         <thead>
     <tr>
       <th>id_inventario</th>
       <th>id_libro</th>
-      <th>Estado_Conservación</th>
+      <th>Estado_conservación</th>
     </tr>
   </thead>
   <!-- Cuerpo -->
