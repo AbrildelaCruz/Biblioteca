@@ -34,8 +34,7 @@ CREATE TABLE `alumnos` (
   `Familia` varchar(100) DEFAULT NULL,
   `Piso` varchar(20) DEFAULT NULL,
   `Grupo` varchar(20) DEFAULT NULL
- ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 -- --------------------------------------------------------
 
 --
