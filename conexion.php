@@ -69,7 +69,7 @@ $resultado = $conexion->query(
       $conexion->close();
       ?>
 ?>
-// conexion-profesores.php
+      // conexion profesores
 <?php
 require_once __DIR__ . '/conexion.php';
 
