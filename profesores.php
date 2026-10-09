@@ -1,3 +1,7 @@
+<?php
+include 'conexion.php';
+?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -5,21 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Préstamos a profesores</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 24px; }
-        .formulario, .tabla-datos { width: 95%; max-width: 1000px; margin: 20px auto; }
-        .formulario { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-        .formulario label { display: flex; flex-direction: column; gap: 5px; }
-        .formulario input, .formulario button { padding: 9px; }
-        .formulario button { cursor: pointer; }
-        .tabla-datos { border-collapse: collapse; }
-        .tabla-datos th, .tabla-datos td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .tabla-datos th { background: #2c3e50; color: white; }
-        .tabla-datos tr:nth-child(even) { background: #f5f5f5; }
-        .mensaje { max-width: 1000px; margin: 16px auto; }
-        .error { color: #b00020; }
-        .exito { color: #16753b; }
-    </style>
+    <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 </head>
 <body>
     <h1 style="text-align:center">Registro de profesores</h1>
@@ -45,7 +35,7 @@
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Materia</th>
-                <th>Libro</th>
+                <th>Nombre del Libro</th>
                 <th>Cantidad</th>
                 <th>Fecha de préstamo</th>
                 <th>Fecha de entrega</th>
