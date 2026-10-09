@@ -281,3 +281,34 @@ h1{
   background-color:chocolate; /* Color al pasar el cursor */
   color: white
 }
+
+.tab{
+  width: 100%;
+  max-width: 600px;
+  margin-top: 40px;     
+  border-collapse: collapse; 
+  background-color: black;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;    /* Aplica el redondeado a las esquinas */
+  border: 1px solid black; 
+}
+
+.tab th{
+  background-color:#1849B7;
+  color: #143D99;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.tab td{
+  padding: 12px 15px;
+  border-bottom: 1px solid white;
+  color: #555;
+}
+
+.tab tr
+  :nth-child(even) {
+  background-color: #f9f9f9;
+}
