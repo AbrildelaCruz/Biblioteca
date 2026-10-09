@@ -11,10 +11,7 @@ include 'conexion.php';
     <title>Inventario</title>
 </head>
 <body>
-     <style>
-
-        </style>
-
+   
     <h1>Inventario</h1>
      <div class="q1">
         <a class="q2" href="registro.html">REGRESAR</a>
