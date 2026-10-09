@@ -115,3 +115,20 @@ $resultado = $conexion->query(
     'SELECT id_Profesores, Nombre, Materia, Nombre del Libro, Cantidad, Fecha_prestamo, Fecha_entrega FROM profesores ORDER BY id_Profesores DESC'
 );
 ?>
+
+ <?php if ($resultado && $resultado->num_rows > 0): ?>
+                <?php while ($fila = $resultado->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= (int) $fila['id_Profesores'] ?></td>
+                        <td><?= htmlspecialchars($fila['Nombre'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($fila['Materia'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($fila['Nombre del Libro'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= (int) $fila['Cantidad'] ?></td>
+                        <td><?= htmlspecialchars($fila['Fecha_prestamo'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($fila['Fecha_entrega'], ENT_QUOTES, 'UTF-8') ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr><td colspan="7" style="text-align:center">No hay registros de profesores.</td></tr>
+            <?php endif; ?>
+              <?php $conexion->close(); ?>
