@@ -308,7 +308,10 @@ h1{
   color: #555;
 }
 
-.tab tr
-  :nth-child(even) {
+.tab tr:nth-child(even) {
   background-color: #f9f9f9;
+}
+
+.tab tbody tr:hover {
+  background-color: #f1f1f1;
 }
