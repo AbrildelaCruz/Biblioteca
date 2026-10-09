@@ -55,6 +55,6 @@
            
         </tbody>
     </table>
-    <?php $conexion->close(); ?>
+  
 </body>
 </html>
