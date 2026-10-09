@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-10-2026 a las 18:55:14
+-- Tiempo de generación: 09-10-2026 a las 19:10:26
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -35,6 +35,16 @@ CREATE TABLE `alumnos` (
   `Piso` varchar(20) DEFAULT NULL,
   `Grupo` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `alumnos`
+--
+
+INSERT INTO `alumnos` (`id_Alumnos`, `Nombre`, `Madre_encargada`, `Familia`, `Piso`, `Grupo`) VALUES
+(1, 'Abril', 'Hna. Griseida', 'sta bernardiata', '2', '501'),
+(2, 'Heidy', 'Hna. Griseida', 'sta bernardita', '2', '501'),
+(6, 'Diana', 'Hna. Rosario', 'Sta. Adela', '3', '502');
+
 -- --------------------------------------------------------
 
 --
@@ -90,13 +100,17 @@ CREATE TABLE `prestamos` (
 -- Estructura de tabla para la tabla `profesores`
 --
 
-CREATE TABLE `profesores` (
-  `id_Profesores` int(11) NOT NULL,
-  `Nombre` varchar(100) NOT NULL,
-  `Materia` varchar(100) DEFAULT NULL,
+CREATE TABLE `profesores` (  
+  `id_Profesores` INT(11) NOT NULL AUTO_INCREMENT,  
+  `Nombre` VARCHAR(100) NOT NULL,  
+  `Materia` VARCHAR(100) DEFAULT NULL,  
+  `Libro` VARCHAR(100) NOT NULL,  
+  `Cantidad` INT(11) NOT NULL,  
+  `Fecha_de_prestamo` DATE NOT NULL,  
+  `Fecha_de_entrega` DATE NOT NULL,
+  PRIMARY KEY (`id_Profesores`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
 -- Índices para tablas volcadas
 --
 
@@ -142,7 +156,7 @@ ALTER TABLE `profesores`
 -- AUTO_INCREMENT de la tabla `alumnos`
 --
 ALTER TABLE `alumnos`
-  MODIFY `id_Alumnos` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_Alumnos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `inventario`
