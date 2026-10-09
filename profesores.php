@@ -7,7 +7,7 @@ $tipoMensaje = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['Nombre'] ?? '');
     $materia = trim($_POST['Materia'] ?? '');
-    $libro = trim($_POST['Libro'] ?? '');
+    $libro = trim($_POST['Nombre del Libro'] ?? '');
     $cantidad = filter_input(INPUT_POST, 'Cantidad', FILTER_VALIDATE_INT);
     $fechaPrestamo = $_POST['Fecha_prestamo'] ?? '';
     $fechaEntrega = $_POST['Fecha_entrega'] ?? '';
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tipoMensaje = 'error';
     } else {
         $stmt = $conexion->prepare(
-            'INSERT INTO profesores (Nombre, Materia, Libro, Cantidad, Fecha_prestamo, Fecha_entrega) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO profesores (Nombre, Materia, Nombre del Libro, Cantidad, Fecha_prestamo, Fecha_entrega) VALUES (?, ?, ?, ?, ?, ?)'
         );
         if (!$stmt) {
             $mensaje = 'No se pudo preparar el guardado: ' . $conexion->error;
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $resultado = $conexion->query(
-    'SELECT id_Profesores, Nombre, Materia, Libro, Cantidad, Fecha_prestamo, Fecha_entrega FROM profesores ORDER BY id_Profesores DESC'
+    'SELECT id_Profesores, Nombre, Materia, Nombre del Libro, Cantidad, Fecha_prestamo, Fecha_entrega FROM profesores ORDER BY id_Profesores DESC'
 );
 ?>
 <!DOCTYPE html>
@@ -97,7 +97,7 @@ $resultado = $conexion->query(
                         <td><?= (int) $fila['id_Profesores'] ?></td>
                         <td><?= htmlspecialchars($fila['Nombre'], ENT_QUOTES, 'UTF-8') ?></td>
                         <td><?= htmlspecialchars($fila['Materia'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($fila['Libro'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($fila['Nombre del Libro'], ENT_QUOTES, 'UTF-8') ?></td>
                         <td><?= (int) $fila['Cantidad'] ?></td>
                         <td><?= htmlspecialchars($fila['Fecha_prestamo'], ENT_QUOTES, 'UTF-8') ?></td>
                         <td><?= htmlspecialchars($fila['Fecha_entrega'], ENT_QUOTES, 'UTF-8') ?></td>
