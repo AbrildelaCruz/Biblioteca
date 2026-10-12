@@ -13,6 +13,6 @@
      <input  type="search" name="termino" placeholder=" auctor" required >
      <input  type="search" name="termino" placeholder="ismb" required >
 </form>
-           <button type="submit">buscar</button> </form>
+           <button type="submit">buscar</button> 
 </body>
 </html>
