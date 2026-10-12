@@ -15,8 +15,11 @@ include 'conexion.php';
   <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
   </div>
+  <?php if ($mensaje !== ''): ?>
+    <p class="mensaje <?= htmlspecialchars($tipoMensaje, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') ?></p>
+  <?php endif; ?>
   <form class="formulario" method="post" action="alumnos.php">
-    <label>Nombre *<input type="text" name="Nombre" maxlength="100" required></label>
+    <label>Nombre<input type="text" name="Nombre" maxlength="100" required></label>
     <label>Madre encargada<input type="text" name="Madre_encargada" maxlength="100"></label>
     <label>Familia<input type="text" name="Familia" maxlength="100"></label>
     <label>Piso<input type="text" name="Piso" maxlength="20"></label>
