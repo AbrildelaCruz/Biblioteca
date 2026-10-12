@@ -10,20 +10,43 @@ include 'conexion.php';
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 </head>
 <body>
-    <h1 style="text-align:center">Registro de profesores</h1>
-    <p style="text-align:center"><a href="registro.html">Regresar</a></p>
+    <div class="contenedor-formulario">
+    <h2>Registrar Nuevo Profesor</h2>
+    
+    <form action="../controladores/guardar_profesor.php" method="POST">
+        
+        <div class="grupo-campo">
+            <label for="num_empleado">Nombre</label>
+            <input type="text" name="Nombre" maxlength="100" required>
+        </div>
 
-    <?php if ($mensaje !== ''): ?>
-        <p class="mensaje <?= htmlspecialchars($tipoMensaje, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') ?></p>
-    <?php endif; ?>
+        <div class="grupo-campo">
+            <label for="Materia">Materia</label>
+            <input type="text" name="Materia" maxlength="100" required>
+        </div>
 
-    <form class="formulario" method="post" action="profesores.php">
-        <label>Nombre del profesor<input type="text" name="Nombre" maxlength="100" required></label>
-        <label>Materia<input type="text" name="Materia" maxlength="100"></label>
-        <label>Nombre del libro<input type="text" name="Libro" maxlength="100" required></label>
-        <label>Cantidad<input type="number" name="Cantidad" min="1" required></label>
-        <label>Fecha de préstamo<input type="date" name="Fecha_prestamo" required></label>
-        <label>Fecha de entrega<input type="date" name="Fecha_entrega" required></label>
+        <div class="grupo-campo">
+            <label for="Libro">Nombre del Libro</label>
+            <input type="text" name="Libro" maxlength="100" required>
+        </div>
+
+        <div class="grupo-campo">
+            <label for="Libro">Cantidad</label>
+            <input type="text" name="Cantidad"  min="20" required>
+        </div>
+
+        <div class="grupo-campo">
+            <label for="Fecha_prestamo">Fecha de préstamo</label>
+            <input type="date" name="Fecha_prestamo" required>
+        </div>
+
+        <div class="grupo-campo">
+            <label for="Fecha_prestamo">Fecha de entrega</label>
+            <input type="date" name="Fecha_entrega" required>
+        </div>
+
+        <button type="submit" class="boton-guardar">Guardar Profesor</button>
+    </form>
         <button type="submit">Guardar profesor</button>
     </form>
 
