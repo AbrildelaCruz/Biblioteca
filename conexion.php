@@ -5,7 +5,7 @@ $usuario  = "root";
 $password = " ";
 $base_datos = "biblioteca-bd.sql";
 
-$conexion = new mysqli('localhost', 'root', '', 'biblioteca-bd.sql');
+$conexion = new mysqli('localhost', 'root', '', 'biblioteca-bd');
 
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
