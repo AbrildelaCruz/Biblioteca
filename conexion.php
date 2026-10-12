@@ -2,10 +2,10 @@
 <?php
 $servidor = "localhost";
 $usuario  = "root";
-$password = "";
-$base_datos = "biblioteca-bd";
+$password = " ";
+$base_datos = "biblioteca-bd.sql";
 
-$conexion = new mysqli($servidor, $usuario, $password, $base_datos);
+$conexion = new mysqli('localhost', 'root', '', 'biblioteca-bd.sql');
 
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
@@ -80,7 +80,7 @@ $tipoMensaje = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['Nombre'] ?? '');
     $materia = trim($_POST['Materia'] ?? '');
-    $libro = trim($_POST['Nombre del Libro'] ?? '');
+    $libro = trim($_POST['Libro'] ?? '');
     $cantidad = filter_input(INPUT_POST, 'Cantidad', FILTER_VALIDATE_INT);
     $fechaPrestamo = $_POST['Fecha_prestamo'] ?? '';
     $fechaEntrega = $_POST['Fecha_entrega'] ?? '';
@@ -92,9 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mensaje = 'La fecha de entrega no puede ser anterior a la fecha de préstamo.';
         $tipoMensaje = 'error';
     } else {
+        
         $stmt = $conexion->prepare(
-            'INSERT INTO profesores (Nombre, Materia, Nombre del Libro, Cantidad, Fecha_prestamo, Fecha_entrega) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO profesores (Nombre, Materia, nombre_libro, Cantidad, Fecha_prestamo, Fecha_entrega) VALUES (?, ?, ?, ?, ?, ?)'
         );
+        
         if (!$stmt) {
             $mensaje = 'No se pudo preparar el guardado: ' . $conexion->error;
             $tipoMensaje = 'error';
@@ -111,29 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-
 $resultado = $conexion->query(
-    'SELECT id_Profesores, Nombre, Materia, Nombre del Libro, Cantidad, Fecha_prestamo, Fecha_entrega FROM profesores ORDER BY id_Profesores DESC'
+    'SELECT id_Profesores, Nombre, Materia, nombre_libro, Cantidad, Fecha_prestamo, Fecha_entrega FROM profesores ORDER BY id_Profesores DESC'
 );
 ?>
-
- <?php if ($resultado && $resultado->num_rows > 0): ?>
-                <?php while ($fila = $resultado->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= (int) $fila['id_Profesores'] ?></td>
-                        <td><?= htmlspecialchars($fila['Nombre'], ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($fila['Materia'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($fila['Nombre del Libro'], ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= (int) $fila['Cantidad'] ?></td>
-                        <td><?= htmlspecialchars($fila['Fecha_prestamo'], ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($fila['Fecha_entrega'], ENT_QUOTES, 'UTF-8') ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr><td colspan="7" style="text-align:center">No hay registros de profesores.</td></tr>
-            <?php endif; ?>
-              <?php $conexion->close(); ?>
-
         //*conexion inventario
 <?php
 require_once __DIR__ . '/conexion.php';
