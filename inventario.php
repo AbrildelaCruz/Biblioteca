@@ -23,9 +23,10 @@ include 'conexion.php';
          <?php endif; ?>
 
          <form class="formulario" method="post" action="inventario.php">
-          <label>id_inventario<input type="text" name="Nombre" maxlength="100" required></label>
-          <label>id_libro<input type="text" name="" maxlength="100" required></label>
-          <label>Estado_conservación
+          <label>id_inventario<input type="text" name="id_inventario" maxlength="20" required></label>
+          <label>id_libro<input type="text" name="id_libro" maxlength="20" required></label>
+          <label>Estado_conservación<input type="text"  name="estado_conservacion" maxlength="50" required></label>
+          <button type="submit">Guardar</button>
          </form>
 
     <table class="tab">
@@ -41,17 +42,17 @@ include 'conexion.php';
     <tr>
       <td>1</td>
       <td>01</td>
-      <td></td>
+      <td>Disponible</td>
     </tr>
     <tr>
       <td>2</td>
       <td>02</td>
-      <td></td>
+      <td>Disponible</td>
     </tr> 
     <tr>
       <td>3</td>
       <td>03</td>
-      <td></td>
+      <td>Disponible</td>
     </tr>
   </tbody>
     </table>
