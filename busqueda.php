@@ -8,15 +8,11 @@
 <body >
     <h1>Biblioteca Sullivan</h1>
      <form action="/buscar-libro" method="get">
-     <input  type="search" name="termino" placeholder="titulo, auctor o tema" required >
-     <select  name="libro">
-        <option value="todos">todos los campos</option>
-         <option value="titulo">titulo</option>
-         <option value="tema">tema</option>
-          <option value="titulo">auctor</option> 
-          <option value="titulo">isbm</option>
-           <button type="submit">bucar</button>
-    
-    </form>
+     <input  type="search" name="termino" placeholder="titulo," required >
+     <input  type="search" name="termino" placeholder=" tema" required >
+     <input  type="search" name="termino" placeholder=" auctor" required >
+     <input  type="search" name="termino" placeholder="ismb" required >
+</form>
+           <button type="submit">buscar</button> </form>
 </body>
 </html>
