@@ -12,7 +12,7 @@ include 'conexion.php';
 <body>
     <div class="contenedor-formulario">
     <h2>Registrar Nuevo Profesor</h2>
-
+    
     <form action="http://localhost:8080/PROYECTO%20DE%20TITULACION/Sistema_biblioteca/Biblioteca/controladores/guardar_profesor.php" method="POST">
         <div class="grupo-campo">
             <label for="num_empleado">Nombre</label>
@@ -45,7 +45,9 @@ include 'conexion.php';
         </div>
 
         <button type="submit" class="boton-guardar">Guardar Profesor</button>
-</form>
+    </form>
+        <button type="submit">Guardar profesor</button>
+    </form>
 
     <table class="tabla-datos">
         <thead>
