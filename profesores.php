@@ -45,9 +45,6 @@ include 'conexion.php';
         </div>
 
         <button type="submit" class="boton-guardar">Guardar Profesor</button>
-    </form>
-        <button type="submit">Guardar profesor</button>
-    </form>
 
     <table class="tabla-datos">
         <thead>
