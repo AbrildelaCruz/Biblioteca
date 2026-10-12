@@ -23,8 +23,8 @@ include 'conexion.php';
          <?php endif; ?>
 
          <form class="formulario" method="post" action="inventario.php">
-          <label>id_inventario<input type="text" name="Nombre" 
-          <label>id_libro
+          <label>id_inventario<input type="text" name="Nombre" maxlength="100" required></label>
+          <label>id_libro<input type="text" name="" maxlength="100" required></label>
           <label>Estado_conservación
          </form>
 
