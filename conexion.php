@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $resultado = $conexion->query(
-    'SELECT id_Profesores, Nombre, Materia, nombre_libro, Cantidad, Fecha_prestamo, Fecha_entrega FROM profesores ORDER BY id_Profesores DESC'
+    'SELECT id_Profesores, Nombre, Materia, Cantidad, Fecha_de_préstamo,Nombre_del_Libro, Fecha_de_entrega FROM profesores ORDER BY id_Profesores DESC'
 );
 ?>
         //*conexion inventario
