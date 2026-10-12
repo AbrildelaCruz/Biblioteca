@@ -65,9 +65,6 @@ $resultado = $conexion->query(
       } else {
           echo "<tr><td colspan='6' style='text-align:center;'>No hay registros en la base de datos</td></tr>";
       }
-      
-      // Cerrar la conexión por seguridad
-      $conexion->close();
       ?>
 ?>
       // conexion profesores
