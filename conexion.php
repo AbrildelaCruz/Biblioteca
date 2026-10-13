@@ -13,7 +13,7 @@ if ($conexion->connect_error) {
 $conexion->set_charset("utf8mb4");
 ?>
 
-/* conexion alumno*/
+//alumnos
 <?php
 require_once __DIR__ . '/conexion.php';
 
