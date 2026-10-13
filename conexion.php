@@ -13,8 +13,8 @@ if ($conexion->connect_error) {
 $conexion->set_charset("utf8mb4");
 ?>
 
-//alumnos
 <?php
+//alumnos
 require_once __DIR__ . '/conexion.php';
 
 $mensaje = '';
@@ -67,8 +67,9 @@ $resultado = $conexion->query(
       }
       ?>
 ?>
-      // conexion profesores
+
 <?php
+//profesores
 require_once __DIR__ . '/conexion.php';
 
 $mensaje = '';
@@ -114,8 +115,9 @@ $resultado = $conexion->query(
     'SELECT id_Profesores, Nombre, Materia, Cantidad, Fecha_de_préstamo,Nombre_del_Libro, Fecha_de_entrega FROM profesores ORDER BY id_Profesores DESC'
 );
 ?>
-        //*conexion inventario
+
 <?php
+//inventario
 require_once __DIR__ . '/conexion.php';
 
 $mensaje = '';
