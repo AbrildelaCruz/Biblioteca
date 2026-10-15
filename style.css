@@ -22,23 +22,18 @@
 }
 
 .A_uno {
-  display: inline-block;
   padding: 10px 20px;
   color: #FFECC2;             /* Color del texto */
   text-decoration: none;     /* Quita el subrayado */
   border-radius: 6px;       /* Bordes redondeados (opcional) */
   font-weight: bold;         /* Texto en negrita (opcional) */
   transition: background-color 0.2s;
-  
-}
-
-.A_uno:hover {
   background-color:rgb(250, 174, 33);
   color: white;
  /* Color al pasar el cursor */
 }
 
-/*LOGIN*/
+/*MODULOS/REGISTRO*/
 .body2{
     background: linear-gradient(-45deg,  #509dc9 , #6c8ad675, #581c87 , #6350ef);
     background-size: 400% 2500%;
@@ -184,11 +179,10 @@
 }
 
 
-h1{
+.Modulos{
     margin: 20px;
     text-align: center;
 }
-
 
 
 /*PRÉSTAMO-ALUMNOS*/
@@ -296,9 +290,20 @@ h1{
 }
 
 /*inventario*/
+.tab{
+  width: 100%;
+  max-width: 600px;    /* Ancho máximo de la tabla */
+  margin-top: 40px;     /* Separación con el formulario de arriba */
+  border-collapse: collapse; /* Une los bordes en una sola línea */
+  background-color: black;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;    /* Aplica el redondeado a las esquinas */
+  border: 1px solid black; 
+}
 .tab th{
-  background-color:#1849B7;
-  color: black;
+  background-color:#333;
+  color: white;
   padding: 12px 15px;
   text-align: left;
   font-weight: bold;
@@ -306,16 +311,48 @@ h1{
 
 .tab td{
   padding: 12px 15px;
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid #ddd;
   color: #555;
 }
 
-.tab tr:nth-child(even) {
+.tab tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
 .tab tbody tr:hover {
   background-color: #f1f1f1;
+}
+/*boton del inventario*/
+.botton{
+  display: inline-flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center;
+  background-color: #1e3a8a;
+  color: #ddd;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 5px;
+  width: 40%;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px #555;
+  font-weight: 700;
+}
+/*texto*/
+.a{
+  color: darkmagenta;
+  font-weight: 700;
+} 
+.b{
+  color: darkmagenta;
+  font-weight: 700;
+}
+.c{
+  color: darkmagenta;
+  font-weight: 700;
 }
 .q1{
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
@@ -340,39 +377,7 @@ h1{
   color: white
 }
 
-.tab{
-  width: 100%;
-  max-width: 600px;
-  margin-top: 40px;     
-  border-collapse: collapse; 
-  background-color: black;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;    /* Aplica el redondeado a las esquinas */
-  border: 1px solid black; 
-}
 
-.tab th{
-  background-color:#333;
-  color:black;
-  padding: 12px 15px;
-  text-align: left;
-  font-weight: bold;
-}
-
-.tab td{
-  padding: 12px 15px;
-  border-bottom: 1px solid white;
-  color: #555;
-}
-
-.tab tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.tab tbody tr:hover {
-  background-color: #f1f1f1;
-}
 .boton-guardar {
     background-color: #1e3a8a; /* Azul institucional */
     color: #ffffff;
@@ -387,3 +392,20 @@ h1{
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(30, 58, 138, 0.2);
 }
+/*busqueda*/
+.body2{
+background-image: url('.png');
+text-align: center;
+justify-content: center;
+
+
+
+}
+.bus{
+ border-radius: 10px;
+ 
+ transform: translateY(-50%);
+  transition: background 0.2s ease, transform 0.2s ease;
+  
+}
+
