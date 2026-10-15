@@ -8,12 +8,10 @@
 <body class="body2">
     <h1>Biblioteca Sullivan</h1>
     <div  class="nt1">
-     <form action="/buscar-libro" method="get">
      <input  type="search" name="termino" placeholder="titulo," required >
      <input  type="search" name="termino" placeholder=" tema" required >
-     <input  type="search" name="termino" placeholder=" auctor" required >
+     <input  type="search" name="termino" placeholder=" autor" required >
      <input  type="search" name="termino" placeholder="ismb" required >
-</form>
     <button  class="bus"  type="submit">🔎Buscar</button> 
 </div>
            
