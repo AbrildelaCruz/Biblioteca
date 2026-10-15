@@ -36,14 +36,6 @@ CREATE TABLE `alumnos` (
   `Grupo` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `alumnos`
---
-
-INSERT INTO `alumnos` (`id_Alumnos`, `Nombre`, `Madre_encargada`, `Familia`, `Piso`, `Grupo`) VALUES
-(1, 'Abril', 'Hna. Griseida', 'sta bernardiata', '2', '501'),
-(2, 'Heidy', 'Hna. Griseida', 'sta bernardita', '2', '501'),
-(6, 'Diana', 'Hna. Rosario', 'Sta. Adela', '3', '502');
 
 -- --------------------------------------------------------
 
