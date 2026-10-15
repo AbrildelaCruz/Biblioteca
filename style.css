@@ -35,7 +35,7 @@
 
 /*MODULOS/REGISTRO*/
 .body2{
-    background: linear-gradient(-45deg,  #509dc9 , #6c8ad675, #581c87 , #6350ef);
+    background: linear-gradient(-45deg,  #f082d8 , #ddb04690, #a05fd1 , #718dc5);
     background-size: 400% 2500%;
     height: 100vh;
     margin: 0;
@@ -189,7 +189,11 @@
 
 .Modulos{
      text-align: center;
-  margin-bottom: 20px;
+    width: 100%;
+    margin-bottom: 30px;
+     position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 
