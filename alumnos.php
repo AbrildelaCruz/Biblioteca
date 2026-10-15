@@ -1,4 +1,4 @@
-<?php
+ <?php
 include 'conexion.php';
 ?>
 <!DOCTYPE html>
@@ -15,9 +15,7 @@ include 'conexion.php';
   <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
   </div>
-  <?php if ($mensaje !== ''): ?>
-    <p class="mensaje <?= htmlspecialchars($tipoMensaje, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') ?></p>
-  <?php endif; ?>
+  
   <form class="formulario" method="post" action="alumnos.php">
     <label>Nombre<input type="text" name="Nombre" maxlength="100" required></label>
     <label>Madre encargada<input type="text" name="Madre_encargada" maxlength="100"></label>
@@ -38,15 +36,38 @@ include 'conexion.php';
       </tr>
     </thead>
     <tbody>
-     
+      <?php
+      $resultado = $conexion->query(
+  'SELECT id_Alumnos, Nombre, Madre_encargada, Familia, Piso, Grupo FROM alumnos ORDER BY id_Alumnos DESC'
+);
+
+      if ($resultado && $resultado->num_rows > 0) {
+          while($fila = $resultado->fetch_assoc()) {
+              echo "<tr>";
+            echo "<td>" . (int) $fila['id_Alumnos'] . "</td>";
+            echo "<td>" . htmlspecialchars($fila['Nombre'], ENT_QUOTES, 'UTF-8') . "</td>";
+            echo "<td>" . htmlspecialchars($fila['Madre_encargada'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
+            echo "<td>" . htmlspecialchars($fila['Familia'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
+            echo "<td>" . htmlspecialchars($fila['Piso'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
+            echo "<td>" . htmlspecialchars($fila['Grupo'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
+              echo "</tr>";
+          }
+      } else {
+          echo "<tr><td colspan='6' style='text-align:center;'>No hay registros en la base de datos</td></tr>";
+      }
+      ?>
     </tbody>
   </table>
   <?php
 //alumnos
-require_once __DIR__ . '/conexion.php';
 
 $mensaje = '';
 $tipoMensaje = '';
+if ($mensaje !== '') {
+    echo '<p class="mensaje ' . htmlspecialchars($tipoMensaje, ENT_QUOTES, 'UTF-8') . '">';
+    echo htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8');
+    echo '</p>';
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $nombre = trim($_POST['Nombre'] ?? '');
@@ -75,25 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-$resultado = $conexion->query(
-  'SELECT id_Alumnos, Nombre, Madre_encargada, Familia, Piso, Grupo FROM alumnos ORDER BY id_Alumnos DESC'
-);
-
-      if ($resultado && $resultado->num_rows > 0) {
-          while($fila = $resultado->fetch_assoc()) {
-              echo "<tr>";
-            echo "<td>" . (int) $fila['id_Alumnos'] . "</td>";
-            echo "<td>" . htmlspecialchars($fila['Nombre'], ENT_QUOTES, 'UTF-8') . "</td>";
-            echo "<td>" . htmlspecialchars($fila['Madre_encargada'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
-            echo "<td>" . htmlspecialchars($fila['Familia'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
-            echo "<td>" . htmlspecialchars($fila['Piso'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
-            echo "<td>" . htmlspecialchars($fila['Grupo'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
-              echo "</tr>";
-          }
-      } else {
-          echo "<tr><td colspan='6' style='text-align:center;'>No hay registros en la base de datos</td></tr>";
-      }
-      ?>
 ?>
 
 </body>
