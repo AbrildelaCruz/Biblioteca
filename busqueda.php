@@ -8,11 +8,15 @@
 <body class="body2">
     <h1>Biblioteca Sullivan</h1>
     <div  class="nt1">
-     <input  type="search" name="termino" placeholder="titulo," required >
-     <input  type="search" name="termino" placeholder=" tema" required >
-     <input  type="search" name="termino" placeholder=" autor" required >
-     <input  type="search" name="termino" placeholder="ismb" required >
-    <button  class="bus"  type="submit">🔎Buscar</button> 
+        <form  method="get" id="buscar-from">
+            <fieldset>
+     <input  type="search" id="buscar-input" name="termino" placeholder="titulo," required >
+     <input  type="search"  id="buscar-input" name="termino" placeholder=" tema" required >
+     <input  type="search" id="buscar-input" name="termino" placeholder=" autor" required >
+     <input  type="search" id="buscar-input" name="termino" placeholder="ismb" required >
+    <input> 
+</form>
+</fieldset>
 </div>
            
            <div class="q1">
