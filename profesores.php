@@ -6,29 +6,29 @@ $tipoMensaje = '';
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = trim($_POST['Nombre'] ?? '');
-    $materia = trim($_POST['Materia'] ?? '');
-    $libro = trim($_POST['Libro'] ?? '');
-    $cantidad = filter_input(INPUT_POST, 'Cantidad', FILTER_VALIDATE_INT);
-    $fechaPrestamo = $_POST['Fecha_prestamo'] ?? '';
-    $fechaEntrega = $_POST['Fecha_entrega'] ?? '';
+    $Nombre = trim($_POST['Nombre'] ?? '');
+    $Materia = trim($_POST['Materia'] ?? '');
+    $Cantidad = filter_input(INPUT_POST, 'Cantidad', FILTER_VALIDATE_INT);
+    $Fecha_de_préstamo = $_POST['Fecha_prestamo'] ?? '';
+    $Nombre_del_Libro = trim($_POST['Libro'] ?? '');
+    $Fecha_de_entrega = $_POST['Fecha_entrega'] ?? '';
 
-    if ($nombre === '' || $libro === '' || $cantidad === false || $cantidad === null || $cantidad < 1 || $fechaPrestamo === '' || $fechaEntrega === '') {
+    if ($Nombre === '' || $Nombre_del_Libro === '' || $Cantidad === false || $Cantidad === null || $Cantidad < 1 || $Fecha_de_préstamo === '' || $Fecha_de_entrega === '') {
         $mensaje = 'Completa todos los campos obligatorios. La cantidad debe ser mayor que cero.';
         $tipoMensaje = 'error';
-    } elseif ($fechaEntrega < $fechaPrestamo) {
+    } elseif ($Fecha_de_entrega < $Fecha_de_préstamo) {
         $mensaje = 'La fecha de entrega no puede ser anterior a la fecha de préstamo.';
         $tipoMensaje = 'error';
     } else {
         $stmt = $conexion->prepare(
-            'INSERT INTO profesores (Nombre, Materia, Libro, Cantidad, Fecha_de_prestamo, Fecha_de_entrega) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO profesores (Nombre, Materia, Cantidad, Fecha_de_préstamo,Nombre_del_Libro, Fecha_de_entrega) VALUES (?, ?, ?, ?, ?, ?)'
         );
         
         if (!$stmt) {
             $mensaje = 'No se pudo preparar el guardado: ' . $conexion->error;
             $tipoMensaje = 'error';
         } else {
-            $stmt->bind_param('sssiss', $nombre, $materia, $libro, $cantidad, $fechaPrestamo, $fechaEntrega);
+            $stmt->bind_param('sssiss', $Nombre, $Materia, $Cantidad, $Fecha_de_préstamo,$Nombre_del_Libro, $Fecha_de_entrega);
             if ($stmt->execute()) {
                 $mensaje = 'Datos guardados en la tabla profesores.';
                 $tipoMensaje = 'exito';
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 //Consulta a la tabla
 $resultado = $conexion->query(
-    'SELECT id_Profesores, Nombre, Materia, Libro, Cantidad, Fecha_de_prestamo, Fecha_de_entrega FROM profesores ORDER BY id_Profesores DESC'
+    'SELECT id_Profesores, Nombre, Materia, Cantidad, Fecha_de_préstamo, Nombre_del_Libro, Fecha_de_entrega FROM profesores ORDER BY id_Profesores DESC'
 );
 ?>
 <!DOCTYPE html>
