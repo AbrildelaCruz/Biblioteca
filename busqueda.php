@@ -7,6 +7,7 @@
 </head>
 <body class="body3">
     <h1>Biblioteca Sullivan</h1>
+
     <div class="nt1">
         <form  method="get" id="buscar-form">
             <fieldset>
@@ -14,7 +15,7 @@
                 <input type="search" id="buscar-tema" name="tema" placeholder="Tema...">
                 <input type="search" id="buscar-autor" name="autor" placeholder="Autor...">
                 <input type="search" id="buscar-isbn" name="isbn" placeholder="ISBN...">
-                <button type="submit">Buscar</button> 
+                <button type="submit" class="buscar-btn">🔍 Buscar</button> 
             </fieldset>
         </form>
     </div>
