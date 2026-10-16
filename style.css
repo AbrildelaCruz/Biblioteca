@@ -154,6 +154,7 @@
     margin: 40px auto 20px auto;                  /* Separación y centrado */
     z-index: 10;
     box-sizing: border-box;
+    
 }
 
 .contenedor-formulario h2 {
@@ -164,11 +165,12 @@
     text-transform: uppercase;
     font-size: 24px;
     letter-spacing: 1px;
+    justify-items: center;
 }
 
 .contenedor-formulario form {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Rejilla responsiva de dos columnas */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Tu diseño original en cuadrícula */
     gap: 20px;
 }
 

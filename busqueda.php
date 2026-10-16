@@ -34,6 +34,7 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Sullivan - Búsqueda</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" href="logobiblioteca.png">
     <style>
         /* Cuadrícula organizada en el formulario para acomodar tus 4 campos */
         .contenedor-formulario fieldset {

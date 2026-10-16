@@ -50,6 +50,7 @@ $resultado = $conexion->query(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Préstamos alumnos</title>
   <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+  <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2"> <!-- Hereda tu fondo animado -->
 
@@ -139,6 +140,8 @@ $resultado = $conexion->query(
   <!-- Botón regresar fijo -->
   <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
+        <a class="c1" href=""
+        
   </div>
 
 </body>

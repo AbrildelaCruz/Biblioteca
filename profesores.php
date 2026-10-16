@@ -54,6 +54,7 @@ $resultado = $conexion->query(
     <title>Préstamos a profesores</title>
     <!-- Aseguramos que use el fondo animado aplicando la clase body2 -->
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
 
@@ -136,6 +137,7 @@ $resultado = $conexion->query(
                     <td><?php echo $fila['Cantidad']; ?></td>
                     <td><?php echo $fila['Fecha_de_prestamo']; ?></td>
                     <td><?php echo $fila['Fecha_de_entrega']; ?></td>
+                    <td><button class="btn-eliminar" onclick="eliminarFila(this)">Eliminar</button></td>
                 </tr>
             <?php 
                 endwhile; 

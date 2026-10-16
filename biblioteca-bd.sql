@@ -95,10 +95,10 @@ CREATE TABLE `prestamos` (
 CREATE TABLE `profesores` (  
   `id_Profesores` INT(11) NOT NULL AUTO_INCREMENT,  
   `Nombre` VARCHAR(100) NOT NULL,  
-  `Materia` VARCHAR(100) DEFAULT NULL,  
-  `Libro` VARCHAR(100) NOT NULL,  
+  `Materia` VARCHAR(100) DEFAULT NULL,    
   `Cantidad` INT(11) NOT NULL,  
-  `Fecha_de_prestamo` DATE NOT NULL,  
+  `Fecha_de_préstamo` DATE NOT NULL,  
+  `Nombre_del_Libro` VARCHAR(100) NOT NULL,
   `Fecha_de_entrega` DATE NOT NULL,
   PRIMARY KEY (`id_Profesores`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
