@@ -13,7 +13,7 @@ include 'conexion.php';
     <div class="contenedor-formulario">
     <h2>Registrar Nuevo Profesor</h2>
     
-    <form action="http://localhost:8080/PROYECTO%20DE%20TITULACION/Sistema_biblioteca/Biblioteca/profesores.php" method="POST">
+    <form action="profesores.php" method="POST">
         <div class="grupo-campo">
             <label for="num_empleado">Nombre</label>
             <input type="text" name="Nombre" maxlength="100" required>
@@ -31,7 +31,7 @@ include 'conexion.php';
 
         <div class="grupo-campo">
             <label for="Libro">Cantidad</label>
-            <input type="text" name="Cantidad"  min="20" required>
+            <input type="text" name="Cantidad"  min="1" required>
         </div>
 
         <div class="grupo-campo">
@@ -63,8 +63,8 @@ include 'conexion.php';
         </tbody>
     </table>
   <?php
-//profesores
-require_once __DIR__ . '/conexion.php';
+// profesores corregido
+require_once 'conexion.php';
 
 $mensaje = '';
 $tipoMensaje = '';
@@ -84,9 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mensaje = 'La fecha de entrega no puede ser anterior a la fecha de préstamo.';
         $tipoMensaje = 'error';
     } else {
-        
+        // CORREGIDO: Nombres de columnas según tu archivo .sql
         $stmt = $conexion->prepare(
-            'INSERT INTO profesores (Nombre, Materia, nombre_libro, Cantidad, Fecha_prestamo, Fecha_entrega) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO profesores (Nombre, Materia, Libro, Cantidad, Fecha_de_prestamo, Fecha_de_entrega) VALUES (?, ?, ?, ?, ?, ?)'
         );
         
         if (!$stmt) {
@@ -105,8 +105,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
 $resultado = $conexion->query(
-    'SELECT id_Profesores, Nombre, Materia, Cantidad, Fecha_de_préstamo,Nombre_del_Libro, Fecha_de_entrega FROM profesores ORDER BY id_Profesores DESC'
+    'SELECT id_Profesores, Nombre, Materia, Libro, Cantidad, Fecha_de_prestamo, Fecha_de_entrega FROM profesores ORDER BY id_Profesores DESC'
 );
 ?>
 
