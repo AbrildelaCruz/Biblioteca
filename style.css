@@ -1,7 +1,7 @@
 
 /*BIENVENIDA*/
 .body1{
-    background-image: url('FONDOSULLIVAN.jpg');
+    background-image: url('fondosullivanv.jpg');
     background-repeat: no-repeat;
     display: flex;
     justify-content: center; /* Centrado horizontal */
@@ -13,6 +13,7 @@
     background-position: center;   /* Mantiene el centro de la imagen visible en cualquier pantalla */
     background-attachment: fixed;
 }
+
       /* Estilo del boton ENTRAR */
 .btn1 {
   display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
@@ -36,19 +37,22 @@
 /*MODULOS/REGISTRO*/
 .body2{
     background: linear-gradient(-45deg,  #f082d8 , #ddb04690, #a05fd1 , #718dc5);
-    background-size: 400% 2500%;
+    background-size: 400% 400%;
     height: 100vh;
     margin: 0;
     background-repeat: no-repeat;
     animation: cambiarFondo 10s ease infinite;
-    align-content: center;
+    position: relative;          /* Permite que las burbujas se posicionen respecto al cuerpo */
+    overflow: hidden;
 }
+
 @keyframes cambiarFondo {
     0% { background-position: 0% 50%; }
     30% { background-position: 100% 50%; }
     70% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
 @keyframes flotar {
     0% {
         transform: translateY(0) translateX(0) scale(1);
@@ -61,6 +65,7 @@
         opacity: 0;
     }
 }
+
 .burbuja{
      position: absolute;
     bottom : -100px;
@@ -106,8 +111,7 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 50px; 
-            margin-right: 15px;
+            border-radius: 50px;
             text-align: center;
             margin: 20px;
             background-color:#D9DDDC;
@@ -117,13 +121,11 @@
 }
 .btn1:hover{
     background-color: #0056b3;
-
 }
+
 .btn1:focus{
     background-color: gold;
-
 }
-
 
 .bton-2{
             text-decoration: none;
@@ -136,8 +138,7 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 50px; 
-            margin-right: 15px;
+            border-radius: 50px;
             margin: 20px;
             text-align: center;
             background-color: 	#D3D3D3;
@@ -157,8 +158,7 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 50px; 
-            margin-right: 15px;
+            border-radius: 50px;
             text-align: center;
             margin: 20px;
             background-color: 	#D3D3D3;
@@ -178,7 +178,6 @@
             font-weight: bold;
             cursor: pointer;
             border-radius: 50px; 
-            margin-right: 15px;
             text-align: center;
             margin: 20px;
             background-color: 	#D3D3D3;
@@ -186,14 +185,12 @@
             gap: 15px;
 }
 
-
-.Modulos{
-     text-align: center;
-    width: 100%;
-    margin-bottom: 30px;
-     position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+.Modulos {
+    display: block !important;
+    text-align: center !important;
+    width: 100% !important;
+    margin: 0 0 20px 0 !important; 
+    padding: 0 !important;
 }
 
 
@@ -411,19 +408,45 @@ h1{
     box-shadow: 0 4px 6px rgba(30, 58, 138, 0.2);
 }
 /*busqueda*/
-.body2{
-background-image: url('.png');
-text-align: center;
-justify-content: center;
-
-
-
+.body3{
+  background-image: url('libro.jpg');
+  background-repeat: no-repeat;   /* Evita que la imagen se repita en mosaico */
+  background-position: center center;   /* Centra la imagen en la pantalla */
+  background-size: cover;  /* Hace que la imagen cubra todo el fondo sin deformarse */
 }
-.bus{
- border-radius: 10px;
- 
- transform: translateY(-50%);
-  transition: background 0.2s ease, transform 0.2s ease;
-  
+#buscar-form{
+max-width: 500px;
+margin: 50px auto;
+text-align: center;  
+}
+#buscar-titulo{
+  Width:70%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+}
+#buscar-tema{
+   Width:70%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+}
+#buscar-autor{Width:70%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+}
+#uscar-isbn{Width:70%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  outline: none;
 }
 
