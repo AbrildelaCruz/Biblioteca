@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="body2">
+<body class="body3">
     <h1>Biblioteca Sullivan</h1>
-    <div  class="nt1">
-        <form  method="get" id="buscar-from">
+    <div class="nt1">
+        <form  method="get" id="buscar-form">
             <fieldset>
-     <input  type="search" id="buscar-input" name="termino" placeholder="titulo," required >
-     <input  type="search"  id="buscar-input" name="termino" placeholder=" tema" required >
-     <input  type="search" id="buscar-input" name="termino" placeholder=" autor" required >
-     <input  type="search" id="buscar-input" name="termino" placeholder="ismb" required >
-    <input> 
-</form>
-</fieldset>
-</div>
+                <input type="search" id="buscar-titulo" name="titulo" placeholder="Título...">
+                <input type="search" id="buscar-tema" name="tema" placeholder="Tema...">
+                <input type="search" id="buscar-autor" name="autor" placeholder="Autor...">
+                <input type="search" id="buscar-isbn" name="isbn" placeholder="ISBN...">
+                <button type="submit">Buscar</button> 
+            </fieldset>
+        </form>
+    </div>
            
-           <div class="q1">
-      <p style="text-align:center"><a class="q2" href="registro.html">REGRESAR</a></p>
-      </div>
+    <div class="q1">
+        <p style="text-align:center"><a class="q2" href="registro.html">REGRESAR</a></p>
+    </div>
 </body>
 </html>
+     
