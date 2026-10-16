@@ -1,452 +1,290 @@
-
-/*BIENVENIDA*/
-.body1{
+.body1 {
     background-image: url('fondosullivanv.jpg');
     background-repeat: no-repeat;
     display: flex;
-    justify-content: center; /* Centrado horizontal */
-    align-items: center;     /* Centrado vertical */
+    justify-content: center; 
+    align-items: center;     
     height: 100vh;     
     width: 100vw;      
     margin: 0;  
-    background-size: cover;        /* Recorta y estira proporcionalmente sin deformar */
-    background-position: center;   /* Mantiene el centro de la imagen visible en cualquier pantalla */
+    background-size: cover;        
+    background-position: center;   
     background-attachment: fixed;
 }
 
-      /* Estilo del boton ENTRAR */
 .btn1 {
-  display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
-  justify-content: center;  /* Centrado horizontal */
-  align-items: center; 
-  font-size: 30px;
+    display: inline-block; 
+    justify-content: center;  
+    align-items: center; 
+    font-size: 30px;
 }
 
 .A_uno {
-  padding: 10px 20px;
-  color: #FFECC2;             /* Color del texto */
-  text-decoration: none;     /* Quita el subrayado */
-  border-radius: 6px;       /* Bordes redondeados (opcional) */
-  font-weight: bold;         /* Texto en negrita (opcional) */
-  transition: background-color 0.2s;
-  background-color:rgb(250, 174, 33);
-  color: white;
- /* Color al pasar el cursor */
+    padding: 10px 20px;
+    color: white;             
+    text-decoration: none;     
+    border-radius: 6px;       
+    font-weight: bold;         
+    transition: background-color 0.2s;
+    background-color: rgb(250, 174, 33);
 }
 
-/*MODULOS/REGISTRO*/
-.body2{
+.btn1:hover { background-color: #0056b3; }
+.btn1:focus { background-color: gold; }
+
+
+/*FONDO CON DEGRADADO, MÓDULOS Y FORMULARIOS) */
+.body2 {
     background: linear-gradient(-45deg,  #f082d8 , #ddb04690, #a05fd1 , #718dc5);
     background-size: 400% 400%;
     height: 100vh;
+    width: 100vw;
     margin: 0;
+    font-family: Arial, sans-serif; /* Centralizado el estilo de fuente limpio */
     background-repeat: no-repeat;
     animation: cambiarFondo 10s ease infinite;
-    position: relative;          /* Permite que las burbujas se posicionen respecto al cuerpo */
-    overflow: hidden;
+    position: relative;          
+    overflow-x: hidden;             /* Cambiado para permitir scroll vertical si la tabla es grande */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 @keyframes cambiarFondo {
     0% { background-position: 0% 50%; }
-    30% { background-position: 100% 50%; }
-    70% { background-position: 100% 50%; }
+    50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
 
 @keyframes flotar {
-    0% {
-        transform: translateY(0) translateX(0) scale(1);
-        opacity: 0;
-    }
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
     10% { opacity: 1; }
     90% { opacity: 1; }
-    100% {
-        transform: translateY(-110vh) translateX(100px) scale(1.2);
-        opacity: 0;
-    }
+    100% { transform: translateY(-110vh) translateX(100px) scale(1.2); opacity: 0; }
 }
 
-.burbuja{
-     position: absolute;
+.burbuja {
+    position: absolute;
     bottom : -100px;
-    background:rgba(255 255 255 0.1);
+    background: rgba(255, 255, 255, 0.1);
     border : 1px solid rgba(255, 255, 255, 0.25);
     border-radius : 50%;
     box-shadow : 0 0 10px rgba(255, 255, 255, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.2);
     animation : flotar 12s linear infinite;
+    z-index: 1;
 }
 
+/* burbujas */
 .burbuja:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-duration: 14s; animation-delay: 0s; }
 .burbuja:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 10s; animation-delay: 2s; }
-.burbuja:nth-child(3) { left: 40%; width: 120px; height: 120px; animation-duration: 18s; animation-delay: 4s; filter: blur(2px); } /* Fondo desenfocado */
+.burbuja:nth-child(3) { left: 40%; width: 120px; height: 120px; animation-duration: 18s; animation-delay: 4s; filter: blur(2px); } 
 .burbuja:nth-child(4) { left: 55%; width: 60px; height: 60px; animation-duration: 12s; animation-delay: 1s; }
 .burbuja:nth-child(5) { left: 70%; width: 90px; height: 90px; animation-duration: 16s; animation-delay: 5s; }
 .burbuja:nth-child(6) { left: 85%; width: 30px; height: 30px; animation-duration: 8s; animation-delay: 3s; }
 .burbuja:nth-child(7) { left: 50%; width: 50px; height: 50px; animation-duration: 13s; animation-delay: 7s; }
 .burbuja:nth-child(8) { left: 80%; width: 110px; height: 110px; animation-duration: 20s; animation-delay: 2s; filter: blur(1px); }
 
-.contenedorpadrere{
-  display: flex;
-  flex-direction: column;   /* Alinea los elementos en vertical */
-  justify-content: center;  /* Centra verticalmente */
-  align-items: center;      /* Centra horizontalmente */
-  min-height: 100vh;        /* Asegura que ocupe todo el alto de la pantalla */
-}
 
-.buttion{
-   width: 280px;
-   padding: 20px;
-   margin: auto;
-   border-radius: 10PX;
-}
-
-.bton-1{
-            text-decoration: none;
-            display: inline-flex;
-            justify-content: center; /* Centra horizontalmente */
-            align-items: center;
-            width: 100%;
-            padding: 14px 28px;     
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50px;
-            text-align: center;
-            margin: 20px;
-            background-color:#D9DDDC;
-            transition: .3s ease;
-            display: flex;
-            gap: 15px;
-}
-.btn1:hover{
-    background-color: #0056b3;
-}
-
-.btn1:focus{
-    background-color: gold;
-}
-
-.bton-2{
-            text-decoration: none;
-            display: inline-flex;
-            justify-content: center; /* Centra horizontalmente */
-            align-items: center;
-            width: 100%;
-            padding: 14px 28px;     
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50px;
-            margin: 20px;
-            text-align: center;
-            background-color: 	#D3D3D3;
-            display: flex;
-            gap: 15px;
-}
-
-
-.bton-3{
-            text-decoration: none;
-            display: inline-flex;
-            justify-content: center; /* Centra horizontalmente */
-            align-items: center;
-            width: 100%;
-            padding: 14px 28px;     
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50px;
-            text-align: center;
-            margin: 20px;
-            background-color: 	#D3D3D3;
-            display: flex;
-            gap: 15px;
-}
-
-.bton-4{
-            text-decoration: none;
-            display: inline-flex;
-            justify-content: center; /* Centra horizontalmente */
-            align-items: center;
-            width: 100%;
-            padding: 14px 28px;     
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50px; 
-            text-align: center;
-            margin: 20px;
-            background-color: 	#D3D3D3;
-            display: flex;
-            gap: 15px;
+/* MÓDULOS*/
+.contenedorpadrere {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 0;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 10;
 }
 
 .Modulos {
     display: block !important;
     text-align: center !important;
     width: 100% !important;
-    margin: 0 0 20px 0 !important; 
     padding: 0 !important;
+    margin: 0 0 25px 0 !important;
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-
-/*PRÉSTAMO-ALUMNOS*/
-/* Estilo para la Tabla HTML */
-.tabla-datos {
-  width: 100%;
-  max-width: 600px;    /* Ancho máximo de la tabla */
-  margin-top: 40px;     /* Separación con el formulario de arriba */
-  border-collapse: collapse; /* Une los bordes en una sola línea */
-  background-color: black;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;    /* Aplica el redondeado a las esquinas */
-  border: 1px solid black; 
-
-}
-
-/* Encabezado de la tabla (Fila oscura) */
-.tabla-datos th {
-  background-color: #333;
-  color: black;
-  padding: 12px 15px;
-  text-align: left;
-  font-weight: bold;
-}
-
-/* Celdas del cuerpo de la tabla */
-.tabla-datos td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #ddd;
-  color: #555;
-}
-
-/* Efecto cebra (filas intercaladas de color gris claro) */
-.tabla-datos tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-/* Efecto al pasar el mouse por encima de una fila */
-.tabla-datos tbody tr:hover {
-  background-color: #f1f1f1;
-}
-
-.z1{
-  display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
-  justify-content: center;  /* Centrado horizontal */
-  align-items: center; 
-  font-size: 18px;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-.z2{
-  display: inline-block;
-  padding: 10px 20px;
-  color: #FFECC2;             /* Color del texto */
-  text-decoration: none;     /* Quita el subrayado */
-  border-radius: 6px;       /* Bordes redondeados (opcional) */
-  font-weight: bold;         /* Texto en negrita (opcional) */
-  transition: background-color 0.2s;
-  background-color:chocolate; /* Color al pasar el cursor */
-  color: white;   
-}
-
-/*prestamo profesores*/
-
- body { font-family: Arial, sans-serif; margin: 24px; }
-        .formulario, .tabla-datos { width: 95%; max-width: 1000px; margin: 20px auto; }
-        .formulario { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-        .formulario label { display: flex; flex-direction: column; gap: 5px; }
-        .formulario input, .formulario button { padding: 9px; }
-        .formulario button { cursor: pointer; }
-        .tabla-datos { border-collapse: collapse; }
-        .tabla-datos th, .tabla-datos td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .tabla-datos th { background: #2c3e50; color: white; }
-        .tabla-datos tr:nth-child(even) { background: #f5f5f5; }
-        .mensaje { max-width: 1000px; margin: 16px auto; }
-        .error { color: #b00020; }
-        .exito { color: #16753b; }
-
-
-.p1{
-  display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
-  justify-content: center;  /* Centrado horizontal */
-  align-items: center; 
-  font-size: 18px;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-.p2{
-  display: inline-block;
-  padding: 10px 20px;
-  color: #FFECC2;             /* Color del texto */
-  text-decoration: none;     /* Quita el subrayado */
-  border-radius: 6px;       /* Bordes redondeados (opcional) */
-  font-weight: bold;         /* Texto en negrita (opcional) */
-  transition: background-color 0.2s;
-  background-color:chocolate; /* Color al pasar el cursor */
-  color: white;          /* Color al pasar el cursor */
-}
-h2{
-  text-align: center;
-}
-
-/*inventario*/
-h1{
-  text-align: center;
-}
-.tab{
-  width: 100%;
-  max-width: 600px;    /* Ancho máximo de la tabla */
-  margin-top: 40px;     /* Separación con el formulario de arriba */
-  border-collapse: collapse; /* Une los bordes en una sola línea */
-  background-color: black;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;    /* Aplica el redondeado a las esquinas */
-  border: 1px solid black; 
-}
-.tab th{
-  background-color:#333;
-  color: white;
-  padding: 12px 15px;
-  text-align: left;
-  font-weight: bold;
-}
-
-.tab td{
-  padding: 12px 15px;
-  border-bottom: 1px solid #ddd;
-  color: #555;
-}
-
-.tab tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.tab tbody tr:hover {
-  background-color: #f1f1f1;
-}
-/*boton del inventario*/
-.botton{
-  display: inline-flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center;
-  background-color: #1e3a8a;
-  color: #ddd;
-  border: none;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 5px;
-  width: 40%;
-  margin-top: 10px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px #555;
-  font-weight: 700;
-}
-/*texto*/
-.a{
-  color: darkmagenta;
-  font-weight: 700;
-} 
-.b{
-  color: darkmagenta;
-  font-weight: 700;
-}
-.c{
-  color: darkmagenta;
-  font-weight: 700;
-}
-.q1{
-  display: inline-block; /* Toma todo el alto de la pantalla (opcional) */
-  justify-content: center;  /* Centrado horizontal */
-  align-items: center; 
-  font-size: 18px;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-.q2{
-  display: inline-block;
-  padding: 10px 20px;
-  color: #FFECC2;             /* Color del texto */
-  text-decoration: none;     /* Quita el subrayado */
-  border-radius: 6px;       /* Bordes redondeados (opcional) */
-  font-weight: bold;         /* Texto en negrita (opcional) */
-  transition: background-color 0.2s;
-  background-color:chocolate; /* Color al pasar el cursor */
-  color: white
-}
-
-
-.boton-guardar {
-    background-color: #1e3a8a; /* Azul institucional */
-    color: #ffffff;
+.bton-1, .bton-2, .bton-3, .bton-4 {
+    text-decoration: none;
+    display: flex !important;         
+    justify-content: center !important; 
+    align-items: center !important;     
+    width: 100% !important;             
+    box-sizing: border-box !important;
+    padding: 14px 28px;     
     border: none;
-    padding: 14px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 50px;
+    text-align: center;
+    margin: 12px 0 !important;          
+    gap: 15px;
+    transition: .3s ease;
+}
+
+.bton-1 { background-color: #D9DDDC; color: #4a148c; }
+.bton-2 { background-color: #D3D3D3; color: #4a148c; }
+.bton-3 { background-color: #D3D3D3; color: #4a148c; }
+.bton-4 { background-color: #D3D3D3; color: #4a148c; }
+
+
+/*FORMULARIO DE REGISTRO PROFESORES / ALUMNOS*/
+.contenedor-formulario {
+    background-color: rgba(255, 255, 255, 0.85); /* Semitransparente como tus botones */
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(4px);
+    width: 100%;
+    max-width: 700px;
+    margin: 40px auto 20px auto;                  /* Separación y centrado */
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+.contenedor-formulario h2 {
+    text-align: center;
+    color: #4a148c;
+    margin-top: 0;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.contenedor-formulario form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Rejilla responsiva de dos columnas */
+    gap: 20px;
+}
+
+.grupo-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.grupo-campo label {
+    font-weight: bold;
+    font-size: 15px;
+    color: #333;
+}
+
+.grupo-campo input {
+    padding: 12px;
+    border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 16px;
-    font-weight: 5px;
-    cursor: pointer;
-    width: 15%;
-    margin-top: 10px;
+    outline: none;
+    box-sizing: border-box;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(30, 58, 138, 0.2);
-}
-/*busqueda*/
-.body3{
-  background-image: url('libro.jpg');
-  background-repeat: no-repeat;   /* Evita que la imagen se repita en mosaico */
-  background-position: center center;   /* Centra la imagen en la pantalla */
-  background-size: cover;  /* Hace que la imagen cubra todo el fondo sin deformarse */
-}
-#buscar-form{
-max-width: 500px;
-margin: 50px auto;
-text-align: center;  
-}
-#buscar-titulo{
-  Width:70%;
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 4px 0 0 4px;
-  outline: none;
-}
-#buscar-tema{
-   Width:70%;
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 4px 0 0 4px;
-  outline: none;
-}
-#buscar-autor{Width:70%;
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 4px 0 0 4px;
-  outline: none;
-}
-#uscar-isbn{Width:70%;
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 4px 0 0 4px;
-  outline: none;
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
+.grupo-campo input:focus {
+    border-color: #a05fd1;
+    box-shadow: 0 0 8px rgba(160, 95, 209, 0.4);
+}
+
+/*El botón guardar del menú principal*/
+.boton-guardar {
+    grid-column: 1 / -1;                       /* Ocupa todo el ancho del formulario */
+    background-color: #4a148c;                 /* Fondo morado a juego */
+    color: white;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;                       /* Bordes totalmente redondeados */
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.boton-guardar:hover {
+    background-color: #718dc5;
+}
+
+
+    /*LAS TABLAS DE DATOS*/
+.tabla-datos {
+    width: 100%;
+    max-width: 1000px;
+    margin: 30px auto 80px auto;                 /* Margen inferior para no tapar el botón regresar */
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.92); /* Fondo claro para legibilidad absoluta */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.tabla-datos th, .tabla-datos td {
+    padding: 14px 16px;
+    text-align: left;
+}
+
+.tabla-datos th {
+    background-color: #2c3e50;                   /* Tu color oscuro original */
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.tabla-datos td {
+    border-bottom: 1px solid #eee;
+    color: #444;
+    font-size: 15px;
+}
+
+.tabla-datos tr:nth-child(even) {
+    background-color: rgba(245, 245, 245, 0.6); /* Sutil efecto cebra */
+}
+
+.tabla-datos tr:hover {
+    background-color: rgba(221, 176, 70, 0.15); /* Resaltado al pasar el mouse */
+}
+
+    /*BOTONES REGRESAR*/
+.z1 {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1000;
+}
+
+.z2 {
+    display: inline-block;
+    padding: 12px 24px;
+    color: white;             
+    text-decoration: none;     
+    border-radius: 50px;                       /* Estilizado a juego con los botones del sistema */
+    font-weight: bold;         
+    transition: all 0.3s ease;
+    background-color: chocolate; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.z2:hover {
+    background-color: #b3591b;
+    transform: translateY(-2px);
+}
