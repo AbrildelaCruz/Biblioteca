@@ -133,9 +133,9 @@ $resultado = $conexion->query(
                     <td><?php echo $fila['id_Profesores']; ?></td>
                     <td><?php echo htmlspecialchars($fila['Nombre']); ?></td>
                     <td><?php echo htmlspecialchars($fila['Materia']); ?></td>
-                    <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                     <td><?php echo $fila['Cantidad']; ?></td>
                     <td><?php echo $fila['Fecha_de_prestamo']; ?></td>
+                    <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                     <td><?php echo $fila['Fecha_de_entrega']; ?></td>
                     <td><button class="btn-eliminar" onclick="eliminarFila(this)">Eliminar</button></td>
                 </tr>
