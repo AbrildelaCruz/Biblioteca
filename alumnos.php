@@ -113,6 +113,7 @@ $resultado = $conexion->query(
         <th>Piso</th>
         <th>Grupo</th>
       </tr>
+      <tr><button type="button " id="btn-modificar" class="btnModificar">Modificar</tr>
     </thead>
     <tbody>
       <?php

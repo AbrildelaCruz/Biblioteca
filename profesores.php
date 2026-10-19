@@ -53,6 +53,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $resultado = $conexion->query(
     'SELECT id_Profesores, Nombre, Materia, Cantidad, Fecha_de_préstamo, Nombre_del_Libro, Fecha_de_entrega FROM profesores ORDER BY id_Profesores DESC'
 );
+
+if (isset($_GET['eliminar_id'])) {
+    $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
+    if ($id_a_borrar) {
+        $stmt_borrar = $conexion->prepare('DELETE FROM profesores WHERE id_Profesores = ?');
+        if ($stmt_borrar) {
+            $stmt_borrar->bind_param('i', $id_a_borrar);
+            if ($stmt_borrar->execute()) {
+                $_SESSION['mensaje'] = 'Registro eliminado correctamente.';
+                $_SESSION['tipoMensaje'] = 'exito';
+            } else {
+                $_SESSION['mensaje'] = 'Error al eliminar en la base de datos.';
+                $_SESSION['tipoMensaje'] = 'error';
+            }
+            $stmt_borrar->close();
+        }
+    }
+    header("Location: profesores.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -73,10 +93,10 @@ $resultado = $conexion->query(
         <div class="burbuja"></div>
     </div>
 
-    <?php if (\$mensaje !== ''): ?>
-        <div class="alerta <?php echo \$tipoMensaje; ?>" style="padding: 10px; margin: 15px auto; max-width: 600px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo \$tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo \$tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
-            <?php echo \$mensaje; ?>
-        </div>
+    <?php if ($mensaje !== ''): ?>
+    <div class="alerta <?php echo $tipoMensaje; ?>" style="padding: 10px; margin: 15px auto; max-width: 600px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
+        <?php echo $mensaje; ?>
+    </div>
     <?php endif; ?>
 
     <div class="contenedor-formulario">
@@ -121,24 +141,25 @@ $resultado = $conexion->query(
                 <th>Fecha de préstamo</th>
                 <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
-                <th>Acción</th>
+                <th>-</th>
             </tr>
         </thead>
         <tbody>
             <?php 
-            if (\(resultado &&\)resultado->num_rows > 0): 
-                while (fila = resultado->fetch_assoc()): 
-            ?>
+                if ($resultado && $resultado->num_rows > 0):
+                while ($fila = $resultado->fetch_assoc()):
+                ?>
                 <tr>
-                    <td><?php echo \$fila['id_Profesores']; ?></td>
-                    <td><?php echo htmlspecialchars(\$fila['Nombre']); ?></td>
-                    <td><?php echo htmlspecialchars(\$fila['Materia']); ?></td>
-                    <td><?php echo \$fila['Cantidad']; ?></td>
-                    <td><?php echo \$fila['Fecha_de_préstamo']; ?></td>
-                    <td><?php echo htmlspecialchars(\$fila['Nombre_del_Libro']); ?></td>
-                    <td><?php echo \$fila['Fecha_de_entrega']; ?></td>
-                    <td><button class="btn-eliminar" onclick="eliminarFila(this)">Eliminar</button></td> 
+                <td><?php echo $fila['id_Profesores']; ?></td>
+                <td><?php echo htmlspecialchars($fila['Nombre']); ?></td>
+                <td><?php echo htmlspecialchars($fila['Materia']); ?></td>
+                <td><?php echo $fila['Cantidad']; ?></td>
+                <td><?php echo $fila['Fecha_de_préstamo']; ?></td>
+                <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
+                <td><?php echo $fila['Fecha_de_entrega']; ?></td>
+                <td><button class="btn-eliminar" onclick="eliminarFila(this)">Eliminar</button></td>
                 </tr>
+                    </tr>
             <?php 
                 endwhile; 
             else: 
@@ -151,10 +172,20 @@ $resultado = $conexion->query(
     </table>
 
     <script>
+
     function eliminarFila(boton) {
-      const fila = boton.parentNode.parentNode;
-      fila.remove();
-    }
+            try {
+                // Obtener la fila (tr) del botón
+                const fila = boton.closest("tr");
+                if (fila) {
+                    fila.remove(); // Eliminar la fila
+                } else {
+                    console.error("No se encontró la fila para eliminar.");
+                }
+            } catch (error) {
+                console.error("Error al eliminar la fila:", error);
+            }
+        }
     </script>
 
     <div class="z1">
