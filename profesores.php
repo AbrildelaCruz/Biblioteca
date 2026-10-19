@@ -121,6 +121,7 @@ $resultado = $conexion->query(
                 <th>Fecha de préstamo</th>
                 <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
+                 <td><button class="btn-eliminar" onclick="eliminarFila(this)">Eliminar</button></td> 
             </tr>
         </thead>
         <tbody>
@@ -137,7 +138,7 @@ $resultado = $conexion->query(
                     <td><?php echo $fila['Fecha_de_prestamo']; ?></td>
                     <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                     <td><?php echo $fila['Fecha_de_entrega']; ?></td>
-                    <td><button class="btn-eliminar" onclick="eliminarFila(this)">Eliminar</button></td>
+                   
                 </tr>
             <?php 
                 endwhile; 
@@ -149,6 +150,14 @@ $resultado = $conexion->query(
             <?php endif; ?>
         </tbody>
     </table>
+     <script>
+    function eliminarFila(boton) {
+      // 'this' pasa el botón actual. 
+      // El primer parentNode es el <td>, el segundo parentNode es el <tr> (la fila).
+      const fila = boton.parentNode.parentNode;
+      fila.remove();
+    }
+  </script>
 
     <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
