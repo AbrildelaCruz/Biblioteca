@@ -1,32 +1,38 @@
 <?php
-// 1. IMPORTAR LA CONEXIÓN AL PRINCIPIO
 require_once 'conexion.php';
 
-// Inicializar variables para los términos de búsqueda
 $resultados = null;
-
 $titulo = isset($_GET['titulo']) ? trim($_GET['titulo']) : '';
-$tema   = isset($_GET['tema']) ? trim($_GET['tema']) : ''; // Este input buscará en la columna "Categoría"
+$tema   = isset($_GET['tema']) ? trim($_GET['tema']) : ''; 
 $autor  = isset($_GET['autor']) ? trim($_GET['autor']) : '';
 $isbn   = isset($_GET['isbn']) ? trim($_GET['isbn']) : '';
 
-// Construimos la consulta SQL dinámica amarrada a tus columnas reales de la base de datos
 if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
-    // Consulta filtrada si el usuario llena algún campo (Filtros con LIKE)
+    // Consulta base
     $query = "SELECT id_libro, Titulo, Autor, Categoría, Editorial, Edición, Idioma, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados FROM libros WHERE 1=1";
     
-    if ($titulo !== '') { $query .= " AND Titulo LIKE '%" . $conexion->real_escape_string($titulo) . "%'"; }
-    if ($tema !== '')   { $query .= " AND Categoría LIKE '%" . $conexion->real_escape_string($tema) . "%'"; }
-    if ($autor !== '')  { $query .= " AND Autor LIKE '%" . $conexion->real_escape_string($autor) . "%'"; }
-    if ($isbn !== '')   { $query .= " AND id_libro LIKE '%" . $conexion->real_escape_string($isbn) . "%'"; } // Ajustado ISBN a id_libro si no tienes columna física de ISBN
+    $params = [];
+    $types = "";
+
+    if ($titulo !== '') { $query .= " AND Titulo LIKE ?"; $params[] = "%$titulo%"; $types .= "s"; }
+    if ($tema !== '')   { $query .= " AND Categoría LIKE ?"; $params[] = "%$tema%"; $types .= "s"; }
+    if ($autor !== '')  { $query .= " AND Autor LIKE ?"; $params[] = "%$autor%"; $types .= "s"; }
+    if ($isbn !== '')   { $query .= " AND id_libro LIKE ?"; $params[] = "%$isbn%"; $types .= "s"; }
     
     $query .= " ORDER BY Titulo ASC";
-    $resultados = $conexion->query($query);
+    
+    $stmt = $conexion->prepare($query);
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $resultados = $stmt->get_result();
 } else {
-    // Si entran por primera vez, muestra los últimos 15 libros registrados de forma automática
+    // Carga por defecto limpia
     $resultados = $conexion->query("SELECT id_libro, Titulo, Autor, Categoría, Editorial, Edición, Idioma, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY id_libro DESC LIMIT 15");
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>

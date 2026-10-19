@@ -121,7 +121,7 @@ $resultado = $conexion->query(
                 <th>Fecha de préstamo</th>
                 <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
-                <th>-</th>
+                <th>Accion</th>
             </tr>
         </thead>
         <tbody>
@@ -138,17 +138,14 @@ $resultado = $conexion->query(
                     <td><?php echo $fila['Fecha_de_prestamo']; ?></td>
                     <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                     <td><?php echo $fila['Fecha_de_entrega']; ?></td>
-                    <td>
-                    <input type="checkbox" id="filaDos" class="toggle-eliminar">
-                    <label for="filaDos" class="btn-eliminar">Eliminar</label>
-                    </td>
+                    <td><button class="btn-eliminar" onclick="eliminarFila(this)">Eliminar</button></td> 
+                   
                 </tr>
             <?php 
                 endwhile; 
             else: 
             ?>
                 <tr>
-                    
                     <td colspan="7" style="text-align: center;">No hay préstamos registrados actualmente.</td>
                 </tr>
             <?php endif; ?>
