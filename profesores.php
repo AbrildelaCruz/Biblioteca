@@ -157,7 +157,9 @@ if (isset($_GET['eliminar_id'])) {
                 <td><?php echo $fila['Fecha_de_préstamo']; ?></td>
                 <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                 <td><?php echo $fila['Fecha_de_entrega']; ?></td>
-                <td><button class="btn-eliminar" onclick="eliminarFila(this)">Eliminar</button></td>
+                <td><a href="profesores.php?eliminar_id=<?php echo $fila['id_Profesores']; ?>" class="btn-eliminar" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro permanente?');">Eliminar</a><td>
+    
+</td></td>
                 </tr>
                     </tr>
             <?php 
@@ -174,18 +176,12 @@ if (isset($_GET['eliminar_id'])) {
     <script>
 
     function eliminarFila(boton) {
-            try {
-                // Obtener la fila (tr) del botón
-                const fila = boton.closest("tr");
-                if (fila) {
-                    fila.remove(); // Eliminar la fila
-                } else {
-                    console.error("No se encontró la fila para eliminar.");
-                }
-            } catch (error) {
-                console.error("Error al eliminar la fila:", error);
-            }
-        }
+
+        
+    function eliminarFila(boton) {
+      const fila = boton.parentNode.parentNode;
+      fila.remove();
+    }
     </script>
 
     <div class="z1">
