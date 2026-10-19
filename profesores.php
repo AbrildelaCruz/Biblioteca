@@ -88,11 +88,6 @@ $resultado = $conexion->query(
             </div>
 
             <div class="grupo-campo">
-                <label>Nombre del Libro</label>
-                <input type="text" name="Libro" maxlength="100" required>
-            </div>
-
-            <div class="grupo-campo">
                 <label>Cantidad</label>
                 <input type="number" name="Cantidad" min="1" required>
             </div>
@@ -100,6 +95,11 @@ $resultado = $conexion->query(
             <div class="grupo-campo">
                 <label>Fecha de préstamo</label>
                 <input type="date" name="Fecha_prestamo" required>
+            </div>
+
+            <div class="grupo-campo">
+                <label>Nombre del Libro</label>
+                <input type="text" name="Libro" maxlength="100" required>
             </div>
 
             <div class="grupo-campo">
@@ -117,9 +117,9 @@ $resultado = $conexion->query(
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Materia</th>
-                <th>Nombre del Libro</th>
                 <th>Cantidad</th>
                 <th>Fecha de préstamo</th>
+                <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
             </tr>
         </thead>
@@ -133,7 +133,7 @@ $resultado = $conexion->query(
                     <td><?php echo $fila['id_Profesores']; ?></td>
                     <td><?php echo htmlspecialchars($fila['Nombre']); ?></td>
                     <td><?php echo htmlspecialchars($fila['Materia']); ?></td>
-                    <td><?php echo htmlspecialchars($fila['Libro']); ?></td>
+                    <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                     <td><?php echo $fila['Cantidad']; ?></td>
                     <td><?php echo $fila['Fecha_de_prestamo']; ?></td>
                     <td><?php echo $fila['Fecha_de_entrega']; ?></td>
