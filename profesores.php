@@ -173,7 +173,7 @@ if (isset($_GET['eliminar_id'])) {
     </table>
     <script>        
     function eliminarFila(boton) {
-      const fila = boton.parentNode.parentNode;
+      var fila = boton.parentNode.parentNode;
       fila.remove();
     }
     </script>
