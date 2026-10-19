@@ -6,6 +6,11 @@ boton.addEventListener('click',() => {
         const contenidoActual = Text.textContent;
         texto.inneHTML= '<iput type ="text" id="inputEditando" value="${contenidoActual}" style="font-size:16px; padding:5px">';
         boton.innerHTML = 'Guardar';
-        boton.style.backgroundColor = #
+        boton.style.backgroundColor = rgb(255, 255, 255);
+    } else{
+        const nuevoTexto = document.getElementById('inputEditando').value;
+        texto.textContent = nuevaTexto;
+        boton.innerHTML='Modificar';
+        boton.style.backgroundColor = '#2563eb'
     }
 });

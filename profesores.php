@@ -158,7 +158,6 @@ if (isset($_GET['eliminar_id'])) {
                 <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                 <td><?php echo $fila['Fecha_de_entrega']; ?></td>
                 <td><a href="profesores.php?eliminar_id=<?php echo $fila['id_Profesores']; ?>" class="btn-eliminar" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro permanente?');">Eliminar</a><td>
-    
 </td></td>
                 </tr>
                     </tr>
@@ -172,21 +171,14 @@ if (isset($_GET['eliminar_id'])) {
             <?php endif; ?>
         </tbody>
     </table>
-
-    <script>
-
-    function eliminarFila(boton) {
-
-        
+    <script>        
     function eliminarFila(boton) {
       const fila = boton.parentNode.parentNode;
       fila.remove();
     }
     </script>
-
     <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
     </div>
-
 </body>
 </html>

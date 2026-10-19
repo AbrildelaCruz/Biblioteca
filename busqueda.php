@@ -1,36 +1,70 @@
 <?php
 require_once 'conexion.php';
 
-$resultados = null;
-$titulo = isset($_GET['titulo']) ? trim($_GET['titulo']) : '';
-$tema   = isset($_GET['tema']) ? trim($_GET['tema']) : ''; 
-$autor  = isset($_GET['autor']) ? trim($_GET['autor']) : '';
-$isbn   = isset($_GET['isbn']) ? trim($_GET['isbn']) : '';
+// 1. RECUPERAR MENSAJES DE LA SESIÓN SI EXISTEN PARA EVITAR DUPLICADOS
+$mensaje = $_SESSION['mensaje'] ?? '';
+$tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 
-if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
-    // Consulta base
-    $query = "SELECT id_libro, Titulo, Autor, Categoría, Editorial, Edición, Idioma, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados FROM libros WHERE 1=1";
-    
-    $params = [];
-    $types = "";
+unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-    if ($titulo !== '') { $query .= " AND Titulo LIKE ?"; $params[] = "%$titulo%"; $types .= "s"; }
-    if ($tema !== '')   { $query .= " AND Categoría LIKE ?"; $params[] = "%$tema%"; $types .= "s"; }
-    if ($autor !== '')  { $query .= " AND Autor LIKE ?"; $params[] = "%$autor%"; $types .= "s"; }
-    if ($isbn !== '')   { $query .= " AND id_libro LIKE ?"; $params[] = "%$isbn%"; $types .= "s"; }
-    
-    $query .= " ORDER BY Titulo ASC";
-    
-    $stmt = $conexion->prepare($query);
-    if (!empty($params)) {
-        $stmt->bind_param($types, ...$params);
+// 2. PROCESAR EL REGISTRO DE INVENTARIO (MÉTODO POST)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $idLibro = trim($_POST['id_libro'] ?? '');
+    $estadoConservacion = trim($_POST['estado_conservacion'] ?? '');
+
+    if ($idLibro === '' || $estadoConservacion === '') {
+        $_SESSION['mensaje'] = 'Completa todos los campos obligatorios.';
+        $_SESSION['tipoMensaje'] = 'error';
+    } else {
+        $stmt = $conexion->prepare(
+            'INSERT INTO inventario (id_libro, Estado_conservación) VALUES (?, ?)'
+        );
+        
+        if (!$stmt) {
+            $_SESSION['mensaje'] = 'No se pudo preparar el guardado: ' . $conexion->error;
+            $_SESSION['tipoMensaje'] = 'error';
+        } else {
+            $stmt->bind_param('ss', $idLibro, $estadoConservacion);
+            if ($stmt->execute()) {
+                $_SESSION['mensaje'] = 'Datos guardados en el inventario correctamente.';
+                $_SESSION['tipoMensaje'] = 'exito';
+            } else {
+                $_SESSION['mensaje'] = 'No se guardaron los datos: ' . $stmt->error;
+                $_SESSION['tipoMensaje'] = 'error';
+            }
+            $stmt->close();
+        }
     }
-    $stmt->execute();
-    $resultados = $stmt->get_result();
-} else {
-    // Carga por defecto limpia
-    $resultados = $conexion->query("SELECT id_libro, Titulo, Autor, Categoría, Editorial, Edición, Idioma, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY id_libro DESC LIMIT 15");
+    // REDIRECCIÓN OBLIGATORIA: Limpia el POST para que no se duplique con F5
+    header("Location: inventario.php");
+    exit();
 }
+
+// 3. PROCESAR EL BORRADO REAL EN LA BASE DE DATOS (MÉTODO GET)
+if (isset($_GET['eliminar_id'])) {
+    $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
+    if ($id_a_borrar) {
+        $stmt_borrar = $conexion->prepare('DELETE FROM inventario WHERE id_inventario = ?');
+        if ($stmt_borrar) {
+            $stmt_borrar->bind_param('i', $id_a_borrar);
+            if ($stmt_borrar->execute()) {
+                $_SESSION['mensaje'] = 'Registro de inventario eliminado correctamente.';
+                $_SESSION['tipoMensaje'] = 'exito';
+            } else {
+                $_SESSION['mensaje'] = 'Error al eliminar en la base de datos.';
+                $_SESSION['tipoMensaje'] = 'error';
+            }
+            $stmt_borrar->close();
+        }
+    }
+    header("Location: inventario.php");
+    exit();
+}
+
+// 4. CONSULTAR LOS DATOS ACTUALIZADOS
+$resultado = $conexion->query(
+    'SELECT id_inventario, id_libro, Estado_conservación FROM inventario ORDER BY id_inventario DESC'
+);
 ?>
 
 <!DOCTYPE html>
