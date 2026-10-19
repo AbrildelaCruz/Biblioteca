@@ -1,43 +1,67 @@
 <?php
-// 1. IMPORTAR LA CONEXIÓN Y AGREGAR LA LÓGICA AL PRINCIPIO
 require_once 'conexion.php';
 
-$mensaje = '';
-$tipoMensaje = '';
+// 1. RECUPERAR MENSAJES DE LA SESIÓN SI EXISTEN PARA EVITAR DUPLICADOS
+$mensaje = $_SESSION['mensaje'] ?? '';
+$tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 
-// Procesar el formulario si se envía por POST
+unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
+
+// 2. PROCESAR EL REGISTRO DE INVENTARIO (MÉTODO POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idLibro = trim($_POST['id_libro'] ?? '');
     $estadoConservacion = trim($_POST['estado_conservacion'] ?? '');
 
-    // Validación básica de campos obligatorios
     if ($idLibro === '' || $estadoConservacion === '') {
-        $mensaje = 'Completa todos los campos obligatorios.';
-        $tipoMensaje = 'error';
+        $_SESSION['mensaje'] = 'Completa todos los campos obligatorios.';
+        $_SESSION['tipoMensaje'] = 'error';
     } else {
-        // Preparamos la inserción usando tu columna exacta Estado_conservación
         $stmt = $conexion->prepare(
             'INSERT INTO inventario (id_libro, Estado_conservación) VALUES (?, ?)'
         );
         
         if (!$stmt) {
-            $mensaje = 'No se pudo preparar el guardado: ' . $conexion->error;
-            $tipoMensaje = 'error';
+            $_SESSION['mensaje'] = 'No se pudo preparar el guardado: ' . $conexion->error;
+            $_SESSION['tipoMensaje'] = 'error';
         } else {
             $stmt->bind_param('ss', $idLibro, $estadoConservacion);
             if ($stmt->execute()) {
-                $mensaje = 'Datos guardados en el inventario correctamente.';
-                $tipoMensaje = 'exito';
+                $_SESSION['mensaje'] = 'Datos guardados en el inventario correctamente.';
+                $_SESSION['tipoMensaje'] = 'exito';
             } else {
-                $mensaje = 'No se guardaron los datos: ' . $stmt->error;
-                $tipoMensaje = 'error';
+                $_SESSION['mensaje'] = 'No se guardaron los datos: ' . $stmt->error;
+                $_SESSION['tipoMensaje'] = 'error';
             }
             $stmt->close();
         }
     }
+    // REDIRECCIÓN OBLIGATORIA: Limpia el POST para que no se duplique con F5
+    header("Location: inventario.php");
+    exit();
 }
 
-// Consultar los datos de inventario ocupando la columna Estado_conservación
+// 3. PROCESAR EL BORRADO REAL EN LA BASE DE DATOS (MÉTODO GET)
+if (isset($_GET['eliminar_id'])) {
+    $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
+    if ($id_a_borrar) {
+        $stmt_borrar = $conexion->prepare('DELETE FROM inventario WHERE id_inventario = ?');
+        if ($stmt_borrar) {
+            $stmt_borrar->bind_param('i', $id_a_borrar);
+            if ($stmt_borrar->execute()) {
+                $_SESSION['mensaje'] = 'Registro de inventario eliminado correctamente.';
+                $_SESSION['tipoMensaje'] = 'exito';
+            } else {
+                $_SESSION['mensaje'] = 'Error al eliminar en la base de datos.';
+                $_SESSION['tipoMensaje'] = 'error';
+            }
+            $stmt_borrar->close();
+        }
+    }
+    header("Location: inventario.php");
+    exit();
+}
+
+// 4. CONSULTAR LOS DATOS ACTUALIZADOS
 $resultado = $conexion->query(
     'SELECT id_inventario, id_libro, Estado_conservación FROM inventario ORDER BY id_inventario DESC'
 );
@@ -97,6 +121,7 @@ $resultado = $conexion->query(
                 <th>ID Inventario</th>
                 <th>ID Libro</th>
                 <th>Estado de Conservación</th>
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody>

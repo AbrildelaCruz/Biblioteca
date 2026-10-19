@@ -146,18 +146,19 @@ if (isset($_GET['eliminar_id'])) {
               echo "<td>" . htmlspecialchars($fila['Familia'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
               echo "<td>" . htmlspecialchars($fila['Piso'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
               echo "<td>" . htmlspecialchars($fila['Grupo'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
+                echo '<a href="alumnos.php?eliminar_id=' . $fila['Acción'] . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm(\'¿Seguro que deseas eliminar este alumno permanentemente?\');">Eliminar</a>';
+               echo '<a href="alumnos.php?Modificar_id=' . $fila['Acción'] . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm(\'¿Seguro que deseas modificar este alumno ?\');">Modificar</a>';
+              
               echo "</tr>";
+
+
 
               echo "<td>";
               echo '<a href="alumnos.php?eliminar_id=' . $fila['Acción'] . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm(\'¿Seguro que deseas eliminar este alumno permanentemente?\');">Eliminar</a>';
-              echo "</td>";
-
-              echo "</tr>";
-
-               echo "<td>";
-              echo '<a href="alumnos.php?Modificar_id=' . $fila['Acción'] . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm(\'¿Seguro que deseas modificar este alumno ?\');">Modificar</a>';
+               echo '<a href="alumnos.php?Modificar_id=' . $fila['Acción'] . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm(\'¿Seguro que deseas modificar este alumno ?\');">Modificar</a>';
               echo "</td>";
               echo "</tr>";
+
           }
       } else {
           echo "<tr><td colspan='7' style='text-align:center;'>No hay alumnos registrados actualmente.</td></tr>";
@@ -168,6 +169,23 @@ if (isset($_GET['eliminar_id'])) {
   <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
   </div>
-  <script></
+  <script>
+    const boton = document.getElementById('btn-modificar');
+const texto = document.getElementById('grupo-campo');
+
+boton.addEventListener('click',() => {
+    if(boton.textContent.includes('Modificar')){
+        const contenidoActual = Text.textContent;
+        texto.inneHTML= '<iput type ="text" id="inputEditando" value="${contenidoActual}" style="font-size:16px; padding:5px">';
+        boton.innerHTML = 'Guardar';
+        boton.style.backgroundColor = rgb(255, 255, 255);
+    } else{
+        const nuevoTexto = document.getElementById('inputEditando').value;
+        texto.textContent = nuevaTexto;
+        boton.innerHTML='Modificar';
+        boton.style.backgroundColor = '#2563eb'
+    }
+});
+  </script>
 </body>
 </html>
