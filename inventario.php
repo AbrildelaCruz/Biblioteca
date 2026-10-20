@@ -134,9 +134,7 @@ $resultado = $conexion->query(
                     <td><?php echo htmlspecialchars($fila['id_libro']); ?></td>
                     <td><?php echo htmlspecialchars($fila['Estado_conservación']); ?></td>
                     <!-- Botón de borrado permanente -->
-                    <td>
-                        <a href="inventario.php?eliminar_id=<?php echo $fila['id_inventario']; ?>" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro de inventario permanentemente?');">Eliminar</a>
-                    </td>
+                 
                 </tr>
             <?php 
                 endwhile; 
@@ -144,10 +142,12 @@ $resultado = $conexion->query(
             ?>
                 <tr>
                     <td colspan="4" style="text-align: center;">No hay registros en el inventario actualmente.</td>
-                </tr>
+               <td> <a href="inventario.php?eliminar_id=<?php echo $fila['id_inventario']; ?>" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro de inventario permanentemente?');">Eliminar</a></td>    
+            </tr>
             <?php endif; ?>
         </tbody>
     </table>
+    
 
     <!-- Botón regresar fijo abajo a la derecha -->
     <div class="z1">

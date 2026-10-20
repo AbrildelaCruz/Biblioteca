@@ -16,55 +16,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $Materia = trim($_POST['Materia'] ?? '');
     $Cantidad = filter_input(INPUT_POST, 'Cantidad', FILTER_VALIDATE_INT);
     $Fecha_de_préstamo = $_POST['Fecha_prestamo'] ?? '';
-    $Nombre_del_Libro = trim($_POST['Libro'] ?? '');
+    $id_libro = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
     $Fecha_de_entrega = $_POST['Fecha_entrega'] ?? '';
 
-    if ($Nombre === '' || $Nombre_del_Libro === '' || $Cantidad === false || $Cantidad === null || $Cantidad < 1 || $Fecha_de_préstamo === '' || $Fecha_de_entrega === '') {
+    if ($Nombre === '' || !$id_libro || $Cantidad === false || $Cantidad < 1 || $Fecha_de_préstamo === '' || $Fecha_de_entrega === '') {
         $_SESSION['mensaje'] = 'Completa todos los campos obligatorios. La cantidad debe ser mayor que cero.';
         $_SESSION['tipoMensaje'] = 'error';
     } elseif ($Fecha_de_entrega < $Fecha_de_préstamo) {
         $_SESSION['mensaje'] = 'La fecha de entrega no puede ser anterior a la fecha de préstamo.';
         $_SESSION['tipoMensaje'] = 'error';
     } else {
-        $stmt = $conexion->prepare(
-            'INSERT INTO profesores (Nombre, Materia, Cantidad, Fecha_de_préstamo, Nombre_del_Libro, Fecha_de_entrega) VALUES (?, ?, ?, ?, ?, ?)'
-        );
-        
-        if (!$stmt) {
-            $_SESSION['mensaje'] = 'No se pudo preparar el guardado: ' . $conexion->error;
-            $_SESSION['tipoMensaje'] = 'error';
-        } else {
-            $stmt->bind_param('sssiss', $Nombre, $Materia, $Cantidad, $Fecha_de_préstamo, $Nombre_del_Libro, $Fecha_de_entrega);
-            if ($stmt->execute()) {
-                $_SESSION['mensaje'] = 'Datos guardados en la tabla profesores.';
-                $_SESSION['tipoMensaje'] = 'exito';
+        // Desactivar temporalmente autocommit para trabajar con transacciones de forma segura
+        $conexion->begin_transaction();
+
+        try {
+            // Verificar si el profesor ya existe para no duplicarlo en la tabla profesores
+            $stmt_prof = $conexion->prepare("SELECT id_Profesores FROM profesores WHERE Nombre = ? AND Materia = ?");
+            $stmt_prof->bind_param("ss", $Nombre, $Materia);
+            $stmt_prof->execute();
+            $res_prof = $stmt_prof->get_result();
+            
+            if ($res_prof->num_rows > 0) {
+                $profesor = $res_prof->fetch_assoc();
+                $id_profesor_actual = $profesor['id_Profesores'];
             } else {
-                $_SESSION['mensaje'] = 'No se guardaron los datos en profesores: ' . $stmt->error;
-                $_SESSION['tipoMensaje'] = 'error';
+                // Si no existe, se registra como nuevo profesor fijo
+                $stmt_ins_prof = $conexion->prepare("INSERT INTO profesores (Nombre, Materia) VALUES (?, ?)");
+                $stmt_ins_prof->bind_param("ss", $Nombre, $Materia);
+                $stmt_ins_prof->execute();
+                $id_profesor_actual = $conexion->insert_id;
+                $stmt_ins_prof->close();
             }
-            $stmt->close();
+            $stmt_prof->close();
+
+            // Insertar el préstamo real en la tabla relacional de 'prestamos'
+            $stmt_prestamo = $conexion->prepare(
+                'INSERT INTO prestamos (id_libros, id_profesores, Cantidad, fecha_salida, fecha_devolucion_esperada) VALUES (?, ?, ?, ?, ?)'
+            );
+            $stmt_prestamo->bind_param('iiiss', $id_libro, $id_profesor_actual, $Cantidad, $Fecha_de_préstamo, $Fecha_de_entrega);
+            $stmt_prestamo->execute();
+            $stmt_prestamo->close();
+
+            // Confirmar inserciones en la Base de Datos
+            $conexion->commit();
+            
+            $_SESSION['mensaje'] = 'Préstamo registrado correctamente en la base de datos relacional.';
+            $_SESSION['tipoMensaje'] = 'exito';
+
+        } catch (Exception $e) {
+            // Si algo falla, revertimos los cambios para no dejar datos corruptos
+            $conexion->rollback();
+            $_SESSION['mensaje'] = 'Error al procesar el préstamo: ' . $e->getMessage();
+            $_SESSION['tipoMensaje'] = 'error';
         }
     }
     header("Location: profesores.php");
     exit();
 }
 
-// 3. CONSULTA REAL A LA TABLA
-$resultado = $conexion->query(
-    'SELECT id_Profesores, Nombre, Materia, Cantidad, Fecha_de_préstamo, Nombre_del_Libro, Fecha_de_entrega FROM profesores ORDER BY id_Profesores DESC'
-);
-
+// 3. PROCESAR ACCIÓN DE ELIMINAR REGISTRO DE PRÉSTAMO
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
-        $stmt_borrar = $conexion->prepare('DELETE FROM profesores WHERE id_Profesores = ?');
+        $stmt_borrar = $conexion->prepare('DELETE FROM prestamos WHERE id_prestamo = ?');
         if ($stmt_borrar) {
             $stmt_borrar->bind_param('i', $id_a_borrar);
             if ($stmt_borrar->execute()) {
-                $_SESSION['mensaje'] = 'Registro eliminado correctamente.';
+                $_SESSION['mensaje'] = 'Préstamo eliminado correctamente.';
                 $_SESSION['tipoMensaje'] = 'exito';
             } else {
-                $_SESSION['mensaje'] = 'Error al eliminar en la base de datos.';
+                $_SESSION['mensaje'] = 'Error al eliminar el préstamo en la base de datos.';
                 $_SESSION['tipoMensaje'] = 'error';
             }
             $stmt_borrar->close();
@@ -73,6 +94,18 @@ if (isset($_GET['eliminar_id'])) {
     header("Location: profesores.php");
     exit();
 }
+
+// 4. CONSULTA RELACIONAL USANDO INNER JOIN PARA ARMAR LA TABLA VISUAL
+$resultado = $conexion->query(
+    'SELECT pr.id_prestamo, p.Nombre, p.Materia, pr.Cantidad, pr.fecha_salida, l.Titulo AS Nombre_del_Libro, pr.fecha_devolucion_esperada 
+     FROM prestamos pr
+     INNER JOIN profesores p ON pr.id_profesores = p.id_Profesores
+     INNER JOIN libros l ON pr.id_libros = l.id_libro
+     ORDER BY pr.id_prestamo DESC'
+);
+
+// 5. OBTENER LISTADO DE LIBROS PARA EL MENÚ DESPLEGABLE
+$lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY Titulo ASC");
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -104,7 +137,7 @@ if (isset($_GET['eliminar_id'])) {
         
         <form action="profesores.php" method="POST">
             <div class="grupo-campo">
-                <label>Nombre</label>
+                <label>Nombre del Profesor</label>
                 <input type="text" name="Nombre" maxlength="100" required>
             </div>
             <div class="grupo-campo">
@@ -113,15 +146,24 @@ if (isset($_GET['eliminar_id'])) {
             </div>
             <div class="grupo-campo">
                 <label>Cantidad</label>
-                <input type="number" name="Cantidad" min="1" required>
+                <input type="number" name="Cantidad" min="1" value="1" required>
             </div>
             <div class="grupo-campo">
                 <label>Fecha de préstamo</label>
                 <input type="date" name="Fecha_prestamo" required>
             </div>
             <div class="grupo-campo">
-                <label>Nombre del Libro</label>
-                <input type="text" name="Libro" maxlength="100" required>
+                <label>Seleccionar Libro</label>
+                <select name="id_libro" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    <option value="">-- Selecciona un libro disponible --</option>
+                    <?php if ($lista_libros && $lista_libros->num_rows > 0): ?>
+                        <?php while($lib = $lista_libros->fetch_assoc()): ?>
+                            <option value="<?php echo $lib['id_libro']; ?>"><?php echo htmlspecialchars($lib['Titulo']); ?></option>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <option value="">No hay libros registrados en el sistema</option>
+                    <?php endif; ?>
+                </select>
             </div>
             <div class="grupo-campo">
                 <label>Fecha de entrega</label>
@@ -134,13 +176,14 @@ if (isset($_GET['eliminar_id'])) {
     <table class="tabla-datos">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>ID Préstamo</th>
                 <th>Nombre</th>
                 <th>Materia</th>
                 <th>Cantidad</th>
                 <th>Fecha de préstamo</th>
                 <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
@@ -149,13 +192,16 @@ if (isset($_GET['eliminar_id'])) {
                 while ($fila = $resultado->fetch_assoc()):
                 ?>
                 <tr>
-                <td><?php echo $fila['id_Profesores']; ?></td>
+                <td><?php echo $fila['id_prestamo']; ?></td>
                 <td><?php echo htmlspecialchars($fila['Nombre']); ?></td>
                 <td><?php echo htmlspecialchars($fila['Materia']); ?></td>
                 <td><?php echo $fila['Cantidad']; ?></td>
-                <td><?php echo $fila['Fecha_de_préstamo']; ?></td>
+                <td><?php echo $fila['fecha_salida']; ?></td>
                 <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
-                <td><?php echo $fila['Fecha_de_entrega']; ?></td>             
+                <td><?php echo $fila['fecha_devolucion_esperada']; ?></td>             
+                <td>
+                    <button href="profesores.php?eliminar_id=<?php echo $fila['id_prestamo']; ?>" class="btn-eliminar" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 3px; color: #721c24; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro de préstamo de forma permanente?');"></button>
+                </td>        
                 </tr>
             <?php 
                 endwhile; 
@@ -163,17 +209,11 @@ if (isset($_GET['eliminar_id'])) {
             ?>
                 <tr>
                     <td colspan="8" style="text-align: center;">No hay préstamos registrados actualmente.</td>
-                    <td><a href="profesores.php?eliminar_id=<?php echo $fila['id_Profesores']; ?>" class="btn-eliminar" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro permanente?');">Eliminar</a></td>
                 </tr>
             <?php endif; ?>
         </tbody>
     </table>
-    <script>        
-    function eliminarFila(boton) {
-      const fila = boton.parentNode.parentNode;
-      fila.remove();
-    }
-    </script>
+
     <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
     </div>

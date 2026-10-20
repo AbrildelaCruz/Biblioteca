@@ -8,14 +8,15 @@ $autor  = isset($_GET['autor']) ? trim($_GET['autor']) : '';
 $isbn   = isset($_GET['isbn']) ? trim($_GET['isbn']) : '';
 
 if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
-    // Consulta base
-    $query = "SELECT id_libro, Titulo, Autor, Categoría, Editorial, Edición, Idioma, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados FROM libros WHERE 1=1";
+    // Si hay búsqueda, usamos una consulta limpia seleccionando todo (*) para evitar errores de nombres exactos
+    $query = "SELECT * FROM libros WHERE 1=1";
     
     $params = [];
     $types = "";
 
     if ($titulo !== '') { $query .= " AND Titulo LIKE ?"; $params[] = "%$titulo%"; $types .= "s"; }
-    if ($tema !== '')   { $query .= " AND Categoría LIKE ?"; $params[] = "%$tema%"; $types .= "s"; }
+    // Filtramos por tema buscando tanto en Categoria como en Encabezamiento_de_Materia para blindar la búsqueda
+    if ($tema !== '')   { $query .= " AND (Categoria LIKE ? OR Encabezamiento_de_Materia LIKE ?)"; $params[] = "%$tema%"; $params[] = "%$tema%"; $types .= "ss"; }
     if ($autor !== '')  { $query .= " AND Autor LIKE ?"; $params[] = "%$autor%"; $types .= "s"; }
     if ($isbn !== '')   { $query .= " AND id_libro LIKE ?"; $params[] = "%$isbn%"; $types .= "s"; }
     
@@ -28,11 +29,10 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
     $stmt->execute();
     $resultados = $stmt->get_result();
 } else {
-    // Carga por defecto limpia
-    $resultados = $conexion->query("SELECT id_libro, Titulo, Autor, Categoría, Editorial, Edición, Idioma, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY id_libro DESC LIMIT 15");
+    // Seleccionamos todo (*) para evitar el fallo de "Unknown column" si varía el acento en XAMPP
+    $resultados = $conexion->query("SELECT * FROM libros ORDER BY id_libro DESC LIMIT 15");
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -54,7 +54,7 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
         }
     </style>
 </head>
-<body class="body2"> <!-- Llama a tu fondo animado con degradado y scroll limpio -->
+<body class="body2">
 
     <!-- Animación de burbujas flotantes de fondo -->
     <div class="contenedor-burbujas">
@@ -66,12 +66,12 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
         <div class="burbuja"></div>
     </div>
 
-    <!-- Bloque del Buscador Estilizado como tus formularios de Profesores e Inventario -->
+    <!-- Bloque del Buscador Estilizado -->
     <div class="contenedor-formulario" style="max-width: 850px; margin-top: 30px;">
         <h2>🔍 Biblioteca Sullivan</h2>
         
-        <!-- Apunta exactamente a Busqueda.php respetando la mayúscula inicial -->
-        <form method="get" action="Busqueda.php">
+        <!-- Apunta exactamente a busqueda.php en minúsculas para evitar errores de servidor -->
+        <form method="get" action="busqueda.php">
             <fieldset>
                 <input type="search" id="buscar-titulo" name="titulo" value="<?php echo htmlspecialchars($titulo); ?>" placeholder="Título del libro...">
                 <input type="search" id="buscar-tema" name="tema" value="<?php echo htmlspecialchars($tema); ?>" placeholder="Categoría o Tema...">
@@ -83,7 +83,7 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
         </form>
     </div>
 
-    <!-- Tabla Dinámica con tus 10 Columnas Reales -->
+    <!-- Tabla Dinámica con tus Columnas Reales -->
     <table class="tabla-datos" style="max-width: 1100px; margin-top: 25px;">
         <thead>
             <tr>
@@ -99,20 +99,22 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
         </thead>
         <tbody>
             <?php if ($resultados && $resultados->num_rows > 0): ?>
-                <?php while ($fila = $resultados->fetch_assoc()): ?>
+                <?php while ($fila = $resultados->fetch_assoc()): 
+                    // Detectar si la clave viene con o sin acento en el array de la BD
+                    $cat_imprimir = $fila['Categoria'] ?? $fila['Categoría'] ?? 'Sin categoría';
+                    $edi_imprimir = $fila['Edicion'] ?? $fila['Edición'] ?? 'Sin edición';
+                ?>
                     <tr>
                         <td><?php echo $fila['id_libro']; ?></td>
                         <td><strong><?php echo htmlspecialchars($fila['Titulo']); ?></strong></td>
                         <td><?php echo htmlspecialchars($fila['Autor']); ?></td>
-                        <!-- Imprime tu columna Categoría con el acento exacto de tu base de datos -->
-                        <td><?php echo htmlspecialchars($fila['Categoría']); ?></td>
-                        <td><?php echo htmlspecialchars($fila['Editorial']); ?></td>
-                        <td><?php echo htmlspecialchars($fila['Edición']); ?></td>
-                        <td><?php echo htmlspecialchars($fila['Idioma']); ?></td>
-                        <!-- Indicador visual dinámico de existencias -->
+                        <td><?php echo htmlspecialchars($cat_imprimir); ?></td>
+                        <td><?php echo htmlspecialchars($fila['Editorial'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edi_imprimir); ?></td>
+                        <td><?php echo htmlspecialchars($fila['Idioma'] ?? ''); ?></td>
                         <td>
-                            <span style="font-weight: bold; color: <?php echo $fila['Ejemplares_disponibles'] > 0 ? '#16753b' : '#b00020'; ?>;">
-                                <?php echo $fila['Ejemplares_disponibles']; ?> de <?php echo $fila['Ejemplares_totales']; ?>
+                            <span style="font-weight: bold; color: <?php echo (isset($fila['Ejemplares_disponibles']) && $fila['Ejemplares_disponibles'] > 0) ? '#16753b' : '#b00020'; ?>;">
+                                <?php echo $fila['Ejemplares_disponibles'] ?? 0; ?> de <?php echo $fila['Ejemplares_totales'] ?? 0; ?>
                             </span>
                         </td>
                     </tr>
@@ -134,4 +136,3 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
 
 </body>
 </html>
-     

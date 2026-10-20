@@ -2,7 +2,7 @@
 require_once 'conexion.php';
 
 // 1. RECUPERAR MENSAJES DE LA SESIÓN
-session_start();
+// Eliminamos session_start() de aquí porque ya se ejecuta automáticamente dentro de conexion.php
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
@@ -39,7 +39,7 @@ if (isset($_GET['editar_id'])) {
 
 // 3. PROCESAR EL FORMULARIO (REGISTRO O ACTUALIZACIÓN - MÉTODO POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $id_alumno_post = $_POST['id_Alumnos'] ?? '';
+  $id_alumno_post = filter_input(INPUT_POST, 'id_Alumnos', FILTER_VALIDATE_INT);
   $nombre = trim($_POST['Nombre'] ?? '');
   $madreEncargada = trim($_POST['Madre_encargada'] ?? '');
   $familia = trim($_POST['Familia'] ?? '');
@@ -91,7 +91,7 @@ if (isset($_GET['eliminar_id'])) {
                 $_SESSION['mensaje'] = 'Alumno eliminado correctamente.';
                 $_SESSION['tipoMensaje'] = 'exito';
             } else {
-                $_SESSION['mensaje'] = 'Error al eliminar.';
+                $_SESSION['mensaje'] = 'Error al eliminar: ' . $stmt_borrar->error;
                 $_SESSION['tipoMensaje'] = 'error';
             }
             $stmt_borrar->close();
@@ -109,7 +109,7 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Préstamos alumnos</title>
+  <title>Registro de Alumnos</title>
   <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
   <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
@@ -127,13 +127,12 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
   </div>
 
   <?php if ($mensaje !== ''): ?>
-      <div style="padding: 10px; margin: 15px auto; max-width: 700px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>; z-index: 10; position: relative;">
+      <div class="alerta <?php echo $tipoMensaje; ?>" style="padding: 10px; margin: 15px auto; max-width: 700px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>; z-index: 10; position: relative;">
           <?php echo $mensaje; ?>
       </div>
   <?php endif; ?>
 
   <div class="contenedor-formulario">
-      <div class="contenedor-formulario">
       <h2><?php echo $modo_editar ? '📝 Modificar Alumno' : 'Registro de Alumnos'; ?></h2>
       
       <form method="post" action="alumnos.php">
@@ -174,7 +173,6 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
         <?php endif; ?>
       </form>
   </div>
-  </div>
 
   <table class="tabla-datos">
     <thead>
@@ -185,55 +183,36 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
         <th>Familia</th>
         <th>Piso</th>
         <th>Grupo</th>
-        <th>Acción</th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
       <?php
     if ($resultado && $resultado->num_rows > 0) {
         while($fila = $resultado->fetch_assoc()) {
+            $id_actual = (int)$fila['id_Alumnos'];
             echo "<tr>";
-            echo "<td>" . (int) $fila['id_Alumnos'] . "</td>";
+            echo "<td>" . $id_actual . "</td>";
             echo "<td>" . htmlspecialchars($fila['Nombre'], ENT_QUOTES, 'UTF-8') . "</td>";
             echo "<td>" . htmlspecialchars($fila['Madre_encargada'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
             echo "<td>" . htmlspecialchars($fila['Familia'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
             echo "<td>" . htmlspecialchars($fila['Piso'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
             echo "<td>" . htmlspecialchars($fila['Grupo'] ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
-            
-            // Columna de Acciones combinada: Editar y Eliminar de forma permanente
             echo "<td>";
-            echo '<a href="alumnos.php?editar_id=' . $fila['Acción'] . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #007bff; border: 1px solid #007bff; border-radius: 3px; color: white; font-size: 13px; font-weight: bold; margin-right: 5px;">Editar</a>';
-            echo '<a href="alumnos.php?eliminar_id=' . $fila['Acción'] . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm(\'¿Seguro que deseas eliminar este alumno permanentemente?\');">Eliminar</a>';
+            echo '<a href="alumnos.php?editar_id=' . $id_actual . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #007bff; border: 1px solid #007bff; border-radius: 3px; color: white; font-size: 13px; margin-right: 5px;">Editar</a>';
+            echo '<a href="alumnos.php?eliminar_id=' . $id_actual . '" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 3px; color: #721c24; font-size: 13px;" onclick="return confirm(\'¿Seguro que deseas eliminar este alumno permanentemente?\');">Eliminar</a>';
             echo "</td>";
-            
             echo "</tr>";
         }
     } else {
-        echo "<tr><td colspan='7' style='text-align:center;'>No hay alumnos registrados actualmente.</td></tr>";
+        echo '<tr><td colspan="7" style="text-align: center;">No hay alumnos registrados actualmente.</td></tr>';
     }
     ?>
     </tbody>
   </table>
+
   <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
   </div>
-  <script>
-    const boton = document.getElementById('btn-modificar');
-const texto = document.getElementById('grupo-campo');
-
-boton.addEventListener('click',() => {
-    if(boton.textContent.includes('Modificar')){
-        const contenidoActual = Text.textContent;
-        texto.inneHTML= '<iput type ="text" id="inputEditando" value="${contenidoActual}" style="font-size:16px; padding:5px">';
-        boton.innerHTML = 'Guardar';
-        boton.style.backgroundColor ='#000';
-    } else{
-        const nuevoTexto = document.getElementById('inputEditando').value;
-        texto.textContent = nuevaTexto;
-        boton.innerHTML='Modificar'; 
-        boton.style.backgroundColor = '#2563eb'
-    }
-});
-  </script>
 </body>
 </html>
