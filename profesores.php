@@ -161,6 +161,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                             <option value="<?php echo $lib['id_libro']; ?>"><?php echo htmlspecialchars($lib['Titulo']); ?></option>
                         <?php endwhile; ?>
                     <?php else: ?>
+                        
                         <option value="">No hay libros registrados en el sistema</option>
                     <?php endif; ?>
                 </select>
@@ -172,8 +173,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
             <button type="submit" class="boton-guardar">Guardar Profesor</button>
         </form> 
     </div> 
-<a href="eliminar.php?id=" onclick="return confirm('¿Seguro que deseas eliminarlo?');" style="color: red;">Eliminar</a>
-    <table class="tabla-datos">
+
         <thead>
             <tr>
                 <th>ID Préstamo</th>
