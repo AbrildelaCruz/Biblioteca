@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Insertar el préstamo real en la tabla relacional de 'prestamos'
             $stmt_prestamo = $conexion->prepare(
-                'INSERT INTO prestamos (id_libros, id_profesores, Cantidad, fecha_salida, fecha_devolucion_esperada) VALUES (?, ?, ?, ?, ?)'
+                'INSERT INTO prestamos (id_libro, id_profesores, Cantidad, fecha_salida, fecha_devolucion_esperada) VALUES (?, ?, ?, ?, ?)'
             );
             $stmt_prestamo->bind_param('iiiss', $id_libro, $id_profesor_actual, $Cantidad, $Fecha_de_préstamo, $Fecha_de_entrega);
             $stmt_prestamo->execute();
@@ -100,7 +100,7 @@ $resultado = $conexion->query(
     'SELECT pr.id_prestamo, p.Nombre, p.Materia, pr.Cantidad, pr.fecha_salida, l.Titulo AS Nombre_del_Libro, pr.fecha_devolucion_esperada 
      FROM prestamos pr
      INNER JOIN profesores p ON pr.id_profesores = p.id_Profesores
-     INNER JOIN libros l ON pr.id_libros = l.id_libro
+     INNER JOIN libros l ON pr.id_libro = l.id_libro
      ORDER BY pr.id_prestamo DESC'
 );
 
@@ -183,7 +183,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                 <th>Fecha de préstamo</th>
                 <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
-                <th>Acción</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -200,8 +200,10 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                 <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                 <td><?php echo $fila['fecha_devolucion_esperada']; ?></td>             
                 <td>
-                    <button href="profesores.php?eliminar_id=<?php echo $fila['id_prestamo']; ?>" class="btn-eliminar" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 3px; color: #721c24; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro de préstamo de forma permanente?');"></button>
-                </td>        
+    <button type="submit" onclick="return confirm('¿Seguro que quieres borrarlo?')">
+        Eliminar
+                </button>     
+                </td>   
                 </tr>
             <?php 
                 endwhile; 
