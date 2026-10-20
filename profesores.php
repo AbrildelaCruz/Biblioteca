@@ -200,9 +200,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                 <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                 <td><?php echo $fila['fecha_devolucion_esperada']; ?></td>             
                 <td>
-    <button type="submit" onclick="return confirm('¿Seguro que quieres borrarlo?')">
-        Eliminar
-                </button>     
+                    <a href="eliminar.php?id=" onclick="return confirm('¿Seguro que deseas eliminarlo?');" style="color: red;">Eliminar</a>
                 </td>   
                 </tr>
             <?php 
