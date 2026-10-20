@@ -141,7 +141,6 @@ if (isset($_GET['eliminar_id'])) {
                 <th>Fecha de préstamo</th>
                 <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
-                <th>-</th>
             </tr>
         </thead>
         <tbody>
@@ -156,24 +155,22 @@ if (isset($_GET['eliminar_id'])) {
                 <td><?php echo $fila['Cantidad']; ?></td>
                 <td><?php echo $fila['Fecha_de_préstamo']; ?></td>
                 <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
-                <td><?php echo $fila['Fecha_de_entrega']; ?></td>
-                <td><a href="profesores.php?eliminar_id=<?php echo $fila['id_Profesores']; ?>" class="btn-eliminar" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro permanente?');">Eliminar</a><td>
-</td></td>
+                <td><?php echo $fila['Fecha_de_entrega']; ?></td>             
                 </tr>
-                    </tr>
             <?php 
                 endwhile; 
             else: 
             ?>
                 <tr>
                     <td colspan="8" style="text-align: center;">No hay préstamos registrados actualmente.</td>
+                    <td><a href="profesores.php?eliminar_id=<?php echo $fila['id_Profesores']; ?>" class="btn-eliminar" style="text-decoration: none; display: inline-block; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 3px; color: black; font-size: 13px;" onclick="return confirm('¿Seguro que deseas eliminar este registro permanente?');">Eliminar</a></td>
                 </tr>
             <?php endif; ?>
         </tbody>
     </table>
     <script>        
     function eliminarFila(boton) {
-      var fila = boton.parentNode.parentNode;
+      const fila = boton.parentNode.parentNode;
       fila.remove();
     }
     </script>
