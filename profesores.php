@@ -172,7 +172,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
             <button type="submit" class="boton-guardar">Guardar Profesor</button>
         </form> 
     </div> 
-
+<a href="eliminar.php?id=" onclick="return confirm('¿Seguro que deseas eliminarlo?');" style="color: red;">Eliminar</a>
     <table class="tabla-datos">
         <thead>
             <tr>
@@ -199,12 +199,9 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                 <td><?php echo $fila['fecha_salida']; ?></td>
                 <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
                 <td><?php echo $fila['fecha_devolucion_esperada']; ?></td>             
-                <td>
-                    <a href="eliminar.php?id=" onclick="return confirm('¿Seguro que deseas eliminarlo?');" style="color: red;">Eliminar</a>
-                </td>   
                 </tr>
             <?php 
-                endwhile; 
+                endwhile;
             else: 
             ?>
                 <tr>
