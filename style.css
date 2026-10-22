@@ -309,7 +309,7 @@
         }
 
         .campo-grupo label {
-            color: #ffffff;
+            color: #bbb9b9;
             font-weight: bold;
             margin-bottom: 5px;
             font-size: 14px;
@@ -317,7 +317,7 @@
 
         /* Estilo para los inputs que son de solo lectura */
         .contenedor-formulario input[readonly] {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: #2c3e50;
             color: #e0e0e0;
             cursor: not-allowed;
         }
