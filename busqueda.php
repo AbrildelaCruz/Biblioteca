@@ -42,7 +42,7 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
     <style>
-        /* Cuadrícula organizada en el formulario para acomodar tus 4 campos */
+        /* Cuadricula organizada en el formulario para acomodar tus 4 campos */
         .contenedor-formulario fieldset {
             border: none;
             padding: 0;
@@ -56,7 +56,7 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
 </head>
 <body class="body2">
 
-    <!-- Animación de burbujas flotantes de fondo -->
+    <!-- Animacion de burbujas flotantes de fondo -->
     <div class="contenedor-burbujas">
         <div class="burbuja"></div>
         <div class="burbuja"></div>
@@ -70,7 +70,7 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
     <div class="contenedor-formulario" style="max-width: 850px; margin-top: 30px;">
         <h2>🔍 Biblioteca Sullivan</h2>
         
-        <!-- Apunta exactamente a busqueda.php en minúsculas para evitar errores de servidor -->
+        <!-- Apunta exactamente a busqueda.php en minusculas para evitar errores de servidor -->
         <form method="get" action="busqueda.php">
             <fieldset>
                 <input type="search" id="buscar-titulo" name="titulo" value="<?php echo htmlspecialchars($titulo); ?>" placeholder="Título del libro...">

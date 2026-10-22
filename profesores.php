@@ -176,11 +176,11 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
 
         <thead>
             <tr>
-                <th>ID Préstamo</th>
+                <th>ID Prestamo</th>
                 <th>Nombre</th>
                 <th>Materia</th>
                 <th>Cantidad</th>
-                <th>Fecha de préstamo</th>
+                <th>Fecha de prestamo</th>
                 <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
                 <th>Acciones</th>
