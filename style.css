@@ -290,4 +290,52 @@
     background-color: #b3591b;
     transform: translateY(-2px);
 }
+/*busqueda.php*/
+  /* Cuadricula organizada en el formulario para acomodar los campos en parejas */
+        .contenedor-formulario fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .campo-grupo {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
 
+        .campo-grupo label {
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        /* Estilo para los inputs que son de solo lectura */
+        .contenedor-formulario input[readonly] {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #e0e0e0;
+            cursor: not-allowed;
+        }
+        
+        /* Estilizado del selector desplegable para que combine con tus inputs */
+        .contenedor-formulario select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 15px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        
+        .contenedor-formulario select option {
+            background-color: #4a148c; /* Fondo morado para las opciones del select */
+            color: white;
+        }

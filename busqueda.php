@@ -33,26 +33,22 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
     $resultados = $conexion->query("SELECT * FROM libros ORDER BY id_libro DESC LIMIT 15");
 }
 ?>
+
+// Cargamos todos los libros de la base de datos para la lista desplegable
+// Usamos SELECT * para evitar fallos si varían los nombres de columna en tu XAMPP
+$query_libros = "SELECT * FROM libros ORDER BY Titulo ASC";
+$resultado_libros = $conexion->query($query_libros);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca Sullivan - Búsqueda</title>
+    <title>Biblioteca Sullivan - Busqueda
+    </title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
-    <style>
-        /* Cuadricula organizada en el formulario para acomodar tus 4 campos */
-        .contenedor-formulario fieldset {
-            border: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            width: 100%;
-        }
-    </style>
+
 </head>
 <body class="body2">
 
@@ -66,69 +62,122 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
         <div class="burbuja"></div>
     </div>
 
-    <!-- Bloque del Buscador Estilizado -->
+    <!-- Bloque del Formulario de Préstamos Estilizado -->
     <div class="contenedor-formulario" style="max-width: 850px; margin-top: 30px;">
-        <h2>🔍 Biblioteca Sullivan</h2>
+        <h2>📝 Registrar Préstamo a Profesor</h2>
         
-        <!-- Apunta exactamente a busqueda.php en minusculas para evitar errores de servidor -->
-        <form method="get" action="busqueda.php">
+        <!-- Apunta al archivo que procesará y guardará el préstamo en la BD -->
+        <form method="post" action="guardar_prestamo.php">
             <fieldset>
-                <input type="search" id="buscar-titulo" name="titulo" value="<?php echo htmlspecialchars($titulo); ?>" placeholder="Título del libro...">
-                <input type="search" id="buscar-tema" name="tema" value="<?php echo htmlspecialchars($tema); ?>" placeholder="Categoría o Tema...">
-                <input type="search" id="buscar-autor" name="autor" value="<?php echo htmlspecialchars($autor); ?>" placeholder="Autor...">
-                <input type="search" id="buscar-isbn" name="isbn" value="<?php echo htmlspecialchars($isbn); ?>" placeholder="Código / ID del Libro...">
                 
-                <button type="submit" class="boton-guardar" style="grid-column: 1 / -1; margin-top: 10px;">🔍 Realizar Búsqueda</button> 
+                <!-- Datos del Profesor -->
+                <div class="campo-grupo">
+                    <label for="nombre_profesor">Nombre del Profesor:</label>
+                    <input type="text" id="nombre_profesor" name="nombre_profesor" required placeholder="Escribe el nombre del profesor...">
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="materia">Materia / Asignatura:</label>
+                    <input type="text" id="materia" name="materia" required placeholder="Escribe la materia...">
+                </div>
+
+                <!-- Lista Desplegable de Títulos enlazada a tu tabla 'libros' -->
+                <div class="campo-grupo" style="grid-column: 1 / -1;">
+                    <label for="buscar-titulo">Título del Libro:</label>
+                    <select id="buscar-titulo" name="id_libro" onchange="rellenarDatosLibro()" required>
+                        <option value="">-- Selecciona un libro de la lista --</option>
+                        <?php if ($resultado_libros && $resultado_libros->num_rows > 0): ?>
+                            <?php while ($libro = $resultado_libros->fetch_assoc()): ?>
+                                <option value="<?php echo $libro['id_libro']; ?>">
+                                    <?php echo htmlspecialchars($libro['Titulo']); ?>
+                                </option>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <!-- Campos de Auto-relleno Automático (Marcados como Readonly) -->
+                <div class="campo-grupo">
+                    <label for="buscar-autor">Autor:</label>
+                    <input type="text" id="buscar-autor" name="autor" readonly placeholder="Se rellena automáticamente...">
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="buscar-tema">Categoría o Tema:</label>
+                    <input type="text" id="buscar-tema" name="tema" readonly placeholder="Se rellena automáticamente...">
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="buscar-editorial">Editorial:</label>
+                    <input type="text" id="buscar-editorial" name="editorial" readonly placeholder="Se rellena automáticamente...">
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="buscar-disponibles">Ejemplares Disponibles:</label>
+                    <input type="text" id="buscar-disponibles" name="disponibles" readonly placeholder="Se rellena automáticamente...">
+                </div>
+
+                <!-- Fechas del Préstamo -->
+                <div class="campo-grupo">
+                    <label for="fecha_prestamo">Fecha de Préstamo:</label>
+                    <input type="date" id="fecha_prestamo" name="fecha_prestamo" required value="<?php echo date('Y-m-d'); ?>">
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="fecha_entrega">Fecha de Entrega:</label>
+                    <input type="date" id="fecha_entrega" name="fecha_entrega" required>
+                </div>
+                
+                <button type="submit" class="boton-guardar" style="grid-column: 1 / -1; margin-top: 15px;">💾 Guardar Registro de Préstamo</button> 
             </fieldset>
         </form>
     </div>
-
-    <!-- Tabla Dinámica con tus Columnas Reales -->
-    <table class="tabla-datos" style="max-width: 1100px; margin-top: 25px;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Autor</th>
-                <th>Categoría</th>
-                <th>Editorial</th>
-                <th>Edición</th>
-                <th>Idioma</th>
-                <th>Disponibles</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ($resultados && $resultados->num_rows > 0): ?>
-                <?php while ($fila = $resultados->fetch_assoc()): 
-                    // Detectar si la clave viene con o sin acento en el array de la BD
-                    $cat_imprimir = $fila['Categoria'] ?? $fila['Categoría'] ?? 'Sin categoría';
-                    $edi_imprimir = $fila['Edicion'] ?? $fila['Edición'] ?? 'Sin edición';
-                ?>
-                    <tr>
-                        <td><?php echo $fila['id_libro']; ?></td>
-                        <td><strong><?php echo htmlspecialchars($fila['Titulo']); ?></strong></td>
-                        <td><?php echo htmlspecialchars($fila['Autor']); ?></td>
-                        <td><?php echo htmlspecialchars($cat_imprimir); ?></td>
-                        <td><?php echo htmlspecialchars($fila['Editorial'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edi_imprimir); ?></td>
-                        <td><?php echo htmlspecialchars($fila['Idioma'] ?? ''); ?></td>
-                        <td>
-                            <span style="font-weight: bold; color: <?php echo (isset($fila['Ejemplares_disponibles']) && $fila['Ejemplares_disponibles'] > 0) ? '#16753b' : '#b00020'; ?>;">
-                                <?php echo $fila['Ejemplares_disponibles'] ?? 0; ?> de <?php echo $fila['Ejemplares_totales'] ?? 0; ?>
-                            </span>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="8" style="text-align: center; font-weight: bold; color: #b00020; padding: 20px;">
-                        ⚠️ No se encontraron libros que coincidan con los filtros ingresados.
-                    </td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
            
+    <!-- Botón flotante para regresar abajo a la derecha -->
+    <div class="z1">
+        <a class="z2" href="registro.html">REGRESAR</a>
+    </div>
+
+    <!-- Script de JavaScript para hacer la magia del auto-relleno instantáneo sin recargar -->
+    <script>
+    function rellenarDatosLibro() {
+        var idLibro = document.getElementById('buscar-titulo').value;
+
+        // Si el usuario vuelve a poner la opción por defecto, limpiamos los campos automáticos
+        if (idLibro == "") {
+            document.getElementById('buscar-autor').value = "";
+            document.getElementById('buscar-tema').value = "";
+            document.getElementById('buscar-editorial').value = "";
+            document.getElementById('buscar-disponibles').value = "";
+            return;
+        }
+
+        // Hacemos una consulta invisible al archivo 'buscar_libro.php' pasando el ID del libro
+        fetch('buscar_libro.php?id=' + idLibro)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    // Mapeamos los datos de tu tabla 'libros' directamente a las casillas del formulario
+                    document.getElementById('buscar-autor').value = data.Autor ?? 'No especificado';
+                    
+                    // Validamos si viene con o sin acento desde tu base de datos
+                    document.getElementById('buscar-tema').value = data.Categoria ?? data.Categoría ?? 'Sin categoría';
+                    document.getElementById('buscar-editorial').value = data.Editorial ?? 'No especificada';
+                    
+                    // Colocamos el stock disponible en formato entendible
+                    var disponibles = data.Ejemplares_disponibles ?? 0;
+                    var totales = data.Ejemplares_totales ?? 0;
+                    document.getElementById('buscar-disponibles').value = disponibles + " de " + totales;
+                } else {
+                    alert("Error: No se pudieron obtener los datos de este libro.");
+                }
+            })
+            .catch(error => {
+                console.error('Error en la petición Fetch:', error);
+            });
+    }
+    </script>
+  
     <!-- Botón flotante para regresar abajo a la derecha -->
     <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
