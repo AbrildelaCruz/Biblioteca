@@ -32,10 +32,10 @@ if ($titulo !== '' || $tema !== '' || $autor !== '' || $isbn !== '') {
     // Seleccionamos todo (*) para evitar el fallo de "Unknown column" si varía el acento en XAMPP
     $resultados = $conexion->query("SELECT * FROM libros ORDER BY id_libro DESC LIMIT 15");
 }
-?>
 
-// Cargamos todos los libros de la base de datos para la lista desplegable
-// Usamos SELECT * para evitar fallos si varían los nombres de columna en tu XAMPP
+/* Cargamos todos los libros de la base de datos para la lista desplegable*/
+/* Usamos SELECT * para evitar fallos si varían los nombres de columna en tu XAMPP */
+
 $query_libros = "SELECT * FROM libros ORDER BY Titulo ASC";
 $resultado_libros = $conexion->query($query_libros);
 ?>
@@ -64,23 +64,9 @@ $resultado_libros = $conexion->query($query_libros);
 
     <!-- Bloque del Formulario de Préstamos Estilizado -->
     <div class="contenedor-formulario" style="max-width: 850px; margin-top: 30px;">
-        <h2>📝 Registrar Préstamo a Profesor</h2>
+        <h2>🔍 Biblioteca Sullivan</h2>
         
-        <!-- Apunta al archivo que procesará y guardará el préstamo en la BD -->
-        <form method="post" action="guardar_prestamo.php">
             <fieldset>
-                
-                <!-- Datos del Profesor -->
-                <div class="campo-grupo">
-                    <label for="nombre_profesor">Nombre del Profesor:</label>
-                    <input type="text" id="nombre_profesor" name="nombre_profesor" required placeholder="Escribe el nombre del profesor...">
-                </div>
-
-                <div class="campo-grupo">
-                    <label for="materia">Materia / Asignatura:</label>
-                    <input type="text" id="materia" name="materia" required placeholder="Escribe la materia...">
-                </div>
-
                 <!-- Lista Desplegable de Títulos enlazada a tu tabla 'libros' -->
                 <div class="campo-grupo" style="grid-column: 1 / -1;">
                     <label for="buscar-titulo">Título del Libro:</label>
@@ -116,19 +102,8 @@ $resultado_libros = $conexion->query($query_libros);
                     <label for="buscar-disponibles">Ejemplares Disponibles:</label>
                     <input type="text" id="buscar-disponibles" name="disponibles" readonly placeholder="Se rellena automáticamente...">
                 </div>
-
-                <!-- Fechas del Préstamo -->
-                <div class="campo-grupo">
-                    <label for="fecha_prestamo">Fecha de Préstamo:</label>
-                    <input type="date" id="fecha_prestamo" name="fecha_prestamo" required value="<?php echo date('Y-m-d'); ?>">
-                </div>
-
-                <div class="campo-grupo">
-                    <label for="fecha_entrega">Fecha de Entrega:</label>
-                    <input type="date" id="fecha_entrega" name="fecha_entrega" required>
-                </div>
                 
-                <button type="submit" class="boton-guardar" style="grid-column: 1 / -1; margin-top: 15px;">💾 Guardar Registro de Préstamo</button> 
+                <button type="submit" class="boton-guardar" style="grid-column: 1 / -1; margin-top: 15px;"> Buscar</button> 
             </fieldset>
         </form>
     </div>
@@ -177,11 +152,6 @@ $resultado_libros = $conexion->query($query_libros);
             });
     }
     </script>
-  
-    <!-- Botón flotante para regresar abajo a la derecha -->
-    <div class="z1">
-        <a class="z2" href="registro.html">REGRESAR</a>
-    </div>
 
 </body>
 </html>
