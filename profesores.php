@@ -196,9 +196,9 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                 <td><?php echo htmlspecialchars($fila['Nombre']); ?></td>
                 <td><?php echo htmlspecialchars($fila['Materia']); ?></td>
                 <td><?php echo $fila['Cantidad']; ?></td>
-                <td><?php echo $fila['Fecha_de_préstamo']; ?></td>
+                <td><?php echo $fila['Fecha_de_préstamo'] ?? ''; ?></td>
                 <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
-                <td><?php echo $fila['Fecha_de_entrega']; ?></td>    
+                <td><?php echo $fila['Fecha_de_entrega']?? ''; ?></td>    
                   <!-- Aqui van tus botones de Editar/Eliminar dentro de la celda de Acciones -->
                       <a href="#">Editar</a> 
                       <a href="#">Eliminar</a>         
