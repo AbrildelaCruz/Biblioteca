@@ -115,6 +115,22 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
     <title>Registro de profesores</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
+    <link rel="stylesheet" href="https://jsdelivr.net"/>
+
+<style>
+        /* Ajuste opcional para que combine perfectamente con tus colores morados */
+        .choices__list--multiple .choices__item {
+            background-color: #4a148c !important; /* Tu color morado */
+            border: 1px solid #4a148c !important;
+            border-radius: 4px !important;
+        }
+        .choices__inner {
+            border-radius: 5px !important;
+            border: 1px solid #ccc !important;
+            background-color: #fff !important;
+        }
+    </style>
+
 </head>
 <body class="body2">
 
@@ -143,10 +159,37 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
             <div class="grupo-campo">
                 <label>Materia</label>
                 <input type="text" name="Materia" maxlength="100" required>
+                <div class="grupo-campo">
+    <!-- Asegúrate de tener el id="materias" y los corchetes [] en el name -->
+    <select name="Materia[]" id="materias" multiple required>
+        <option value="Conciencia Historica">Conciencia Historica</option>
+        <option value="Filosofia/Humanidades">Filosofia/Humanidades</option>
+        <option value="Natacion">Natacion</option>
+        <option value="Matematicas">Matematicas</option>
+        <option value="Lengua y Comunicacion">Lengua y Comunicacion</option>
+    </select>
+    </div>
+    <!-- ENLACES NUEVOS: Script de Choices.js e inicialización -->
+    <script src="https://jsdelivr.net"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const elementoSelect = document.getElementById('materias');
+            new Choices(elementoSelect, {
+                removeItemButton: true, // Agrega la 'X' para quitar materias seleccionadas
+                noChoicesText: 'No hay más materias disponibles',
+                itemSelectText: 'Presiona para seleccionar',
+                placeholder: true,
+                placeholderValue: '-- Selecciona las materias --'
+            });
+        });
+    </script>
             </div>
             <button type="submit" class="boton-guardar">Guardar Profesor</button>
         </form> 
-    </div> 
+           </div> 
+
+</head>
+<body>
     <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
     </div>
