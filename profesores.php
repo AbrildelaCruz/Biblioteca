@@ -15,9 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $Nombre = trim($_POST['Nombre'] ?? '');
     $Materia = trim($_POST['Materia'] ?? '');
     $Cantidad = filter_input(INPUT_POST, 'Cantidad', FILTER_VALIDATE_INT);
-    $Fecha_de_préstamo = $_POST['Fecha_prestamo'] ?? '';
+    $Fecha_de_préstamo = $_POST['Fecha_de_prestamo'] ?? '';
     $id_libro = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
-    $Fecha_de_entrega = $_POST['Fecha_entrega'] ?? '';
+    $Fecha_de_entrega = $_POST['Fecha_de_entrega'] ?? '';
 
     if ($Nombre === '' || !$id_libro || $Cantidad === false || $Cantidad < 1 || $Fecha_de_préstamo === '' || $Fecha_de_entrega === '') {
         $_SESSION['mensaje'] = 'Completa todos los campos obligatorios. La cantidad debe ser mayor que cero.';
@@ -112,7 +112,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Préstamos a profesores</title>
+    <title>Registro de profesores</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
@@ -133,7 +133,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
     <?php endif; ?>
 
     <div class="contenedor-formulario">
-        <h2>Registrar Nuevo Profesor</h2>
+        <h2>Registrar Docente</h2>
         
         <form action="profesores.php" method="POST">
             <div class="grupo-campo">
@@ -144,76 +144,9 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                 <label>Materia</label>
                 <input type="text" name="Materia" maxlength="100" required>
             </div>
-            <div class="grupo-campo">
-                <label>Cantidad</label>
-                <input type="number" name="Cantidad" min="1" value="1" required>
-            </div>
-            <div class="grupo-campo">
-                <label>Fecha de préstamo</label>
-                <input type="date" name="Fecha_de_prestamo" required>
-            </div>
-            <div class="grupo-campo">
-                <label>Seleccionar Libro</label>
-                <select name="id_libro" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                    <option value="">-- Selecciona un libro disponible --</option>
-                    <?php if ($lista_libros && $lista_libros->num_rows > 0): ?>
-                        <?php while($lib = $lista_libros->fetch_assoc()): ?>
-                            <option value="<?php echo $lib['id_libro']; ?>"><?php echo htmlspecialchars($lib['Titulo']); ?></option>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        
-                        <option value="">No hay libros registrados en el sistema</option>
-                    <?php endif; ?>
-                </select>
-            </div>
-            <div class="grupo-campo">
-                <label>Fecha de entrega</label>
-                <input type="date" name="Fecha_de_entrega" required>
-            </div>
             <button type="submit" class="boton-guardar">Guardar Profesor</button>
         </form> 
     </div> 
-    <table>
-        <thead>
-            <tr>
-                <th>ID Prestamo</th>
-                <th>Nombre</th>
-                <th>Materia</th>
-                <th>Cantidad</th>
-                <th>Fecha de préstamo</th>
-                <th>Nombre del Libro</th>
-                <th>Fecha de entrega</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-                if ($resultado && $resultado->num_rows > 0):
-                while ($fila = $resultado->fetch_assoc()):
-                ?>
-                <tr>
-                <td><?php echo $fila['id_prestamo']; ?></td>
-                <td><?php echo htmlspecialchars($fila['Nombre']); ?></td>
-                <td><?php echo htmlspecialchars($fila['Materia']); ?></td>
-                <td><?php echo $fila['Cantidad']; ?></td>
-                <td><?php echo $fila['Fecha_de_préstamo'] ?? ''; ?></td>
-                <td><?php echo htmlspecialchars($fila['Nombre_del_Libro']); ?></td>
-                <td><?php echo $fila['Fecha_de_entrega']?? ''; ?></td>    
-                  <!-- Aqui van tus botones de Editar/Eliminar dentro de la celda de Acciones -->
-                      <a href="#">Editar</a> 
-                      <a href="#">Eliminar</a>         
-                </tr>
-            <?php 
-                endwhile;
-            else: 
-            ?>
-                <tr>
-                    <td colspan="8" style="text-align: center;">No hay préstamos registrados actualmente.</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-
     <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
     </div>
