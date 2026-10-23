@@ -1,26 +1,28 @@
 <?php
 require_once 'conexion.php';
 
-// 1. RECUPERAR MENSAJES DE LA SESIÓN PARA EVITAR REPETICIONES
+// 1. RECUPERAR MENSAJES DE LA SESIÓN
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-// Variables para el modo edición
+// Variables para el modo edición con tus nuevos campos bibliográficos
 $modo_editar = false;
 $id_libro = '';
 $titulo = '';
 $autor = '';
-$categoria = '';
+$encabezamiento_de_materia = '';
 $editorial = '';
-$edicion = '';
 $isbm = '';
+$ano = '';
+$clasificacion = '';
 $pais = '';
 $idioma = '';
-$estado_conservacion = 'Excelente'; // Valor por defecto rescatado de inventario
+$descripcion = '';
+$estado_conservacion = 'Excelente';
 $ejemplares_totales = 1;
 
-// 2. DETECTAR MODO EDICIÓN (GET)
+// 2. DETECTAR SI SE SOLICITA EDITAR UN REGISTRO (MÉTODO GET)
 if (isset($_GET['editar_id'])) {
     $id_editar = filter_input(INPUT_GET, 'editar_id', FILTER_VALIDATE_INT);
     if ($id_editar) {
@@ -33,13 +35,14 @@ if (isset($_GET['editar_id'])) {
             $id_libro = $libro_data['id_libro'];
             $titulo = $libro_data['Titulo'];
             $autor = $libro_data['Autor'];
-            $categoria = $libro_data['Categoria'] ?? $libro_data['Categoría'] ?? '';
+            $encabezamiento_de_materia = $libro_data['encabezamiento_de_materia'] ?? '';
             $editorial = $libro_data['Editorial'];
-            $edicion = $libro_data['Edicion'] ?? $libro_data['Edición'] ?? '';
             $isbm = $libro_data['ISBM'];
+            $ano = $libro_data['ano'] ?? '';
+            $clasificacion = $libro_data['clasificacion'] ?? '';
             $pais = $libro_data['Pais'];
             $idioma = $libro_data['Idioma'];
-            // Rescatado de la estructura de inventario
+            $descripcion = $libro_data['descripcion'] ?? '';
             $estado_conservacion = $libro_data['Estado_conservación'] ?? $libro_data['Estado_conservacion'] ?? 'Excelente';
             $ejemplares_totales = $libro_data['Ejemplares_totales'];
         }
@@ -47,18 +50,20 @@ if (isset($_GET['editar_id'])) {
     }
 }
 
-// 3. PROCESAR EL FORMULARIO UNIFICADO (POST)
+// 3. PROCESAR EL FORMULARIO (REGISTRO O ACTUALIZACIÓN - MÉTODO POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_libro_post = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
     $titulo = trim($_POST['Titulo'] ?? '');
     $autor = trim($_POST['Autor'] ?? '');
-    $categoria = trim($_POST['Categoria'] ?? '');
+    $encabezamiento_de_materia = trim($_POST['encabezamiento_de_materia'] ?? '');
     $editorial = trim($_POST['Editorial'] ?? '');
-    $edicion = trim($_POST['Edicion'] ?? '');
     $isbm = trim($_POST['ISBM'] ?? '');
+    $ano = trim($_POST['ano'] ?? '');
+    $clasificacion = trim($_POST['clasificacion'] ?? '');
     $pais = trim($_POST['Pais'] ?? '');
     $idioma = trim($_POST['Idioma'] ?? '');
-    $estado_conservacion = trim($_POST['Estado_conservacion'] ?? 'Excelente'); // Campo de inventario integrado
+    $descripcion = trim($_POST['descripcion'] ?? '');
+    $estado_conservacion = trim($_POST['Estado_conservacion'] ?? 'Excelente');
     $ejemplares_totales = filter_input(INPUT_POST, 'Ejemplares_totales', FILTER_VALIDATE_INT);
     
     if ($titulo === '' || $autor === '' || $ejemplares_totales === false || $ejemplares_totales < 0) {
@@ -66,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['tipoMensaje'] = 'error';
     } else {
         if (!empty($id_libro_post)) {
-            // ACTUALIZAR LIBRO EXISTENTE
+            // ACTUALIZAR LIBRO EXISTENTE EN EL CATÁLOGO (MODO EDICIÓN)
             $stmt_calc = $conexion->prepare('SELECT Ejemplares_prestados FROM libros WHERE id_libro = ?');
             $stmt_calc->bind_param('i', $id_libro_post);
             $stmt_calc->execute();
@@ -77,15 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $disponibles_nuevos = $ejemplares_totales - $prestados;
             if ($disponibles_nuevos < 0) $disponibles_nuevos = 0;
 
-            // Incluimos Estado_conservación en el UPDATE
-            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, Categoria=?, Editorial=?, Edicion=?, ISBM=?, Pais=?, Idioma=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
-            $stmt->bind_param('sssssssssiii', $titulo, $autor, $categoria, $editorial, $edicion, $isbm, $pais, $idioma, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
-            $texto_exito = 'Libro y estado de conservación actualizados correctamente.';
+            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, encabezamiento_de_materia=?, Editorial=?, ISBM=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
+            $stmt->bind_param('sssssssssssiii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbm, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
+            $texto_exito = 'Libro actualizado en el catálogo correctamente.';
         } else {
-            // INSERTAR NUEVO LIBRO CON SU ESTADO DE INVENTARIO
-            $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, Categoria, Editorial, Edicion, ISBM, Pais, Idioma, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
-            $stmt->bind_param('sssssssssii', $titulo, $autor, $categoria, $editorial, $edicion, $isbm, $pais, $idioma, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
-            $texto_exito = 'Nuevo libro y registro de conservación añadidos con éxito.';
+            // INSERTAR NUEVO LIBRO AL CATÁLOGO
+            $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, encabezamiento_de_materia, Editorial, ISBM, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
+            $stmt->bind_param('sssssssssssii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbm, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
+            $texto_exito = 'Nuevo libro añadido al catálogo de la biblioteca.';
         }
         
         if ($stmt && $stmt->execute()) {
@@ -101,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// 4. PROCESAR BORRADO (GET)
+// 4. PROCESAR EL BORRADO EN EL CATÁLOGO (MÉTODO GET)
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
@@ -119,7 +123,7 @@ if (isset($_GET['eliminar_id'])) {
     exit();
 }
 
-// 5. CONSULTAR CATÁLOGO MAESTRO ACTUALIZADO
+// 5. CONSULTAR LOS DATOS ACTUALIZADOS DEL CATÁLOGO
 $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
 ?>
 <!DOCTYPE html>
@@ -165,20 +169,24 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
                 <input type="text" name="Autor" value="<?php echo htmlspecialchars($autor); ?>" maxlength="255" required>
             </div>
             <div class="grupo-campo">
-                <label>Categoría / Tema</label>
-                <input type="text" name="Categoria" value="<?php echo htmlspecialchars($categoria); ?>" maxlength="100">
+                <label>Encabezamiento de Materia</label>
+                <input type="text" name="encabezamiento_de_materia" value="<?php echo htmlspecialchars($encabezamiento_de_materia); ?>" maxlength="255">
             </div>
             <div class="grupo-campo">
                 <label>Editorial</label>
                 <input type="text" name="Editorial" value="<?php echo htmlspecialchars($editorial); ?>" maxlength="100">
             </div>
             <div class="grupo-campo">
-                <label>Edición</label>
-                <input type="text" name="Edicion" value="<?php echo htmlspecialchars($edicion); ?>" maxlength="50">
-            </div>
-            <div class="grupo-campo">
                 <label>ISBN / Código</label>
                 <input type="text" name="ISBM" value="<?php echo htmlspecialchars($isbm); ?>" maxlength="50">
+            </div>
+            <div class="grupo-campo">
+                <label>Año</label>
+                <input type="number" name="ano" value="<?php echo htmlspecialchars($ano); ?>" max="9999">
+            </div>
+            <div class="grupo-campo">
+                <label>Clasificación</label>
+                <input type="text" name="clasificacion" value="<?php echo htmlspecialchars($clasificacion); ?>" maxlength="100">
             </div>
             <div class="grupo-campo">
                 <label>País</label>
@@ -188,12 +196,15 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
                 <label>Idioma</label>
                 <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50">
             </div>
-            <!-- CAMPOS RESCATADOS Y REORGANIZADOS PARA REGISTRO EXPRÉS -->
             <div class="grupo-campo">
                 <label>Estado de Conservación</label>
                 <input type="text" name="Estado_conservacion" value="<?php echo htmlspecialchars($estado_conservacion); ?>" maxlength="50" required placeholder="Ej. Excelente, Bueno, Dañado">
             </div>
-            <div class="grupo-campo">
+            <div class="grupo-campo" style="grid-column: 1 / -1;">
+                <label>Descripción / Notas</label>
+                <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255">
+            </div>
+            <div class="grupo-campo" style="grid-column: 1 / -1;">
                 <label>Ejemplares Totales</label>
                 <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required>
             </div>
@@ -202,4 +213,62 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
         <button type="submit" class="boton-guardar" style="margin-top: 20px; width: 100%;">
             <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'Registrar Libro (Entrada Única)'; ?>
         </button>
-        <?php if ($modo_editar):?>
+         <?php if ($modo_editar): ?>
+            <a href="catalogo.php" style="display: block; text-align: center; margin-top: 10px; color: #721c24; text-decoration: none; font-size: 14px;">Cancelar Edición</a>
+        <?php endif; ?>
+      </form>
+  </div>
+
+  <!-- 4. TABLA DE DATOS DEL CATÁLOGO MAESTRO CORREGIDA Y ALINEADA -->
+  <table class="tabla-datos" style="max-width: 95%; margin: 30px auto; font-size: 13px;">
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Título-libro</th>
+              <th>Autor</th>
+              <th>Editorial</th>
+              <th>ISBM</th>
+              <th>Año</th>
+              <th>Clasificación</th>
+              <th>Estado de conservación</th>
+              <th>Ej. Totales</th>
+              <th>EJ. Disponibles</th>
+              <th>Ej. Prestados</th>
+              <th>Acciones</th>
+          </tr>
+      </thead>
+      <tbody>
+          <?php if ($resultado && $resultado->num_rows > 0): 
+              while ($fila = $resultado->fetch_assoc()): ?>
+              <tr>
+                  <td><?php echo $fila['id_libro']; ?></td>
+                  <td><b><?php echo htmlspecialchars($fila['Titulo']); ?></b></td>
+                  <td><?php echo htmlspecialchars($fila['Autor']); ?></td>
+                  <td><?php echo htmlspecialchars($fila['Editorial']); ?></td>
+                  <td><?php echo htmlspecialchars($fila['ISBM']); ?></td>
+                  <td><?php echo htmlspecialchars($fila['ano'] ?? '-'); ?></td>
+                  <td><?php echo htmlspecialchars($fila['clasificacion'] ?? '-'); ?></td>
+                  <td><span style="padding: 2px 5px; background: #e9ecef; border-radius:3px; font-weight:500;"><?php echo htmlspecialchars($fila['Estado_conservación'] ?? 'Excelente'); ?></span></td>
+                  <td style="text-align: center;"><?php echo $fila['Ejemplares_totales']; ?></td>
+                  <td style="text-align: center; color: green; font-weight: bold;"><?php echo $fila['Ejemplares_disponibles']; ?></td>
+                  <td style="text-align: center; color: red;"><?php echo $fila['Ejemplares_prestados']; ?></td>
+                  <td>
+                      <a href="catalogo.php?editar_id=<?php echo $fila['id_libro']; ?>" style="text-decoration: none; padding: 3px 6px; background-color: #e2e3e5; border-radius: 3px; color: #383d41; font-size: 11px;">Editar</a>
+                      <a href="catalogo.php?eliminar_id=<?php echo $fila['id_libro']; ?>" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px; margin-left: 2px;" onclick="return confirm('¿Seguro que deseas eliminar este libro?');">Eliminar</a>
+                  </td>
+              </tr>
+          <?php endwhile; 
+          else: ?>
+              <tr>
+                  <td colspan="12" style="text-align: center;">No hay libros registrados en el catálogo.</td>
+              </tr>
+          <?php endif; ?>
+      </tbody>
+  </table>
+
+  <div class="z1">
+      <a class="z2" href="registro.html">REGRESAR</a>
+  </div>
+
+</body>
+</html>
