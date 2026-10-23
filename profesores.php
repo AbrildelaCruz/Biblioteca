@@ -150,7 +150,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
             </div>
             <div class="grupo-campo">
                 <label>Fecha de préstamo</label>
-                <input type="date" name="Fecha_prestamo" required>
+                <input type="date" name="Fecha_de_prestamo" required>
             </div>
             <div class="grupo-campo">
                 <label>Seleccionar Libro</label>
@@ -168,7 +168,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
             </div>
             <div class="grupo-campo">
                 <label>Fecha de entrega</label>
-                <input type="date" name="Fecha_entrega" required>
+                <input type="date" name="Fecha_de_entrega" required>
             </div>
             <button type="submit" class="boton-guardar">Guardar Profesor</button>
         </form> 
@@ -180,7 +180,7 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                 <th>Nombre</th>
                 <th>Materia</th>
                 <th>Cantidad</th>
-                <th>Fecha de prestamo</th>
+                <th>Fecha de préstamo</th>
                 <th>Nombre del Libro</th>
                 <th>Fecha de entrega</th>
                 <th>Acciones</th>
