@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['tipoMensaje'] = 'error';
     } else {
         if (!empty($id_libro_post)) {
-            // ACTUALIZAR LIBRO EXISTENTE EN EL CATÁLOGO (MODO EDICIÓN)
+            // ACTUALIZAR LIBRO EXISTENTE IN EL CATÁLOGO (MODO EDICIÓN)
             $stmt_calc = $conexion->prepare('SELECT Ejemplares_prestados FROM libros WHERE id_libro = ?');
             $stmt_calc->bind_param('i', $id_libro_post);
             $stmt_calc->execute();
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: catalogo.php");
+    header("Location: ver_catalogo.php"); // Al guardar te manda a la otra página a ver la tabla
     exit();
 }
 
@@ -119,13 +119,11 @@ if (isset($_GET['eliminar_id'])) {
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: catalogo.php");
+    header("Location: ver_catalogo.php"); // Al borrar te manda a la otra página
     exit();
 }
-
-// 5. CONSULTAR LOS DATOS ACTUALIZADOS DEL CATÁLOGO
-$resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -219,52 +217,14 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
       </form>
   </div>
 
-  <!-- 4. TABLA DE DATOS DEL CATÁLOGO MAESTRO CORREGIDA Y ALINEADA -->
-  <table class="tabla-datos" style="max-width: 95%; margin: 30px auto; font-size: 13px;">
-      <thead>
-          <tr>
-              <th>ID</th>
-              <th>Título-libro</th>
-              <th>Autor</th>
-              <th>Editorial</th>
-              <th>ISBM</th>
-              <th>Año</th>
-              <th>Clasificación</th>
-              <th>Estado de conservación</th>
-              <th>Ej. Totales</th>
-              <th>EJ. Disponibles</th>
-              <th>Ej. Prestados</th>
-              <th>Acciones</th>
-          </tr>
-      </thead>
-      <tbody>
-          <?php if ($resultado && $resultado->num_rows > 0): 
-              while ($fila = $resultado->fetch_assoc()): ?>
-              <tr>
-                  <td><?php echo $fila['id_libro']; ?></td>
-                  <td><b><?php echo htmlspecialchars($fila['Titulo']); ?></b></td>
-                  <td><?php echo htmlspecialchars($fila['Autor']); ?></td>
-                  <td><?php echo htmlspecialchars($fila['Editorial']); ?></td>
-                  <td><?php echo htmlspecialchars($fila['ISBM']); ?></td>
-                  <td><?php echo htmlspecialchars($fila['ano'] ?? '-'); ?></td>
-                  <td><?php echo htmlspecialchars($fila['clasificacion'] ?? '-'); ?></td>
-                  <td><span style="padding: 2px 5px; background: #e9ecef; border-radius:3px; font-weight:500;"><?php echo htmlspecialchars($fila['Estado_conservación'] ?? 'Excelente'); ?></span></td>
-                  <td style="text-align: center;"><?php echo $fila['Ejemplares_totales']; ?></td>
-                  <td style="text-align: center; color: green; font-weight: bold;"><?php echo $fila['Ejemplares_disponibles']; ?></td>
-                  <td style="text-align: center; color: red;"><?php echo $fila['Ejemplares_prestados']; ?></td>
-                  <td>
-                      <a href="catalogo.php?editar_id=<?php echo $fila['id_libro']; ?>" style="text-decoration: none; padding: 3px 6px; background-color: #e2e3e5; border-radius: 3px; color: #383d41; font-size: 11px;">Editar</a>
-                      <a href="catalogo.php?eliminar_id=<?php echo $fila['id_libro']; ?>" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px; margin-left: 2px;" onclick="return confirm('¿Seguro que deseas eliminar este libro?');">Eliminar</a>
-                  </td>
-              </tr>
-          <?php endwhile; 
-          else: ?>
-              <tr>
-                  <td colspan="12" style="text-align: center;">No hay libros registrados en el catálogo.</td>
-              </tr>
-          <?php endif; ?>
-      </tbody>
-  </table>
+  <?php if ($modo_editar): ?>
+            <a href="catalogo.php" style="display: block; text-align: center; margin-top: 10px; color: #721c24; text-decoration: none; font-size: 14px;">Cancelar Edición</a>
+        <?php endif; ?>
+      </form>
+      
+      <!-- Enlace directo para ir a la página web donde se guardan los datos en la tabla -->
+      <a href="ver_catalogo.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Todos los Libros Registrados</a>
+  </div>
 
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
