@@ -13,7 +13,7 @@ $titulo = '';
 $autor = '';
 $encabezamiento_de_materia = '';
 $editorial = '';
-$isbm = '';
+$isbn = '';
 $ano = '';
 $clasificacion = '';
 $pais = '';
@@ -37,7 +37,7 @@ if (isset($_GET['editar_id'])) {
             $autor = $libro_data['Autor'];
             $encabezamiento_de_materia = $libro_data['encabezamiento_de_materia'] ?? '';
             $editorial = $libro_data['Editorial'];
-            $isbm = $libro_data['ISBM'];
+            $isbn = $libro_data['ISBN'];
             $ano = $libro_data['ano'] ?? '';
             $clasificacion = $libro_data['clasificacion'] ?? '';
             $pais = $libro_data['Pais'];
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $autor = trim($_POST['Autor'] ?? '');
     $encabezamiento_de_materia = trim($_POST['encabezamiento_de_materia'] ?? '');
     $editorial = trim($_POST['Editorial'] ?? '');
-    $isbm = trim($_POST['ISBM'] ?? '');
+    $isbn = trim($_POST['ISBN'] ?? '');
     $ano = trim($_POST['ano'] ?? '');
     $clasificacion = trim($_POST['clasificacion'] ?? '');
     $pais = trim($_POST['Pais'] ?? '');
@@ -83,12 +83,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($disponibles_nuevos < 0) $disponibles_nuevos = 0;
 
             $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, encabezamiento_de_materia=?, Editorial=?, ISBM=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
-            $stmt->bind_param('sssssssssssiii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbm, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
+            $stmt->bind_param('sssssssssssiii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
             $texto_exito = 'Libro actualizado en el catálogo correctamente.';
         } else {
             // INSERTAR NUEVO LIBRO AL CATÁLOGO
             $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, encabezamiento_de_materia, Editorial, ISBM, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
-            $stmt->bind_param('sssssssssssii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbm, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
+            $stmt->bind_param('sssssssssssii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
             $texto_exito = 'Nuevo libro añadido al catálogo de la biblioteca.';
         }
         
