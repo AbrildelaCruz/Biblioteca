@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['tipoMensaje'] = 'error';
     } else {
         if (!empty($id_libro_post)) {
-            // ACTUALIZAR LIBRO EXISTENTE IN EL CATÁLOGO (MODO EDICIÓN)
+            // ACTUALIZAR LIBRO EXISTENTE EN EL CATÁLOGO (MODO EDICIÓN)
             $stmt_calc = $conexion->prepare('SELECT Ejemplares_prestados FROM libros WHERE id_libro = ?');
             $stmt_calc->bind_param('i', $id_libro_post);
             $stmt_calc->execute();
@@ -82,14 +82,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $disponibles_nuevos = $ejemplares_totales - $prestados;
             if ($disponibles_nuevos < 0) $disponibles_nuevos = 0;
 
-            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, Encabezamiento_de_Materia=?, Editorial=?, ISBM=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
+            // CORREGIDO: Cambiado Encabezamiento_de_Materia por Materia, e ISBM por ISBN
+            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, Encabezamiento de Materia=?, Editorial=?, ISBN=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
             $stmt->bind_param('sssssssssssiii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
             $texto_exito = 'Libro actualizado en el catálogo correctamente.';
         } else {
             // INSERTAR NUEVO LIBRO AL CATÁLOGO
-            $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, Encabezamiento_de_Materia, Editorial, ISBM, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
+            // CORREGIDO: Cambiado Encabezamiento_de_Materia por Materia, e ISBM por ISBN
+            $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, Encabezamiento_de_Materia, Editorial, ISBN, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
             $stmt->bind_param('sssssssssssii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
             $texto_exito = 'Nuevo libro añadido al catálogo de la biblioteca.';
+        }
         }
         
         if ($stmt && $stmt->execute()) {
@@ -103,8 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     header("Location: ver_catalogo.php"); // Al guardar te manda a la otra página a ver la tabla
     exit();
-}
-
 // 4. PROCESAR EL BORRADO EN EL CATÁLOGO (MÉTODO GET)
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
@@ -176,7 +177,7 @@ if (isset($_GET['eliminar_id'])) {
             </div>
             <div class="grupo-campo">
                 <label>ISBN / Código</label>
-                <input type="text" name="ISBM" value="<?php echo htmlspecialchars($isbn); ?>" maxlength="50">
+                <input type="text" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>" maxlength="50">
             </div>
             <div class="grupo-campo">
                 <label>Año</label>
