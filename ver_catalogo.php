@@ -1,12 +1,12 @@
 <?php
 require_once 'conexion.php';
 
-// 1. RECUPERAR MENSAJES DE LA SESIÓN TRAS BORRAR O EDITAR
+// Recuperar alertas si el usuario eliminó o editó algo
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-// 2. CONSULTAR LOS DATOS ACTUALIZADOS DEL CATÁLOGO
+// Consultar los libros cargados
 $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
 ?>
 <!DOCTYPE html>
@@ -14,15 +14,13 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo Maestro - Libros Registrados</title>
+  <title>Catálogo Maestro - Base de Datos</title>
   <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
   <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
 
   <div class="contenedor-burbujas">
-      <div class="burbuja"></div>
-      <div class="burbuja"></div>
       <div class="burbuja"></div>
       <div class="burbuja"></div>
       <div class="burbuja"></div>
@@ -34,21 +32,21 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
       </div>
   <?php endif; ?>
 
-  <h2 style="text-align: center; color: white; margin-top: 30px;">📚 Libros en el Catálogo Maestro</h2>
+  <h2 style="text-align: center; color: white; margin-top: 30px;">📚 Libros Registrados en la Base de Datos</h2>
 
-  <table class="tabla-datos" style="max-width: 98%; margin: 30px auto; font-size: 13px;">
+  <table class="tabla-datos" style="max-width: 95%; margin: 30px auto; font-size: 13px;">
       <thead>
           <tr>
               <th>ID</th>
-              <th>Título del Libro</th>
+              <th>Título-libro</th>
               <th>Autor</th>
               <th>Editorial</th>
               <th>ISBM</th>
               <th>Año</th>
               <th>Clasificación</th>
-              <th>Estado de Conservación</th>
+              <th>Estado de conservación</th>
               <th>Ej. Totales</th>
-              <th>Ej. Disponibles</th>
+              <th>EJ. Disponibles</th>
               <th>Ej. Prestados</th>
               <th>Acciones</th>
           </tr>
@@ -87,7 +85,7 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
   </div>
 
   <div class="z1">
-      <a class="z2" href="registro.html">REGRESAR</a>
+      <a class="z2" href="catalogo.php">REGRESAR</a>
   </div>
 
 </body>
