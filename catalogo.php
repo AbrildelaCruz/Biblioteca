@@ -106,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     header("Location: ver_catalogo.php"); // Al guardar te manda a la otra página a ver la tabla
     exit();
+    
 // 4. PROCESAR EL BORRADO EN EL CATÁLOGO (MÉTODO GET)
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
