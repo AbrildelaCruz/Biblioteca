@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['tipoMensaje'] = 'error';
     } else {
         try {
-            $stmt_prof = $conexion->prepare("SELECT id_Profesores FROM profesores WHERE Nombre = ? AND Materia = ?");
+            $stmt_prof = $conexion->prepare("SELECT id_profesores FROM profesores WHERE Nombre = ? AND Materia = ?");
             $stmt_prof->bind_param("ss", $Nombre, $Materia);
             $stmt_prof->execute();
             $res_prof = $stmt_prof->get_result();
