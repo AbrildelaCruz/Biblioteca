@@ -339,3 +339,44 @@
             background-color: #4a148c; /* Fondo morado para las opciones del select */
             color: white;
         }
+ /* Estilos profesionales para los Checkboxes en cuadrícula */
+        .contenedor-materias {
+            text-align: left;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        .contenedor-materias .titulo-seccion {
+            font-weight: bold;
+            color: #4a148c;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .grid-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            background: #fdfbfd;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e1bee7;
+        }
+        .opcion-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 5px;
+            transition: background 0.2s ease;
+            font-size: 14px;
+            color: #333;
+        }
+        .opcion-checkbox:hover {
+            background-color: #f3e5f5;
+        }
+        .opcion-checkbox input[type="checkbox"] {
+            accent-color: #4a148c; /* Aplica el color morado nativo al recuadro */
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+        }
