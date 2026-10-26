@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// 2. ACCIÓN DE ELIMINAR DOCENTE (Si es necesario)
+// 2. ACCIÓN DE ELIMINAR DOCENTE
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
@@ -86,23 +86,6 @@ $resultado = $conexion->query('SELECT id_Profesores, Nombre, Materia FROM profes
     <title>Registro de profesores</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
-    
-    <!-- Enlace CSS de Choices.js completo -->
-    <link rel="stylesheet" href="https://jsdelivr.net"/>
-
-    <style>
-        .choices__list--multiple .choices__item {
-            background-color: #4a148c !important; 
-            border: 1px solid #4a148c !important;
-            border-radius: 4px !important;
-        }
-        .choices__inner {
-            border-radius: 5px !important;
-            border: 1px solid #ccc !important;
-            background-color: #fff !important;
-            text-align: left;
-        }
-    </style>
 </head>
 <body class="body2">
 
@@ -129,29 +112,39 @@ $resultado = $conexion->query('SELECT id_Profesores, Nombre, Materia FROM profes
                 <input type="text" name="Nombre" maxlength="100" required>
             </div>
             
-            <div class="grupo-campo">
-                <label>Materia(s)</label>
-                <select name="Materia[]" id="materias" multiple required>
-                    <option value="Conciencia Historica">Conciencia Historica</option>
-                    <option value="Filosofia/Humanidades">Filosofia/Humanidades</option>
-                    <option value="Natacion">Natacion</option>
-                    <option value="Matematicas">Matematicas</option>
-                    <option value="Lengua y Comunicacion">Lengua y Comunicacion</option>
-                </select>
+            <div class="contenedor-materias">
+                <span class="titulo-seccion">Academia</span>
+                <div class="grid-checkboxes">
+                    <label class="opcion-checkbox">
+                        <input type="checkbox" name="Materia[]" value="Iformatica, Contabilidad y Electronica"> Informática/Contabilidad/Electrónica
+                    </label>
+                    <label class="opcion-checkbox">
+                        <input type="checkbox" name="Materia[]" value="Gastronomia y Enfermeria"> Gastronomía/Enfermería
+                    </label>
+                    <label class="opcion-checkbox">
+                        <input type="checkbox" name="Materia[]" value="Educacion Fisica Y Artes"> Educación Física/Artes
+                    </label>
+                    <label class="opcion-checkbox">
+                        <input type="checkbox" name="Materia[]" value="Manufactura del Vestido"> Manufactura del Vestido
+                    </label>
+                    <label class="opcion-checkbox">
+                        <input type="checkbox" name="Materia[]" value="Lengua y Comunicacion"> Lengua y Comunicación
+                    </label>
+                </div>
             </div>
             
-            <button type="submit" class="boton-guardar">Guardar Profesor</button>
+            <button type="submit" class="boton-guardar">Guardar Docente</button>
         </form> 
     </div> 
 
-    <!-- Tabla de visualización simplificada -->
+    <!-- Tabla de visualización -->
     <div style="max-width: 800px; margin: 30px auto; padding: 0 10px;">
         <table border="1" style="width:100%; text-align:center; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <thead>
                 <tr style="background-color: #4a148c; color: white;">
                     <th style="padding: 10px;">ID</th>
                     <th style="padding: 10px;">Nombre del Profesor</th>
-                    <th style="padding: 10px;">Materia(s)</th>
+                    <th style="padding: 10px;">Academia</th>
                     <th style="padding: 10px;">Acciones</th>
                 </tr>
             </thead>
