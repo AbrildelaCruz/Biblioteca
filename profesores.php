@@ -1,72 +1,52 @@
 <?php
 require_once 'conexion.php';
 
-$mensaje = '';
-$tipoMensaje = '';
+// Iniciar sesión si no está iniciada para los mensajes
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// 1. RECUPERAR MENSAJES DE LA SESIÓN SI EXISTEN
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
-
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-// 2. PROCESAR EL FORMULARIO POR MÉTODO POST
+// 1. PROCESAR EL FORMULARIO POR MÉTODO POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $Nombre = trim($_POST['Nombre'] ?? '');
-    $Materia = trim($_POST['Materia'] ?? '');
-    $Cantidad = filter_input(INPUT_POST, 'Cantidad', FILTER_VALIDATE_INT);
-    $Fecha_de_préstamo = $_POST['Fecha_de_prestamo'] ?? '';
-    $id_libro = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
-    $Fecha_de_entrega = $_POST['Fecha_de_entrega'] ?? '';
+    
+    // Recibimos las materias como un arreglo y las unimos con comas
+    $materias_seleccionadas = $_POST['Materia'] ?? [];
+    $Materia = is_array($materias_seleccionadas) ? implode(', ', $materias_seleccionadas) : trim($materias_seleccionadas);
 
-    if ($Nombre === '' || !$id_libro || $Cantidad === false || $Cantidad < 1 || $Fecha_de_préstamo === '' || $Fecha_de_entrega === '') {
-        $_SESSION['mensaje'] = 'Completa todos los campos obligatorios. La cantidad debe ser mayor que cero.';
-        $_SESSION['tipoMensaje'] = 'error';
-    } elseif ($Fecha_de_entrega < $Fecha_de_préstamo) {
-        $_SESSION['mensaje'] = 'La fecha de entrega no puede ser anterior a la fecha de préstamo.';
+    // Validar que los campos obligatorios no estén vacíos
+    if ($Nombre === '' || $Materia === '') {
+        $_SESSION['mensaje'] = 'Completa todos los campos obligatorios (Nombre y Materias).';
         $_SESSION['tipoMensaje'] = 'error';
     } else {
-        // Desactivar temporalmente autocommit para trabajar con transacciones de forma segura
-        $conexion->begin_transaction();
-
         try {
-            // Verificar si el profesor ya existe para no duplicarlo en la tabla profesores
+            // Verificar si el profesor ya existe con ese mismo nombre y exactamente ese mismo grupo de materias
             $stmt_prof = $conexion->prepare("SELECT id_Profesores FROM profesores WHERE Nombre = ? AND Materia = ?");
             $stmt_prof->bind_param("ss", $Nombre, $Materia);
             $stmt_prof->execute();
             $res_prof = $stmt_prof->get_result();
             
             if ($res_prof->num_rows > 0) {
-                $profesor = $res_prof->fetch_assoc();
-                $id_profesor_actual = $profesor['id_Profesores'];
+                $_SESSION['mensaje'] = 'Este docente ya se encuentra registrado con las mismas materias.';
+                $_SESSION['tipoMensaje'] = 'error';
             } else {
-                // Si no existe, se registra como nuevo profesor fijo
+                // Registrar el nuevo profesor de forma directa
                 $stmt_ins_prof = $conexion->prepare("INSERT INTO profesores (Nombre, Materia) VALUES (?, ?)");
                 $stmt_ins_prof->bind_param("ss", $Nombre, $Materia);
                 $stmt_ins_prof->execute();
-                $id_profesor_actual = $conexion->insert_id;
                 $stmt_ins_prof->close();
+                
+                $_SESSION['mensaje'] = 'Docente registrado correctamente.';
+                $_SESSION['tipoMensaje'] = 'exito';
             }
             $stmt_prof->close();
 
-            // Insertar el préstamo real en la tabla relacional de 'prestamos'
-            $stmt_prestamo = $conexion->prepare(
-                'INSERT INTO prestamos (id_libro, id_profesores, Cantidad, fecha_salida, fecha_devolucion_esperada) VALUES (?, ?, ?, ?, ?)'
-            );
-            $stmt_prestamo->bind_param('iiiss', $id_libro, $id_profesor_actual, $Cantidad, $Fecha_de_préstamo, $Fecha_de_entrega);
-            $stmt_prestamo->execute();
-            $stmt_prestamo->close();
-
-            // Confirmar inserciones en la Base de Datos
-            $conexion->commit();
-            
-            $_SESSION['mensaje'] = 'Préstamo registrado correctamente en la base de datos relacional.';
-            $_SESSION['tipoMensaje'] = 'exito';
-
         } catch (Exception $e) {
-            // Si algo falla, revertimos los cambios para no dejar datos corruptos
-            $conexion->rollback();
-            $_SESSION['mensaje'] = 'Error al procesar el préstamo: ' . $e->getMessage();
+            $_SESSION['mensaje'] = 'Error al registrar el docente: ' . $e->getMessage();
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
@@ -74,18 +54,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// 3. PROCESAR ACCIÓN DE ELIMINAR REGISTRO DE PRÉSTAMO
+// 2. ACCIÓN DE ELIMINAR DOCENTE (Si es necesario)
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
-        $stmt_borrar = $conexion->prepare('DELETE FROM prestamos WHERE id_prestamo = ?');
+        $stmt_borrar = $conexion->prepare('DELETE FROM profesores WHERE id_Profesores = ?');
         if ($stmt_borrar) {
             $stmt_borrar->bind_param('i', $id_a_borrar);
             if ($stmt_borrar->execute()) {
-                $_SESSION['mensaje'] = 'Préstamo eliminado correctamente.';
+                $_SESSION['mensaje'] = 'Docente eliminado correctamente.';
                 $_SESSION['tipoMensaje'] = 'exito';
             } else {
-                $_SESSION['mensaje'] = 'Error al eliminar el préstamo en la base de datos.';
+                $_SESSION['mensaje'] = 'Error al eliminar el docente de la base de datos.';
                 $_SESSION['tipoMensaje'] = 'error';
             }
             $stmt_borrar->close();
@@ -95,17 +75,8 @@ if (isset($_GET['eliminar_id'])) {
     exit();
 }
 
-// 4. CONSULTA RELACIONAL USANDO INNER JOIN PARA ARMAR LA TABLA VISUAL
-$resultado = $conexion->query(
-    'SELECT pr.id_prestamo, p.Nombre, p.Materia, pr.Cantidad, pr.fecha_salida, l.Titulo AS Nombre_del_Libro, pr.fecha_devolucion_esperada 
-     FROM prestamos pr
-     INNER JOIN profesores p ON pr.id_profesores = p.id_Profesores
-     INNER JOIN libros l ON pr.id_libro = l.id_libro
-     ORDER BY pr.id_prestamo DESC'
-);
-
-// 5. OBTENER LISTADO DE LIBROS PARA EL MENÚ DESPLEGABLE
-$lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY Titulo ASC");
+// 3. CONSULTA SENCILLA PARA LA TABLA VISUAL
+$resultado = $conexion->query('SELECT id_Profesores, Nombre, Materia FROM profesores ORDER BY id_Profesores DESC');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -115,12 +86,13 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
     <title>Registro de profesores</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
+    
+    <!-- Enlace CSS de Choices.js completo -->
     <link rel="stylesheet" href="https://jsdelivr.net"/>
 
-<style>
-        /* Ajuste opcional para que combine perfectamente con tus colores morados */
+    <style>
         .choices__list--multiple .choices__item {
-            background-color: #4a148c !important; /* Tu color morado */
+            background-color: #4a148c !important; 
             border: 1px solid #4a148c !important;
             border-radius: 4px !important;
         }
@@ -128,9 +100,9 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
             border-radius: 5px !important;
             border: 1px solid #ccc !important;
             background-color: #fff !important;
+            text-align: left;
         }
     </style>
-
 </head>
 <body class="body2">
 
@@ -156,26 +128,66 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
                 <label>Nombre del Profesor</label>
                 <input type="text" name="Nombre" maxlength="100" required>
             </div>
+            
             <div class="grupo-campo">
-                <label>Materia</label>
-                <input type="text" name="Materia" maxlength="100" required>
-                <div class="grupo-campo">
-    <!-- Asegúrate de tener el id="materias" y los corchetes [] en el name -->
-    <select name="Materia[]" id="materias" multiple required>
-        <option value="Conciencia Historica">Conciencia Historica</option>
-        <option value="Filosofia/Humanidades">Filosofia/Humanidades</option>
-        <option value="Natacion">Natacion</option>
-        <option value="Matematicas">Matematicas</option>
-        <option value="Lengua y Comunicacion">Lengua y Comunicacion</option>
-    </select>
+                <label>Materia(s)</label>
+                <select name="Materia[]" id="materias" multiple required>
+                    <option value="Conciencia Historica">Conciencia Historica</option>
+                    <option value="Filosofia/Humanidades">Filosofia/Humanidades</option>
+                    <option value="Natacion">Natacion</option>
+                    <option value="Matematicas">Matematicas</option>
+                    <option value="Lengua y Comunicacion">Lengua y Comunicacion</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="boton-guardar">Guardar Profesor</button>
+        </form> 
+    </div> 
+
+    <!-- Tabla de visualización simplificada -->
+    <div style="max-width: 800px; margin: 30px auto; padding: 0 10px;">
+        <table border="1" style="width:100%; text-align:center; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <thead>
+                <tr style="background-color: #4a148c; color: white;">
+                    <th style="padding: 10px;">ID</th>
+                    <th style="padding: 10px;">Nombre del Profesor</th>
+                    <th style="padding: 10px;">Materia(s)</th>
+                    <th style="padding: 10px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($resultado && $resultado->num_rows > 0): ?>
+                    <?php while ($row = $resultado->fetch_assoc()): ?>
+                        <tr>
+                            <td style="padding: 10px;"><?php echo $row['id_Profesores']; ?></td>
+                            <td style="padding: 10px;"><?php echo htmlspecialchars($row['Nombre']); ?></td>
+                            <td style="padding: 10px;"><?php echo htmlspecialchars($row['Materia']); ?></td>
+                            <td style="padding: 10px;">
+                                <a href="editar_profesor.php?id=<?php echo $row['id_Profesores']; ?>" class="boton-editar" style="margin-right: 5px;">Editar</a>
+                                <a href="profesores.php?eliminar_id=<?php echo $row['id_Profesores']; ?>" class="boton-eliminar" onclick="return confirm('¿Seguro que deseas eliminar a este docente?');">Eliminar</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="4" style="padding: 15px;">No hay docentes registrados.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
-    <!-- ENLACES NUEVOS: Script de Choices.js e inicialización -->
+
+    <div class="z1" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
+        <a class="z2" href="registro.html" style="text-decoration: none; font-weight: bold;">REGRESAR</a>
+    </div>
+
+    <!-- Enlace JS de Choices.js completo -->
     <script src="https://jsdelivr.net"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const elementoSelect = document.getElementById('materias');
             new Choices(elementoSelect, {
-                removeItemButton: true, // Agrega la 'X' para quitar materias seleccionadas
+                removeItemButton: true, 
                 noChoicesText: 'No hay más materias disponibles',
                 itemSelectText: 'Presiona para seleccionar',
                 placeholder: true,
@@ -183,15 +195,5 @@ $lista_libros = $conexion->query("SELECT id_libro, Titulo FROM libros ORDER BY T
             });
         });
     </script>
-            </div>
-            <button type="submit" class="boton-guardar">Guardar Profesor</button>
-        </form> 
-           </div> 
-
-</head>
-<body>
-    <div class="z1">
-        <a class="z2" href="registro.html">REGRESAR</a>
-    </div>
 </body>
 </html>
