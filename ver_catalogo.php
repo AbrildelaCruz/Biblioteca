@@ -41,7 +41,7 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
               <th>Título-libro</th>
               <th>Autor</th>
               <th>Editorial</th>
-              <th>ISBM</th>
+              <th>ISBN</th>
               <th>Año</th>
               <th>Clasificación</th>
               <th>Estado de conservación</th>
@@ -59,7 +59,7 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
                   <td><b><?php echo htmlspecialchars($fila['Titulo']); ?></b></td>
                   <td><?php echo htmlspecialchars($fila['Autor']); ?></td>
                   <td><?php echo htmlspecialchars($fila['Editorial']); ?></td>
-                  <td><?php echo htmlspecialchars($fila['ISBM']); ?></td>
+                  <td><?php echo htmlspecialchars($fila['ISBN']); ?></td>
                   <td><?php echo htmlspecialchars($fila['ano'] ?? '-'); ?></td>
                   <td><?php echo htmlspecialchars($fila['clasificacion'] ?? '-'); ?></td>
                   <td><span style="padding: 2px 5px; background: #e9ecef; border-radius:3px; font-weight:500;"><?php echo htmlspecialchars($fila['Estado_conservación'] ?? 'Excelente'); ?></span></td>
