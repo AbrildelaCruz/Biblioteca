@@ -127,7 +127,7 @@ if (isset($_GET['eliminar_id'])) {
             <button type="submit" class="boton-guardar">Guardar Docente</button>
         </form> 
         
-        <!-- Enlace agregado para ir a la nueva página de la tabla -->
+        <!-- Enlace para ir a la nueva página de la tabla -->
         <a href="ver_profesores.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Profesores Registrados</a>
     </div> 
 
