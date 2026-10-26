@@ -85,7 +85,7 @@ $resultado = $conexion->query('SELECT * FROM libros ORDER BY id_libro DESC');
   </div>
 
   <div class="z1">
-      <a class="z2" href="catalogo.php">REGRESAR</a>
+      <a class="z2" href="registro.html">REGRESAR</a>
   </div>
 
 </body>
