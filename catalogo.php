@@ -11,7 +11,7 @@ $modo_editar = false;
 $id_libro = '';
 $titulo = '';
 $autor = '';
-$encabezamiento_de_materia = '';
+$Encabezamiento_de_Materia = '';
 $editorial = '';
 $isbn = '';
 $ano = '';
@@ -35,7 +35,7 @@ if (isset($_GET['editar_id'])) {
             $id_libro = $libro_data['id_libro'];
             $titulo = $libro_data['Titulo'];
             $autor = $libro_data['Autor'];
-            $encabezamiento_de_materia = $libro_data['encabezamiento_de_materia'] ?? '';
+            $encabezamiento_de_materia = $libro_data['Encabezamiento_de_Materia'] ?? '';
             $editorial = $libro_data['Editorial'];
             $isbn = $libro_data['ISBN'];
             $ano = $libro_data['ano'] ?? '';
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_libro_post = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
     $titulo = trim($_POST['Titulo'] ?? '');
     $autor = trim($_POST['Autor'] ?? '');
-    $encabezamiento_de_materia = trim($_POST['encabezamiento_de_materia'] ?? '');
+    $encabezamiento_de_materia = trim($_POST['Encabezamiento_de_Materia'] ?? '');
     $editorial = trim($_POST['Editorial'] ?? '');
     $isbn = trim($_POST['ISBN'] ?? '');
     $ano = trim($_POST['ano'] ?? '');
@@ -82,12 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $disponibles_nuevos = $ejemplares_totales - $prestados;
             if ($disponibles_nuevos < 0) $disponibles_nuevos = 0;
 
-            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, encabezamiento_de_materia=?, Editorial=?, ISBM=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
+            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, Encabezamiento_de_Materia=?, Editorial=?, ISBM=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
             $stmt->bind_param('sssssssssssiii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
             $texto_exito = 'Libro actualizado en el catálogo correctamente.';
         } else {
             // INSERTAR NUEVO LIBRO AL CATÁLOGO
-            $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, encabezamiento_de_materia, Editorial, ISBM, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
+            $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, Encabezamiento_de_Materia, Editorial, ISBM, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
             $stmt->bind_param('sssssssssssii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
             $texto_exito = 'Nuevo libro añadido al catálogo de la biblioteca.';
         }
@@ -168,7 +168,7 @@ if (isset($_GET['eliminar_id'])) {
             </div>
             <div class="grupo-campo">
                 <label>Encabezamiento de Materia</label>
-                <input type="text" name="encabezamiento_de_materia" value="<?php echo htmlspecialchars($encabezamiento_de_materia); ?>" maxlength="255">
+                <input type="text" name="Encabezamiento_de_Materia" value="<?php echo htmlspecialchars($Encabezamiento_de_Materia); ?>" maxlength="255">
             </div>
             <div class="grupo-campo">
                 <label>Editorial</label>
@@ -176,7 +176,7 @@ if (isset($_GET['eliminar_id'])) {
             </div>
             <div class="grupo-campo">
                 <label>ISBN / Código</label>
-                <input type="text" name="ISBM" value="<?php echo htmlspecialchars($isbm); ?>" maxlength="50">
+                <input type="text" name="ISBM" value="<?php echo htmlspecialchars($isbn); ?>" maxlength="50">
             </div>
             <div class="grupo-campo">
                 <label>Año</label>
