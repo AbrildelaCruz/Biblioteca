@@ -1,7 +1,6 @@
 <?php
 require_once 'conexion.php';
 
-// Iniciar sesión si no está iniciada para los mensajes
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -13,18 +12,14 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 // 1. PROCESAR EL FORMULARIO POR MÉTODO POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $Nombre = trim($_POST['Nombre'] ?? '');
-    
-    // Recibimos las materias como un arreglo y las unimos con comas
     $materias_seleccionadas = $_POST['Materia'] ?? [];
     $Materia = is_array($materias_seleccionadas) ? implode(', ', $materias_seleccionadas) : trim($materias_seleccionadas);
 
-    // Validar que los campos obligatorios no estén vacíos
     if ($Nombre === '' || $Materia === '') {
         $_SESSION['mensaje'] = 'Completa todos los campos obligatorios (Nombre y Materias).';
         $_SESSION['tipoMensaje'] = 'error';
     } else {
         try {
-            // Verificar si el profesor ya existe con ese mismo nombre y exactamente ese mismo grupo de materias
             $stmt_prof = $conexion->prepare("SELECT id_Profesores FROM profesores WHERE Nombre = ? AND Materia = ?");
             $stmt_prof->bind_param("ss", $Nombre, $Materia);
             $stmt_prof->execute();
@@ -34,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['mensaje'] = 'Este docente ya se encuentra registrado con las mismas materias.';
                 $_SESSION['tipoMensaje'] = 'error';
             } else {
-                // Registrar el nuevo profesor de forma directa
                 $stmt_ins_prof = $conexion->prepare("INSERT INTO profesores (Nombre, Materia) VALUES (?, ?)");
                 $stmt_ins_prof->bind_param("ss", $Nombre, $Materia);
                 $stmt_ins_prof->execute();
@@ -50,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: profesores.php");
+    header("Location: ver_profesores.php"); // Redirige directo a la tabla externa al guardar
     exit();
 }
 
-// 2. ACCIÓN DE ELIMINAR DOCENTE
+// 2. ACCIÓN DE ELIMINAR DOCENTE (GET DE REGRESO)
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
@@ -71,12 +65,9 @@ if (isset($_GET['eliminar_id'])) {
             $stmt_borrar->close();
         }
     }
-    header("Location: profesores.php");
+    header("Location: ver_profesores.php");
     exit();
 }
-
-// 3. CONSULTA SENCILLA PARA LA TABLA VISUAL
-$resultado = $conexion->query('SELECT id_Profesores, Nombre, Materia FROM profesores ORDER BY id_Profesores DESC');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -135,58 +126,13 @@ $resultado = $conexion->query('SELECT id_Profesores, Nombre, Materia FROM profes
             
             <button type="submit" class="boton-guardar">Guardar Docente</button>
         </form> 
+        
+        <!-- Enlace agregado para ir a la nueva página de la tabla -->
+        <a href="ver_profesores.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Profesores Registrados</a>
     </div> 
-
-    <!-- Tabla de visualización -->
-    <div style="max-width: 800px; margin: 30px auto; padding: 0 10px;">
-        <table border="1" style="width:100%; text-align:center; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <thead>
-                <tr style="background-color: #4a148c; color: white;">
-                    <th style="padding: 10px;">ID</th>
-                    <th style="padding: 10px;">Nombre del Profesor</th>
-                    <th style="padding: 10px;">Academia</th>
-                    <th style="padding: 10px;">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($resultado && $resultado->num_rows > 0): ?>
-                    <?php while ($row = $resultado->fetch_assoc()): ?>
-                        <tr>
-                            <td style="padding: 10px;"><?php echo $row['id_Profesores']; ?></td>
-                            <td style="padding: 10px;"><?php echo htmlspecialchars($row['Nombre']); ?></td>
-                            <td style="padding: 10px;"><?php echo htmlspecialchars($row['Materia']); ?></td>
-                            <td style="padding: 10px;">
-                                <a href="editar_profesor.php?id=<?php echo $row['id_Profesores']; ?>" class="boton-editar" style="margin-right: 5px;">Editar</a>
-                                <a href="profesores.php?eliminar_id=<?php echo $row['id_Profesores']; ?>" class="boton-eliminar" onclick="return confirm('¿Seguro que deseas eliminar a este docente?');">Eliminar</a>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="4" style="padding: 15px;">No hay docentes registrados.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
 
     <div class="z1" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
         <a class="z2" href="registro.html" style="text-decoration: none; font-weight: bold;">REGRESAR</a>
     </div>
-
-    <!-- Enlace JS de Choices.js completo -->
-    <script src="https://jsdelivr.net"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const elementoSelect = document.getElementById('materias');
-            new Choices(elementoSelect, {
-                removeItemButton: true, 
-                noChoicesText: 'No hay más materias disponibles',
-                itemSelectText: 'Presiona para seleccionar',
-                placeholder: true,
-                placeholderValue: '-- Selecciona las materias --'
-            });
-        });
-    </script>
 </body>
 </html>
