@@ -1,13 +1,46 @@
 <?php
 require_once 'conexion.php';
 
+// Iniciar sesión si no está iniciada para evitar errores con las alertas
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // 1. RECUPERAR ALERTAS DE LA SESIÓN TRAS GUARDAR O ELIMINAR
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-// 2. CONSULTAR TODOS LOS REGISTROS DE PROFESORES ORDENADOS POR TU COLUMNA REAL (id_profesores)
-$resultado = $conexion->query('SELECT * FROM profesores ORDER BY id_profesores DESC');
+// ==========================================
+//        CONFIGURACIÓN DEL PAGINADOR
+// ==========================================
+$registros_por_pagina = 10; // Cantidad de profesores por página
+
+// Obtener la página actual desde la URL, si no existe por defecto es la página 1
+$pagina_actual = isset($_GET['pagina']) ? filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT) : 1;
+if (!$pagina_actual || $pagina_actual < 1) {
+    $pagina_actual = 1;
+}
+
+// Calcular desde qué registro de la base de datos se debe empezar a leer (OFFSET)
+$desplazamiento = ($pagina_actual - 1) * $registros_por_pagina;
+
+// Contar el total de profesores existentes para calcular las páginas necesarias
+$sql_total = "SELECT COUNT(*) AS total FROM profesores";
+$resultado_total = $conexion->query($sql_total);
+$fila_total = $resultado_total->fetch_assoc();
+$total_registros = $fila_total['total'];
+
+// Calcular el número total de páginas (redondeando hacia arriba)
+$total_paginas = ceil($total_registros / $registros_por_pagina);
+
+// 2. CONSULTAR REGISTROS DE PROFESORES LIMITADOS CORRESPONDIENTES A LA PÁGINA ACTIVA
+$sql_datos = "SELECT * FROM profesores ORDER BY id_profesores ASC LIMIT ? OFFSET ?";
+$stmt = $conexion->prepare($sql_datos);
+$stmt->bind_param("ii", $registros_por_pagina, $desplazamiento);
+$stmt->execute();
+$resultado = $stmt->get_result();
+// ==========================================
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -17,6 +50,44 @@ $resultado = $conexion->query('SELECT * FROM profesores ORDER BY id_profesores D
     <title>Lista de Profesores</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
+    
+    <style>
+        /* Estilos profesionales para la botonera del paginador */
+        .paginador {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        .paginador a {
+            color: #4a148c;
+            background-color: white;
+            border: 1px solid #e1bee7;
+            padding: 8px 14px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+        .paginador a:hover {
+            background-color: #f3e5f5;
+            border-color: #4a148c;
+        }
+        .paginador a.activa {
+            background-color: #4a148c;
+            color: white;
+            border-color: #4a148c;
+            cursor: default;
+        }
+        .paginador a.deshabilitado {
+            color: #ccc;
+            border-color: #eee;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body class="body2">
 
@@ -37,7 +108,7 @@ $resultado = $conexion->query('SELECT * FROM profesores ORDER BY id_profesores D
     <table class="tabla-datos" style="max-width: 85%; margin: 30px auto; font-size: 13px;">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>N°</th> <!-- Cambiado de ID a N° consecutivo -->
                 <th>Nombre del Profesor</th>
                 <th>Materia(s) Asignada(s)</th>
                 <th>Acciones</th>
@@ -45,20 +116,29 @@ $resultado = $conexion->query('SELECT * FROM profesores ORDER BY id_profesores D
         </thead>
         <tbody>
             <?php if ($resultado && $resultado->num_rows > 0): 
+                // A. INICIALIZAMOS EL CONTADOR USANDO EL DESPLAZAMIENTO DE LA PÁGINA
+                $num = $desplazamiento + 1;
+                
                 while ($fila = $resultado->fetch_assoc()): 
-                    // Obtener la llave primaria real en plural
+                    // Obtener la llave primaria real en plural para los enlaces ocultos
                     $id_actual = $fila['id_profesores'];
                     $materias_docente = $fila['Materia'] ?? $fila['materia'] ?? '-';
                 ?>
                 <tr>
-                    <td><?php echo $id_actual; ?></td>
+                    <!-- B. REEMPLAZAMOS EL ID REAL POR NUESTRO CONTADOR VISUAL -->
+                    <td style="font-weight: bold; text-align: center;"><?php echo $num; ?></td>
                     <td><b><?php echo htmlspecialchars($fila['Nombre'] ?? $fila['nombre'] ?? ''); ?></b></td>
                     <td><span style="color: #4a148c; font-weight: 500;"><?php echo htmlspecialchars($materias_docente); ?></span></td>
                     <td>
+                        <!-- Los botones conservan internamente su ID real para que PHP sepa a quién procesar -->
                         <a href="profesores.php?editar_id=<?php echo $id_actual; ?>" style="text-decoration: none; padding: 3px 6px; background-color: #007bff; border-radius: 3px; color: white; font-size: 11px; margin-right: 5px;">Editar</a>
                         <a href="profesores.php?eliminar_id=<?php echo $id_actual; ?>" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px;" onclick="return confirm('¿Seguro que deseas eliminar este profesor?');">Eliminar</a>
                     </td>
                 </tr>
+                <?php 
+                // C. LE SUMAMOS 1 AL CONTADOR PARA EL SIGUIENTE RENGLÓN
+                $num++; 
+                ?>
             <?php endwhile; 
             else: ?>
                 <tr>
@@ -67,6 +147,27 @@ $resultado = $conexion->query('SELECT * FROM profesores ORDER BY id_profesores D
             <?php endif; ?>
         </tbody>
     </table>
+
+    <!-- ==========================================
+          RENDERIZADO VISUAL DEL PAGINADOR
+    ========================================== -->
+    <?php if ($total_paginas > 1): ?>
+    <div class="paginador">
+        <!-- Botón Anterior -->
+        <a href="?pagina=<?php echo $pagina_actual - 1; ?>" class="<?php echo ($pagina_actual <= 1) ? 'deshabilitado' : ''; ?>">« Anterior</a>
+
+        <!-- Lista de números de página -->
+        <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+            <a href="?pagina=<?php echo $i; ?>" class="<?php echo ($pagina_actual == $i) ? 'activa' : ''; ?>">
+                <?php echo $i; ?>
+            </a>
+        <?php endfor; ?>
+
+        <!-- Botón Siguiente -->
+        <a href="?pagina=<?php echo $pagina_actual + 1; ?>" class="<?php echo ($pagina_actual >= $total_paginas) ? 'deshabilitado' : ''; ?>">Siguiente »</a>
+    </div>
+    <?php endif; ?>
+    <!-- ========================================== -->
 
     <div style="text-align: center; margin-bottom: 40px;">
         <a href="profesores.php" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Registrar Nuevo Profesor</a>
