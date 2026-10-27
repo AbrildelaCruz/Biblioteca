@@ -19,6 +19,7 @@
     font-size: 30px;
 }
 
+/* BOTÓN DE ENTRADA PRINCIPAL */
 .A_uno {
     padding: 10px 20px;
     color: white;             
@@ -26,25 +27,27 @@
     border-radius: 6px;       
     font-weight: bold;         
     transition: background-color 0.2s;
-    background-color: rgb(250, 174, 33);
+    background-color: #2A9D8F; /* Verde Agua (Acción) */
 }
 
-.btn1:hover { background-color: #0056b3; }
-.btn1:focus { background-color: gold; }
+/* Corrección de selectores para los estados del botón de entrada */
+.A_uno:hover { background-color: #218074; } /* Verde agua más oscuro */
+.A_uno:focus { outline: 2px solid #0F4C81; } /* Foco institucional */
 
-
-/*FONDO CON DEGRADADO, MÓDULOS Y FORMULARIOS) */
+/* FONDO DEL SISTEMA (MÓDULOS Y FORMULARIOS) */
 .body2 {
-    background: linear-gradient(-45deg,  #f082d8 , #ddb04690, #a05fd1 , #718dc5);
+    /* Suave degradado institucional en tonos acero y blanco */
+    background: linear-gradient(-45deg, #FFFFFF, #E8EEF5, #DDE6ED, #E8EEF5);
     background-size: 400% 400%;
     height: 100vh;
     width: 100vw;
     margin: 0;
-    font-family: Arial, sans-serif; /* Centralizado el estilo de fuente limpio */
+    font-family: 'Segoe UI', Arial, sans-serif;
     background-repeat: no-repeat;
-    animation: cambiarFondo 10s ease infinite;
+    animation: cambiarFondo 15s ease infinite;
     position: relative;          
-    overflow-x: hidden;             /* Cambiado para permitir scroll vertical si la tabla es grande */
+    overflow-y: auto; 
+    overflow-x: hidden;             
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -58,89 +61,37 @@
     100% { background-position: 0% 50%; }
 }
 
+/* ANIMACIÓN DE FLOTADO: Movimiento más suave y controlado */
 @keyframes flotar {
     0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { transform: translateY(-110vh) translateX(100px) scale(1.2); opacity: 0; }
+    10% { opacity: 0.4; } /* Opacidad máxima baja para que sean muy sutiles */
+    90% { opacity: 0.4; }
+    100% { transform: translateY(-110vh) translateX(50px) scale(1.1); opacity: 0; }
 }
 
+/* BURBUJAS ADAPTADAS AL SISTEMA DIGITAL */
 .burbuja {
     position: absolute;
-    bottom : -100px;
-    background: rgba(255, 255, 255, 0.1);
-    border : 1px solid rgba(255, 255, 255, 0.25);
+    bottom : -120px;
+    /* Colores basados en el azul cobalto y acero con alta transparencia */
+    background: rgba(15, 76, 129, 0.03); 
+    border : 1px solid rgba(15, 76, 129, 0.08);
     border-radius : 50%;
-    box-shadow : 0 0 10px rgba(255, 255, 255, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.2);
-    animation : flotar 12s linear infinite;
+    /* Resplandor digital muy suave */
+    box-shadow : 0 0 12px rgba(232, 238, 245, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.6);
+    animation : flotar 16s linear infinite; /* Animación más lenta para transmitir calma */
     z-index: 1;
 }
 
-/* burbujas */
-.burbuja:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-duration: 14s; animation-delay: 0s; }
-.burbuja:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 10s; animation-delay: 2s; }
-.burbuja:nth-child(3) { left: 40%; width: 120px; height: 120px; animation-duration: 18s; animation-delay: 4s; filter: blur(2px); } 
-.burbuja:nth-child(4) { left: 55%; width: 60px; height: 60px; animation-duration: 12s; animation-delay: 1s; }
-.burbuja:nth-child(5) { left: 70%; width: 90px; height: 90px; animation-duration: 16s; animation-delay: 5s; }
-.burbuja:nth-child(6) { left: 85%; width: 30px; height: 30px; animation-duration: 8s; animation-delay: 3s; }
-.burbuja:nth-child(7) { left: 50%; width: 50px; height: 50px; animation-duration: 13s; animation-delay: 7s; }
-.burbuja:nth-child(8) { left: 80%; width: 110px; height: 110px; animation-duration: 20s; animation-delay: 2s; filter: blur(1px); }
-
-
-/* MÓDULOS*/
-.contenedorpadrere {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 0;
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    z-index: 10;
-}
-
-.Modulos {
-    display: block !important;
-    text-align: center !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 0 25px 0 !important;
-    font-size: 2.2rem;
-    font-weight: bold;
-    color: #000;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.bton-1, .bton-2, .bton-3, .bton-4 {
-    text-decoration: none;
-    display: flex !important;         
-    justify-content: center !important; 
-    align-items: center !important;     
-    width: 100% !important;             
-    box-sizing: border-box !important;
-    padding: 14px 28px;     
-    border: none;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 50px;
-    text-align: center;
-    margin: 12px 0 !important;          
-    gap: 15px;
-    transition: .3s ease;
-}
-
-.bton-1 { background-color: #D9DDDC; color: #4a148c; }
-.bton-2 { background-color: #D3D3D3; color: #4a148c; }
-.bton-3 { background-color: #D3D3D3; color: #4a148c; }
-.bton-4 { background-color: #D3D3D3; color: #4a148c; }
-
+/* Configuración de las burbujas (Se mantiene tu estructura pero con mejores tiempos) */
+.burbuja:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-duration: 18s; animation-delay: 0s; }
+.burbuja:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 14s; animation-delay: 2s; }
+.burbuja:nth-child(3) { left: 40%; width: 120px; height: 120px; animation-duration: 22s; animation-delay: 4s; filter: blur(1px); } 
+.burbuja:nth-child(4) { left: 55%; width: 60px; height: 60px; animation-duration: 16s; animation-delay: 1s; }
+.burbuja:nth-child(5) { left: 70%; width: 90px; height: 90px; animation-duration: 20s; animation-delay: 5s; }
+.burbuja:nth-child(6) { left: 85%; width: 30px; height: 30px; animation-duration: 12s; animation-delay: 3s; }
+.burbuja:nth-child(7) { left: 50%; width: 50px; height: 50px; animation-duration: 17s; animation-delay: 7s; }
+.burbuja:nth-child(8) { left: 80%; width: 110px; height: 110px; animation-duration: 24s; animation-delay: 2s; filter: blur(1px); }
 
 /*FORMULARIO DE REGISTRO PROFESORES / ALUMNOS*/
 .contenedor-formulario {
@@ -380,3 +331,38 @@
             height: 17px;
             cursor: pointer;
         }
+             /* Estilos profesionales para la botonera del paginador */
+      .paginador {
+          display: flex;
+          justify-content: center;
+          gap: 6px;
+          margin-top: 20px;
+          margin-bottom: 30px;
+      }
+      .paginador a {
+          color: #4a148c;
+          background-color: white;
+          border: 1px solid #e1bee7;
+          padding: 8px 14px;
+          text-decoration: none;
+          border-radius: 4px;
+          font-weight: bold;
+          font-size: 13px;
+          transition: all 0.2s ease;
+      }
+      .paginador a:hover {
+          background-color: #f3e5f5;
+          border-color: #4a148c;
+      }
+      .paginador a.activa {
+          background-color: #4a148c;
+          color: white;
+          border-color: #4a148c;
+          cursor: default;
+      }
+      .paginador a.deshabilitado {
+          color: #ccc;
+          border-color: #eee;
+          cursor: not-allowed;
+          pointer-events: none;
+      }

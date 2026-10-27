@@ -14,7 +14,7 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 // ==========================================
 //        CONFIGURACIÓN DEL PAGINADOR
 // ==========================================
-$registros_por_pagina = 10; // Cantidad de libros que deseas por página
+$registros_por_pagina = 15; // Cantidad de libros que deseas por página
 
 // Obtener la página actual desde la URL, si no existe por defecto es la página 1
 $pagina_actual = isset($_GET['pagina']) ? filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT) : 1;
@@ -50,44 +50,6 @@ $resultado = $stmt->get_result();
   <title>Catálogo Maestro - Base de Datos</title>
   <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
   <link rel="icon" type="image/png" href="logobiblioteca.png">
-  
-  <style>
-      /* Estilos profesionales para la botonera del paginador */
-      .paginador {
-          display: flex;
-          justify-content: center;
-          gap: 6px;
-          margin-top: 20px;
-          margin-bottom: 30px;
-      }
-      .paginador a {
-          color: #4a148c;
-          background-color: white;
-          border: 1px solid #e1bee7;
-          padding: 8px 14px;
-          text-decoration: none;
-          border-radius: 4px;
-          font-weight: bold;
-          font-size: 13px;
-          transition: all 0.2s ease;
-      }
-      .paginador a:hover {
-          background-color: #f3e5f5;
-          border-color: #4a148c;
-      }
-      .paginador a.activa {
-          background-color: #4a148c;
-          color: white;
-          border-color: #4a148c;
-          cursor: default;
-      }
-      .paginador a.deshabilitado {
-          color: #ccc;
-          border-color: #eee;
-          cursor: not-allowed;
-          pointer-events: none;
-      }
-  </style>
 </head>
 <body class="body2">
 
@@ -186,6 +148,5 @@ $resultado = $stmt->get_result();
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
   </div>
-
 </body>
 </html>
