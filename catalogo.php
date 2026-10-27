@@ -139,6 +139,54 @@ if (isset($_GET['eliminar_id'])) {
   <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
+     <div style="display: flex; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 15px; box-sizing: border-box;">
+
+      <!-- 🔔 BARRA LATERAL IZQUIERDA: ALERTAS DE ENTREGAS PARA HOY -->
+      <div class="sidebar-alertas" style="flex: 1; max-width: 300px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); height: fit-content; box-sizing: border-box;">
+          <h3 style="margin-top: 0; color: #4a148c; font-size: 16px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              🔔 Entregas de Hoy
+          </h3>
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+              <?php
+              // Consultamos la tabla de préstamos cruzando datos para saber quién entrega hoy
+              // NOTA: Ajusta los nombres de tus columnas e ID según tu base de datos real
+              $fecha_hoy = date('Y-m-d');
+              $query_alertas = "SELECT p.id_prestamo, prof.Nombre AS Profesor, lib.Titulo AS Libro 
+                                FROM prestamos p 
+                                INNER JOIN profesores prof ON p.id_profesor = prof.id_profesor
+                                INNER JOIN libros lib ON p.id_libro = lib.id_libro
+                                WHERE p.fecha_devolucion_esperada = ? AND p.fecha_devolucion_real IS NULL";
+              
+              $stmt_alertas = $conexion->prepare($query_alertas);
+              if ($stmt_alertas) {
+                  $stmt_alertas->bind_param('s', $fecha_hoy);
+                  $stmt_alertas->execute();
+                  $res_alertas = $stmt_alertas->get_result();
+                  
+                  if ($res_alertas->num_rows > 0) {
+                      while ($alerta = $res_alertas->fetch_assoc()) {
+                          ?>
+                          <!-- Notificación Dinámica estilo Tarjeta en Alerta -->
+                          <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                              <span style="display: block; font-size: 11px; color: #856404; font-weight: bold;">⚠️ DEBE ENTREGAR HOY</span>
+                              <strong style="display: block; font-size: 13px; color: #333; margin-top: 3px;"><?php echo htmlspecialchars($alerta['Profesor']); ?></strong>
+                              <span style="display: block; font-size: 12px; color: #666; font-style: italic;">Libro: <?php echo htmlspecialchars($alerta['Libro']); ?></span>
+                          </div>
+                          <?php
+                      }
+                  } else {
+                      echo '<p style="font-size: 13px; color: #888; text-align: center; margin: 10px 0;">✅ No hay entregas pendientes para el día de hoy.</p>';
+                  }
+                  $stmt_alertas->close();
+              } else {
+                  echo '<p style="font-size: 12px; color: #721c24;">Error al cargar alertas dinámicas.</p>';
+              }
+              ?>
+          </div>
+      </div>
+
+      <!-- 📊 COLUMNA DERECHA: AQUÍ VA TU FORMULARIO ORIGINAL DE CATÁLOGO (Abarca el resto de la pantalla) -->
+      <div style="flex: 2; box-sizing: border-box;">
 
   <div class="contenedor-burbujas">
       <div class="burbuja"></div>
@@ -259,6 +307,6 @@ if (isset($_GET['eliminar_id'])) {
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
   </div>
-
+    <script src="main.js"></script>
 </body>
 </html>
