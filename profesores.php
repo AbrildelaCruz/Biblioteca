@@ -129,7 +129,6 @@ if ($es_edicion && $id_editar) {
     </div>
 
     <?php if ($mensaje !== ''): ?>
-    <!-- Alertas profesionales adaptadas a la paleta -->
     <div class="alerta" style="padding: 12px; margin: 20px auto; max-width: 700px; text-align: center; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: <?php echo $tipoMensaje === 'exito' ? '#E8F5E9' : '#FFEBEE'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#2E7D32' : '#C62828'; ?>; border: 1px solid <?php echo $tipoMensaje === 'exito' ? '#C8E6C9' : '#FFCDD2'; ?>;">
         <?php echo $mensaje; ?>
     </div>
@@ -139,19 +138,19 @@ if ($es_edicion && $id_editar) {
         <h2><?php echo $es_edicion ? 'Editar Docente' : 'Registrar Docente'; ?></h2>
         
         <form action="profesores.php" method="POST">
-            <!-- Input oculto para enviar el ID al procesar la edición -->
             <?php if ($es_edicion): ?>
                 <input type="hidden" name="id_docente" value="<?php echo $id_editar; ?>">
             <?php endif; ?>
 
             <div class="grupo-campo">
                 <label>Nombre del Docente</label>
-                <input type="text" name="Nombre" value="<?php echo htmlspecialchars($nombre_actual); ?>" maxlength="100" required>
+                <!-- Le añadimos el id="inputNombre" para poder leerlo desde JavaScript -->
+                <input type="text" id="inputNombre" name="Nombre" value="<?php echo htmlspecialchars($nombre_actual); ?>" maxlength="100" required>
                 
-                <!-- BOTÓN DE BÚSQUEDA UBICADO DEBAJO DEL INPUT -->
-                <a href="ver_profesores.php" class="boton-buscar-inline">
-                    🔍 Buscar Docente Existente
-                </a>
+                <!-- BOTÓN INTERACTIVO DE BÚSQUEDA EN TIEMPO REAL -->
+                <button type="button" class="boton-buscar-inline" onclick="buscarDocente()">
+                    🔍 Buscar Docente
+                </button>
             </div>
             
             <div class="contenedor-materias">
@@ -184,5 +183,29 @@ if ($es_edicion && $id_editar) {
     <div class="z1" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
         <a class="z2" href="registro.html" style="text-decoration: none; font-weight: bold;">REGRESAR</a>
     </div>
-</body>
-</html>
+
+    <!-- SCRIPT DE JAVASCRIPT PARA PROCESAR LA BÚSQUEDA DINÁMICA -->
+    <script>
+   function buscarDocente() {
+    // 1. Obtenemos el elemento input
+    var inputElement = document.getElementById('inputNombre');
+    
+    // Verificación de seguridad por si no encuentra el ID
+    if (!inputElement) {
+        console.error("No se encontró el elemento con ID 'inputNombre'");
+        return;
+    }
+
+    var nombreEscrito = inputElement.value.trim();
+    
+    // 2. Si está vacío, le avisamos al usuario
+    if (nombreEscrito === "") {
+        alert("Por favor, escribe el nombre de un docente para poder buscarlo.");
+        inputElement.focus();
+        return;
+    }
+    
+    // 3. Redirección directa hacia la tabla con el parámetro de búsqueda
+    window.location.href = "ver_profesores.php?buscar=" + encodeURIComponent(nombreEscrito);
+}
+    </script>

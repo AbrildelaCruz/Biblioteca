@@ -178,9 +178,14 @@ if (isset($_GET['eliminar_id'])) {
                 <label>Editorial</label>
                 <input type="text" name="Editorial" value="<?php echo htmlspecialchars($editorial); ?>" maxlength="100">
             </div>
-            <div class="grupo-campo">
+           <div class="grupo-campo">
                 <label>ISBN / Código</label>
-                <input type="text" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>" maxlength="50">
+                <div style="display: flex; gap: 8px;">
+                    <!-- Le ponemos el id="isbn_input" para que JavaScript lo encuentre -->
+                    <input type="text" id="isbn_input" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>" maxlength="50" style="flex: 1;">
+                    <!-- Botón express que activa la magia de Google Books -->
+                    <button type="button" onclick="buscarLibroPorISBN()" style="background-color: #007bff; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">🔍 Buscar</button>
+                </div>
             </div>
             <div class="grupo-campo">
                 <label>Año</label>
@@ -194,49 +199,63 @@ if (isset($_GET['eliminar_id'])) {
                 <label>País</label>
                 <input type="text" name="Pais" value="<?php echo htmlspecialchars($pais); ?>" maxlength="50">
             </div>
-        </div> <!-- Cerramos el grid aquí -->
+             <!-- 🟢 IDIOMA: Al estar fuera del primer grid, se estira de lado a lado automáticamente -->
+          <div class="grupo-campo" style="margin-bottom: 20px; width: 100%;">
+              <label style="display: block; margin-bottom: 8px; font-weight: bold;">Idioma</label>
+              <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50" style="width: 100%; box-sizing: border-box;">
+          </div>
 
-        <!-- 🟢 BLOQUE ANTIBLOQUEO: Obliga a las cajas a separarse e irse abajo sin encimarse -->
-        <div style="clear: both; display: block; position: relative; width: 100%; margin-top: 30px; padding-top: 10px;">
-            
-            <div class="grupo-campo" style="margin-bottom: 20px; display: block; width: 100%;">
-                <label style="display: block; margin-bottom: 5px;">Idioma</label>
-                <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50" style="width: 100%; box-sizing: border-box;">
-            </div>
+          <!-- 🟢 DESCRIPCIÓN: Ocupa todo el ancho completo -->
+          <div class="grupo-campo" style="margin-bottom: 20px; width: 100%;">
+              <label style="display: block; margin-bottom: 8px; font-weight: bold;">Descripción / Notas</label>
+              <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255" style="width: 100%; box-sizing: border-box;">
+          </div>
 
-            <div class="grupo-campo" style="margin-bottom: 20px; display: block; width: 100%;">
-                <label style="display: block; margin-bottom: 5px;">Descripción / Notas</label>
-                <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255" style="width: 100%; box-sizing: border-box;">
-            </div>
+          <!-- 🟢 EJEMPLARES TOTALES: Ocupa todo el ancho completo -->
+          <div class="grupo-campo" style="margin-bottom: 25px; width: 100%;">
+              <label style="display: block; margin-bottom: 8px; font-weight: bold;">Ejemplares Totales</label>
+              <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required style="width: 100%; box-sizing: border-box;">
+          </div>
 
-            <div class="grupo-campo" style="margin-bottom: 30px; display: block; width: 100%;">
-                <label style="display: block; margin-bottom: 5px;">Ejemplares Totales</label>
-                <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required style="width: 100%; box-sizing: border-box;">
-            </div>
-            
-        </div>
+          <!-- 🟢 TU BOTÓN ORIGINAL: Libre de las columnas, abarcando el 100% de forma limpia -->
+          <button type="submit" class="boton-guardar" style="width: 100%; padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer; box-sizing: border-box;">
+              <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
+          </button>
 
-        <!-- 🟢 EL BOTÓN REGISTRAR: Totalmente libre en la parte inferior -->
-        <div style="position: relative; clear: both; display: block; margin-top: 20px; width: 100%;">
-            <button type="submit" class="boton-guardar" style="width: 100%; padding: 12px; box-sizing: border-box;">
-                <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
-            </button>
-        </div>
+                    <div style="margin-top: 20px; width: 100%;">
+              <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-sizing: border-box;">🔍 Ver Todos los Libros Registrados</a>
+          </div>
 
-        <?php if ($modo_editar): ?>
-            <div style="position: relative; display: block; text-align: center; margin-top: 15px;">
-                <a href="catalogo.php" style="color: #721c24; text-decoration: none; font-size: 14px; font-weight: bold;">Cancelar Edición</a>
-            </div>
-        <?php endif; ?>
+        </div> <!-- Cierra el div del grid -->
+      </form> <!-- 🟢 TRUCO MAESTRO 1: Cerramos el formulario aquí para liberar las columnas -->
+  </div> <!-- 🟢 TRUCO MAESTRO 2: Cerramos la tarjeta blanca original aquí -->
 
-        <!-- Enlace verde con su propio espacio libre -->
-        <div style="position: relative; clear: both; display: block; margin-top: 30px; width: 100%;">
-            <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-sizing: border-box;">🔍 Ver Todos los Libros Registrados</a>
-        </div>
+  <!-- 🚀 SEGUNDO BLOQUE INDEPENDIENTE: Genera una nueva tarjeta limpia justo abajo para tus 3 campos extendidos -->
+  <div class="contenedor-formulario" style="max-width: 800px; margin: -10px auto 20px auto; padding: 20px; box-sizing: border-box; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      
+      <!-- Abrimos un segundo formulario que apunta al mismo archivo para que procese los datos -->
+      <form method="post" action="catalogo.php">
+          <!-- Pasamos los datos ocultos para que PHP no pierda el hilo si estás editando -->
+          <input type="hidden" name="id_libro" value="<?php echo $id_libro; ?>">
+          <input type="hidden" name="Titulo" value="<?php echo htmlspecialchars($titulo); ?>">
+          <input type="hidden" name="Autor" value="<?php echo htmlspecialchars($autor); ?>">
+          <input type="hidden" name="Encabezamiento_de_Materia" value="<?php echo htmlspecialchars($encabezamiento_de_materia); ?>">
+          <input type="hidden" name="Editorial" value="<?php echo htmlspecialchars($editorial); ?>">
+          <input type="hidden" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>">
+          <input type="hidden" name="ano" value="<?php echo htmlspecialchars($ano); ?>">
+          <input type="hidden" name="clasificacion" value="<?php echo htmlspecialchars($clasificacion); ?>">
+          <input type="hidden" name="Pais" value="<?php echo htmlspecialchars($pais); ?>">
+
+         
+          <?php if ($modo_editar): ?>
+              <a href="catalogo.php" style="display: block; text-align: center; margin-top: 15px; color: #721c24; text-decoration: none; font-size: 14px; font-weight: bold;">Cancelar Edición</a>
+          <?php endif; ?>
+
 
       </form>
-  </div> <!-- Fin de contenedor-formulario -->
+  </div> 
 
+ 
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
   </div>

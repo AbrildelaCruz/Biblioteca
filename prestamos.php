@@ -7,10 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div>
-        
+    <header>
+        <nav >
+            <ul>
+                <li><a href="#profesores">Profesores</a></li>
+                <li><a href="#alumnos">alumnos</a></li>
+                <li><a href="#libros_prestados">Libros_Prestados</a></li>
+            </ul>
+            </nav>
+</header>
 
-    </div>
     
 </body>
 </html>

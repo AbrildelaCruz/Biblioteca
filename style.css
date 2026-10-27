@@ -499,11 +499,11 @@
             border-radius: 6px;
             font-size: 13px;
             font-weight: bold;
-            text-decoration: none;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             transition: all 0.2s ease;
             text-align: center;
+            cursor: pointer;
         }
         .boton-buscar-inline:hover {
             background-color: #0F4C81;
