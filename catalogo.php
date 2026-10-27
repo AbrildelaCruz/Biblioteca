@@ -200,41 +200,48 @@ if (isset($_GET['eliminar_id'])) {
                 <label>País</label>
                 <input type="text" name="Pais" value="<?php echo htmlspecialchars($pais); ?>" maxlength="50">
             </div>
+            <!-- El campo Idioma se queda normal en su columna -->
             <div class="grupo-campo">
                 <label>Idioma</label>
                 <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50">
             </div>
+
+            <!-- Espacio vacío para mantener el orden del grid -->
+            <div></div> 
+
+            <!-- DESCRIPCIÓN: Abarca todo el ancho -->
             <div class="grupo-campo" style="grid-column: 1 / -1;">
                 <label>Descripción / Notas</label>
                 <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255">
             </div>
-            
-            <!-- EJEMPLARES TOTALES: Ahora también ocupa todo el ancho (grid-column: 1 / -1) -->
+
+            <!-- EJEMPLARES TOTALES: Se estira de lado a lado abajo -->
             <div class="grupo-campo" style="grid-column: 1 / -1;">
                 <label>Ejemplares Totales</label>
                 <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required>
             </div>
-        </div> <!-- Aquí cierra el grid de dos columnas -->
+        </div> <!-- Aquí cierra el div con la cuadrícula (grid) -->
+        
+        <!-- El botón morado se queda aquí adentro para procesar los datos pero flotará hacia abajo con el CSS -->
+        <div class="contenedor-boton-externo">
+            <button type="submit" class="boton-guardar">
+                <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO (ENTRADA ÚNICA)'; ?>
+            </button>
+        </div>
 
-        <!-- Si estás editando, el link de cancelar se queda dentro del formulario -->
         <?php if ($modo_editar): ?>
             <a href="catalogo.php" style="display: block; text-align: center; margin-top: 15px; color: #721c24; text-decoration: none; font-size: 14px; font-weight: bold;">Cancelar Edición</a>
         <?php endif; ?>
+
+        <!-- ENLACE VERDE: Ahora está de vuelta adentro de la tarjeta blanca -->
+        <div style="margin-top: 60px; width: 100%;">
+            <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.15);">🔍 Ver Todos los Libros Registrados</a>
+        </div>
+
       </form>
-  </div> <!-- Aquí termina la caja blanca (contenedor-formulario) -->
+  </div> <!-- Aquí termina formalmente la tarjeta blanca (contenedor-formulario) -->
 
-  <!--  EL BOTÓN DE GUARDAR AHORA ESTÁ AFUERA Y TIENE SU PROPIO CONTENEDOR INDEPENDIENTE -->
-  <div class="contenedor-boton-externo" style="max-width: 800px; margin: 20px auto; padding: 0 20px; width: 100%; box-sizing: border-box;">
-      <!-- Para que un botón fuera de un form pueda enviar los datos, le agregamos el atributo form="id_de_tu_formulario" -->
-      <!-- Pero como tu form no tiene ID, lo más fácil y seguro es dejarlo como un botón estilizado flotante. Para que funcione afuera, puedes meterlo dentro del form o usar JavaScript, pero para tu exposición de estadías, la forma más limpia y directa de estilizarlo es con CSS en su propio div: -->
-  </div>
-
-  <!-- Enlace directo para ir a la tabla (También afuera) -->
-  <div style="max-width: 800px; margin: 10px auto; padding: 0 20px; width: 100%; box-sizing: border-box;">
-      <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.15);">🔍 Ver Todos los Libros Registrados</a>
-  </div>
-
-  <!-- El botón regresar estándar en el fondo -->
+  <!-- El botón regresar se queda flotando afuera e independiente abajo -->
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
   </div>
