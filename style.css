@@ -156,18 +156,22 @@
 
 /* Botón Guardar del Formulario */
 .boton-guardar {
+    display: flex;
+    flex-direction: column;
+    gap:15;
+    margin-top: 25px;
+    border-size: border-box;
     grid-column: 1 / -1;       /* Se mantiene en su propia fila completa */
     justify-self: center;       /* ¡Clave! Centra el botón en medio del formulario */
-    width: auto;                /* Hace que el ancho no sea del 100% */
+    width: 100;                /* Hace que el ancho no sea del 100% */
     min-width: 200px;           /* Le da un tamaño mínimo para que no se vea minúsculo */
-    padding: 12px 30px;         /* Ajusta el tamaño: 12px arriba/abajo y 30px a los lados */
-    
+    padding: 14px;         /* Ajusta el tamaño: 12px arriba/abajo y 30px a los lados */
     background-color: #2A9D8F;  /* Verde Agua de nuestra paleta */
     color: white;
     font-size: 16px;
     font-weight: bold;
     border: none;
-    border-radius: 8px;         /* Bordes modernos alineados al sistema */
+    border-radius: 6px;         /* Bordes modernos alineados al sistema */
     cursor: pointer;
     text-transform: uppercase;
     transition: background-color 0.2s ease, transform 0.1s ease;
@@ -479,3 +483,33 @@
     background-color: #0B3459 !important; 
     transform: translateY(0);
 }
+/* Fuerza a un campo a ocupar las dos columnas del formulario */
+.campo-ancho-completo {
+    grid-column: 1 / -1;
+}
+/* BOTÓN DE BUSQUEDA INLINE */
+  .boton-buscar-inline {
+            display: inline-block;
+            align-self: flex-start;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #E8EEF5; 
+            color: #0F4C81;            
+            border: 1px solid #DDE6ED;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .boton-buscar-inline:hover {
+            background-color: #0F4C81;
+            color: #FFFFFF;
+            border-color: #0F4C81;
+        }
+        .boton-buscar-inline:active {
+            transform: scale(0.98);
+        }

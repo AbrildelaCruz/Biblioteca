@@ -129,7 +129,8 @@ if ($es_edicion && $id_editar) {
     </div>
 
     <?php if ($mensaje !== ''): ?>
-    <div class="alerta <?php echo $tipoMensaje; ?>" style="padding: 10px; margin: 15px auto; max-width: 600px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
+    <!-- Alertas profesionales adaptadas a la paleta -->
+    <div class="alerta" style="padding: 12px; margin: 20px auto; max-width: 700px; text-align: center; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: <?php echo $tipoMensaje === 'exito' ? '#E8F5E9' : '#FFEBEE'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#2E7D32' : '#C62828'; ?>; border: 1px solid <?php echo $tipoMensaje === 'exito' ? '#C8E6C9' : '#FFCDD2'; ?>;">
         <?php echo $mensaje; ?>
     </div>
     <?php endif; ?>
@@ -146,6 +147,11 @@ if ($es_edicion && $id_editar) {
             <div class="grupo-campo">
                 <label>Nombre del Docente</label>
                 <input type="text" name="Nombre" value="<?php echo htmlspecialchars($nombre_actual); ?>" maxlength="100" required>
+                
+                <!-- BOTÓN DE BÚSQUEDA UBICADO DEBAJO DEL INPUT -->
+                <a href="ver_profesores.php" class="boton-buscar-inline">
+                    🔍 Buscar Docente Existente
+                </a>
             </div>
             
             <div class="contenedor-materias">
@@ -172,7 +178,7 @@ if ($es_edicion && $id_editar) {
             <button type="submit" class="boton-guardar"><?php echo $es_edicion ? 'Guardar Cambios' : 'Guardar Docente'; ?></button>
         </form> 
         
-        <a href="ver_profesores.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Profesores Registrados</a>
+        <a href="ver_profesores.php" style="display: block; text-align: center; margin-top: 20px; font-weight: 600; color: white; text-decoration: none; background-color: #2A9D8F; padding: 12px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#218074'" onmouseout="this.style.backgroundColor='#2A9D8F'">🔍 Ver Profesores Registrados</a>
     </div> 
 
     <div class="z1" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">

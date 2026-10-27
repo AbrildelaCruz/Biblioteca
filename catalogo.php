@@ -82,13 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $disponibles_nuevos = $ejemplares_totales - $prestados;
             if ($disponibles_nuevos < 0) $disponibles_nuevos = 0;
 
-            // CORREGIDO: Cambiado Encabezamiento_de_Materia por su nombre real e ISBM por ISBN
             $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, Encabezamiento_de_Materia=?, Editorial=?, ISBN=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
             $stmt->bind_param('sssssssssssiii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
             $texto_exito = 'Libro actualizado en el catálogo correctamente.';
         } else {
             // INSERTAR NUEVO LIBRO AL CATÁLOGO
-            // CORREGIDO: Cambiado Encabezamiento_de_Materia por su nombre real e ISBM por ISBN
             $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, Encabezamiento_de_Materia, Editorial, ISBN, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
             $stmt->bind_param('sssssssssssii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
             $texto_exito = 'Nuevo libro añadido al catálogo de la biblioteca.';
@@ -103,20 +101,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    // Te manda directo a la tabla externa al terminar el procesamiento POST
     header("Location: ver_catalogo.php"); 
     exit();
-} // <-- AQUÍ SE CIERRA EL BLOQUE DEL POST CORRECTAMENTE
+}
 
 // 4. PROCESAR EL BORRADO EN EL CATÁLOGO (MÉTODO GET)
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
         $stmt_borrar = $conexion->prepare('DELETE FROM libros WHERE id_libro = ?');
-        
         if ($stmt_borrar) {
             $stmt_borrar->bind_param('i', $id_a_borrar); 
-            
             if ($stmt_borrar->execute()) {
                 $_SESSION['mensaje'] = 'Libro eliminado del catálogo correctamente.';
                 $_SESSION['tipoMensaje'] = 'exito';
@@ -130,7 +125,7 @@ if (isset($_GET['eliminar_id'])) {
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: ver_catalogo.php"); // Al borrar te redirige de vuelta a la tabla
+    header("Location: ver_catalogo.php"); 
     exit();
 }
 ?>
@@ -140,13 +135,11 @@ if (isset($_GET['eliminar_id'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catálogo Maestro - Libros</title>
-  <!-- Rescatado truco contra el caché para desarrollo veloz -->
   <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
   <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
 
-  <!-- Animación de burbujas unificada -->
   <div class="contenedor-burbujas">
       <div class="burbuja"></div>
       <div class="burbuja"></div>
@@ -167,6 +160,7 @@ if (isset($_GET['eliminar_id'])) {
       <form method="post" action="catalogo.php">
         <input type="hidden" name="id_libro" value="<?php echo $id_libro; ?>">
 
+        <!-- Bloque de campos superiores en dos columnas balanceadas -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div class="grupo-campo">
                 <label>Título del Libro</label>
@@ -200,46 +194,49 @@ if (isset($_GET['eliminar_id'])) {
                 <label>País</label>
                 <input type="text" name="Pais" value="<?php echo htmlspecialchars($pais); ?>" maxlength="50">
             </div>
-            <!-- El campo Idioma se queda normal en su columna -->
-            <div class="grupo-campo">
-                <label>Idioma</label>
-                <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50">
+        </div> <!-- Cerramos el grid aquí -->
+
+        <!-- 🟢 BLOQUE ANTIBLOQUEO: Obliga a las cajas a separarse e irse abajo sin encimarse -->
+        <div style="clear: both; display: block; position: relative; width: 100%; margin-top: 30px; padding-top: 10px;">
+            
+            <div class="grupo-campo" style="margin-bottom: 20px; display: block; width: 100%;">
+                <label style="display: block; margin-bottom: 5px;">Idioma</label>
+                <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50" style="width: 100%; box-sizing: border-box;">
             </div>
 
-            <!-- Espacio en blanco obligatorio para cerrar la fila del grid ordenadamente -->
-            <div></div> 
-
-            <!-- DESCRIPCIÓN: Abarca todo el ancho -->
-            <div class="grupo-campo" style="grid-column: 1 / -1;">
-                <label>Descripción / Notas</label>
-                <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255">
+            <div class="grupo-campo" style="margin-bottom: 20px; display: block; width: 100%;">
+                <label style="display: block; margin-bottom: 5px;">Descripción / Notas</label>
+                <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255" style="width: 100%; box-sizing: border-box;">
             </div>
 
-            <!-- EJEMPLARES TOTALES: Se estira de lado a lado abajo -->
-            <div class="grupo-campo" style="grid-column: 1 / -1;">
-                <label>Ejemplares Totales</label>
-                <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required>
+            <div class="grupo-campo" style="margin-bottom: 30px; display: block; width: 100%;">
+                <label style="display: block; margin-bottom: 5px;">Ejemplares Totales</label>
+                <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required style="width: 100%; box-sizing: border-box;">
             </div>
-        </div> <!-- ⚠️ AQUÍ DEBE CERRAR EL DIV QUE TIENE EL GRID DE LAS DOS COLUMNAS -->
+            
+        </div>
 
-        <!-- 🟢 PEGA TU BOTÓN AQUÍ EXACTAMENTE (Afuera del div de arriba pero adentro del form) -->
-      <button type="submit" class="boton-guardar">
-            <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
-        </button>
+        <!-- 🟢 EL BOTÓN REGISTRAR: Totalmente libre en la parte inferior -->
+        <div style="position: relative; clear: both; display: block; margin-top: 20px; width: 100%;">
+            <button type="submit" class="boton-guardar" style="width: 100%; padding: 12px; box-sizing: border-box;">
+                <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
+            </button>
+        </div>
 
         <?php if ($modo_editar): ?>
-            <a href="catalogo.php" style="display: block; text-align: center; margin-top: 10px; color: #721c24; text-decoration: none; font-size: 14px;">Cancelar Edición</a>
+            <div style="position: relative; display: block; text-align: center; margin-top: 15px;">
+                <a href="catalogo.php" style="color: #721c24; text-decoration: none; font-size: 14px; font-weight: bold;">Cancelar Edición</a>
+            </div>
         <?php endif; ?>
 
-        <a href="ver_catalogo.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Todos los Libros Registrados</a>
+        <!-- Enlace verde con su propio espacio libre -->
+        <div style="position: relative; clear: both; display: block; margin-top: 30px; width: 100%;">
+            <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-sizing: border-box;">🔍 Ver Todos los Libros Registrados</a>
+        </div>
 
+      </form>
+  </div> <!-- Fin de contenedor-formulario -->
 
-      </form> <!-- AQUÍ CIERRA TU FORMULARIO -->
-  </div> <!-- Aquí termina la tarjeta blanca (contenedor-formulario) -->
-
-  <!-- Enlace directo para ir a la tabla -->
- 
-  <!-- El botón regresar estándar en el fondo -->
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
   </div>
