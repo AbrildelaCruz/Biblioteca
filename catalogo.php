@@ -196,7 +196,7 @@ if (isset($_GET['eliminar_id'])) {
                 <label>Clasificación</label>
                 <input type="text" name="clasificacion" value="<?php echo htmlspecialchars($clasificacion); ?>" maxlength="100">
             </div>
-            <div class="grupo-campo">
+             <div class="grupo-campo">
                 <label>País</label>
                 <input type="text" name="Pais" value="<?php echo htmlspecialchars($pais); ?>" maxlength="50">
             </div>
@@ -205,25 +205,25 @@ if (isset($_GET['eliminar_id'])) {
                 <label>Idioma</label>
                 <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50">
             </div>
+        </div> <!-- 🟢 CERRAMOS EL GRID DE DOS COLUMNAS AQUÍ MISMO PARA QUITAR EL ESPACIO EN BLANCO -->
 
-            <!-- Espacio en blanco obligatorio para cerrar la fila del grid ordenadamente -->
-            <div></div> 
-
+        <!-- A partir de aquí, al estar fuera del grid, todo abarca el ancho completo de forma natural -->
+        <div style="margin-top: 15px;">
             <!-- DESCRIPCIÓN: Abarca todo el ancho -->
-            <div class="grupo-campo" style="grid-column: 1 / -1;">
+            <div class="grupo-campo">
                 <label>Descripción / Notas</label>
                 <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255">
             </div>
 
             <!-- EJEMPLARES TOTALES: Se estira de lado a lado abajo -->
-            <div class="grupo-campo" style="grid-column: 1 / -1;">
+            <div class="grupo-campo" style="margin-top: 15px;">
                 <label>Ejemplares Totales</label>
                 <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required>
             </div>
-        </div> <!-- ⚠️ AQUÍ DEBE CERRAR EL DIV QUE TIENE EL GRID DE LAS DOS COLUMNAS -->
+        </div>
 
-        <!-- 🟢 PEGA TU BOTÓN AQUÍ EXACTAMENTE (Afuera del div de arriba pero adentro del form) -->
-      <button type="submit" class="boton-guardar">
+        <!-- El botón original con su ancho de la captura -->
+        <button type="submit" class="boton-guardar" style="margin-top: 20px; width: 100%;">
             <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
         </button>
 
@@ -233,12 +233,9 @@ if (isset($_GET['eliminar_id'])) {
 
         <a href="ver_catalogo.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Todos los Libros Registrados</a>
 
-
       </form> <!-- AQUÍ CIERRA TU FORMULARIO -->
   </div> <!-- Aquí termina la tarjeta blanca (contenedor-formulario) -->
 
-  <!-- Enlace directo para ir a la tabla -->
- 
   <!-- El botón regresar estándar en el fondo -->
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
