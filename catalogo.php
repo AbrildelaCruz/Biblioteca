@@ -162,7 +162,7 @@ if (isset($_GET['eliminar_id'])) {
   <?php endif; ?>
 
   <div class="contenedor-formulario" style="max-width: 800px;">
-      <h2><?php echo $modo_editar ? '📝 Modificar Libro del Catálogo' : '📚 Alta y Conservación de Libros'; ?></h2>
+      <h2><?php echo $modo_editar ? '📝 Modificar Libro del Catálogo' : '📚 Registro de Libros'; ?></h2>
       
       <form method="post" action="catalogo.php">
         <input type="hidden" name="id_libro" value="<?php echo $id_libro; ?>">
@@ -206,7 +206,7 @@ if (isset($_GET['eliminar_id'])) {
                 <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50">
             </div>
 
-            <!-- Espacio vacío para mantener el orden del grid -->
+            <!-- Espacio en blanco obligatorio para cerrar la fila del grid ordenadamente -->
             <div></div> 
 
             <!-- DESCRIPCIÓN: Abarca todo el ancho -->
@@ -220,28 +220,26 @@ if (isset($_GET['eliminar_id'])) {
                 <label>Ejemplares Totales</label>
                 <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required>
             </div>
-        </div> <!-- Aquí cierra el div con la cuadrícula (grid) -->
-        
-        <!-- El botón morado se queda aquí adentro para procesar los datos pero flotará hacia abajo con el CSS -->
-        <div class="contenedor-boton-externo">
-            <button type="submit" class="boton-guardar">
-                <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO (ENTRADA ÚNICA)'; ?>
-            </button>
-        </div>
+        </div> <!-- ⚠️ AQUÍ DEBE CERRAR EL DIV QUE TIENE EL GRID DE LAS DOS COLUMNAS -->
+
+        <!-- 🟢 PEGA TU BOTÓN AQUÍ EXACTAMENTE (Afuera del div de arriba pero adentro del form) -->
+      <button type="submit" class="boton-guardar">
+            <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
+        </button>
 
         <?php if ($modo_editar): ?>
-            <a href="catalogo.php" style="display: block; text-align: center; margin-top: 15px; color: #721c24; text-decoration: none; font-size: 14px; font-weight: bold;">Cancelar Edición</a>
+            <a href="catalogo.php" style="display: block; text-align: center; margin-top: 10px; color: #721c24; text-decoration: none; font-size: 14px;">Cancelar Edición</a>
         <?php endif; ?>
 
-        <!-- ENLACE VERDE: Ahora está de vuelta adentro de la tarjeta blanca -->
-        <div style="margin-top: 60px; width: 100%;">
-            <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.15);">🔍 Ver Todos los Libros Registrados</a>
-        </div>
+        <a href="ver_catalogo.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Todos los Libros Registrados</a>
 
-      </form>
-  </div> <!-- Aquí termina formalmente la tarjeta blanca (contenedor-formulario) -->
 
-  <!-- El botón regresar se queda flotando afuera e independiente abajo -->
+      </form> <!-- AQUÍ CIERRA TU FORMULARIO -->
+  </div> <!-- Aquí termina la tarjeta blanca (contenedor-formulario) -->
+
+  <!-- Enlace directo para ir a la tabla -->
+ 
+  <!-- El botón regresar estándar en el fondo -->
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
   </div>
