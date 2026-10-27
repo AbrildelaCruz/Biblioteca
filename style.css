@@ -93,35 +93,34 @@
 .burbuja:nth-child(7) { left: 50%; width: 50px; height: 50px; animation-duration: 17s; animation-delay: 7s; }
 .burbuja:nth-child(8) { left: 80%; width: 110px; height: 110px; animation-duration: 24s; animation-delay: 2s; filter: blur(1px); }
 
-/*FORMULARIO DE REGISTRO PROFESORES / ALUMNOS*/
+/* FORMULARIO DE REGISTRO PROFESORES / ALUMNOS */
 .contenedor-formulario {
-    background-color: rgba(252, 251, 251, 0.85); /* Semitransparente como tus botones */
+    background-color: rgba(255, 255, 255, 0.9); /* Blanco limpio semi-transparente */
     padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(4px);
+    border-radius: 12px; /* Esquinas suavizadas alineadas a software moderno */
+    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08); /* Sombra suave con tono azul institucional */
+    backdrop-filter: blur(6px); /* Efecto esmerilado un poco más definido */
     width: 100%;
     max-width: 700px;
-    margin: 40px auto 20px auto;                  /* Separación y centrado */
+    margin: 40px auto 20px auto;                  
     z-index: 10;
     box-sizing: border-box;
-    
+    border: 1px solid rgba(232, 238, 245, 0.6); /* Borde sutil para delimitar el contenedor */
 }
 
 .contenedor-formulario h2 {
     text-align: center;
-    color: #4a148c;
+    color: #0F4C81; /* Azul Cobalto Institucional */
     margin-top: 0;
     margin-bottom: 25px;
     text-transform: uppercase;
     font-size: 24px;
     letter-spacing: 1px;
-    justify-items: center;
 }
 
 .contenedor-formulario form {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Tu diseño original en cuadrícula */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
     gap: 20px;
 }
 
@@ -132,57 +131,63 @@
 }
 
 .grupo-campo label {
-    font-weight: bold;
-    font-size: 15px;
-    color: #333;
+    font-weight: 600; /* Peso visual limpio */
+    font-size: 14px;
+    color: #1E293B; /* Texto Gris Oscuro (Alta legibilidad) */
 }
 
 .grupo-campo input {
     padding: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #DDE6ED; /* Borde acero suave */
     border-radius: 8px;
     font-size: 16px;
     outline: none;
     box-sizing: border-box;
-    transition: all 0.3s ease;
-    background-color: rgba(255, 255, 255, 0.9);
+    transition: all 0.2s ease;
+    background-color: #FFFFFF;
+    color: #1E293B;
 }
 
+/* Estado de selección o escritura */
 .grupo-campo input:focus {
-    border-color: #a05fd1;
-    box-shadow: 0 0 8px rgba(160, 95, 209, 0.4);
+    border-color: #0F4C81; /* Cambia al Azul Cobalto al escribir */
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.15); /* Resplandor azul sutil y moderno */
 }
 
-/*El botón guardar del menú principal*/
+/* Botón Guardar del Formulario */
 .boton-guardar {
-    grid-column: 1 / -1;                       /* Ocupa todo el ancho del formulario */
-    background-color: #4a148c;                 /* Fondo morado a juego */
+    grid-column: 1 / -1;                       
+    background-color: #2A9D8F;                 /* Verde Agua (Color de acción principal) */
     color: white;
     padding: 14px;
     font-size: 18px;
     font-weight: bold;
     border: none;
-    border-radius: 50px;                       /* Bordes totalmente redondeados */
+    border-radius: 8px;                        /* Consistente con el diseño técnico */
     cursor: pointer;
     text-transform: uppercase;
-    transition: background 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.1s ease;
     margin-top: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(42, 157, 143, 0.15);
 }
 
+/* Efectos interactivos para el botón */
 .boton-guardar:hover {
-    background-color: #718dc5;
+    background-color: #218074; /* Verde agua más oscuro e institucional */
 }
 
+.boton-guardar:active {
+    transform: scale(0.98); /* Pequeño efecto de pulsación al hacer clic */
+}
 
-    /*LAS TABLAS DE DATOS*/
+    /* LAS TABLAS DE DATOS */
 .tabla-datos {
     width: 100%;
     max-width: 1000px;
-    margin: 30px auto 80px auto;                 /* Margen inferior para no tapar el botón regresar */
+    margin: 30px auto 80px auto;                 
     border-collapse: collapse;
-    background-color: rgba(255, 255, 255, 0.92); /* Fondo claro para legibilidad absoluta */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.95); /* Fondo claro de alta nitidez */
+    box-shadow: 0 6px 20px rgba(15, 76, 129, 0.06); /* Sombra suave institucional */
     border-radius: 12px;
     overflow: hidden;
     z-index: 10;
@@ -194,28 +199,32 @@
 }
 
 .tabla-datos th {
-    background-color: #2c3e50;                   /* Tu color oscuro original */
+    background-color: #0F4C81;                   /* Azul Cobalto Institucional */
     color: white;
-    font-weight: bold;
+    font-weight: 600;
     text-transform: uppercase;
-    font-size: 14px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
 }
 
 .tabla-datos td {
-    border-bottom: 1px solid #eee;
-    color: #444;
+    border-bottom: 1px solid #E8EEF5;            /* Línea divisoria en azul acero claro */
+    color: #1E293B;                              /* Texto Gris Oscuro */
     font-size: 15px;
 }
 
+/* Sutil efecto cebra usando la paleta acero */
 .tabla-datos tr:nth-child(even) {
-    background-color: rgba(245, 245, 245, 0.6); /* Sutil efecto cebra */
+    background-color: rgba(232, 238, 245, 0.4); 
 }
 
+/* Resaltado de fila al pasar el mouse */
 .tabla-datos tr:hover {
-    background-color: rgba(221, 176, 70, 0.15); /* Resaltado al pasar el mouse */
+    background-color: rgba(15, 76, 129, 0.05);  /* Tono azul muy suave e intuitivo */
 }
 
-    /*BOTONES REGRESAR*/
+
+/* BOTONES REGRESAR (Flotante) */
 .z1 {
     position: fixed;
     bottom: 25px;
@@ -226,143 +235,172 @@
 .z2 {
     display: inline-block;
     padding: 12px 24px;
-    color: white;             
+    color: #1E293B;                              /* Texto Gris Oscuro */
     text-decoration: none;     
-    border-radius: 50px;                       /* Estilizado a juego con los botones del sistema */
+    border-radius: 8px;                          /* Consistente con los módulos y formularios */
     font-weight: bold;         
-    transition: all 0.3s ease;
-    background-color: chocolate; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    background-color: #DDE6ED;                   /* Gris Acero Medio (Neutro y limpio) */
+    border: 1px solid #CBD5E1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-transform: uppercase;
-    font-size: 14px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
 }
 
 .z2:hover {
-    background-color: #b3591b;
+    background-color: #CBD5E1;                   /* Oscurece sutilmente al pasar el mouse */
     transform: translateY(-2px);
 }
-/*busqueda.php*/
- /* Cuadricula organizada en el formulario para acomodar los campos en parejas */
-        .contenedor-formulario fieldset {
-            border: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 15px;
-            width: 100%;
-        }
-        
-        .campo-grupo {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
 
-        .campo-grupo label {
-            color: #000000;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
+.z2:active {
+    transform: translateY(0);
+}
 
-        /* Estilo para los inputs que son de solo lectura */
-        .contenedor-formulario input[readonly] {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: #e0e0e0;
-            cursor: not-allowed;
-        }
-        
-        /* Estilizado del selector desplegable para que combine con tus inputs */
-        .contenedor-formulario select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 15px;
-            outline: none;
-            box-sizing: border-box;
-        }
-        
-        .contenedor-formulario select option {
-            background-color: #4a148c; /* Fondo morado para las opciones del select */
-            color: white;
-        }
+
+/* BUSQUEDA.PHP */
+.contenedor-formulario fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 15px;
+    width: 100%;
+}
+
+.campo-grupo {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.campo-grupo label {
+    color: #1E293B;                              /* Texto Gris Oscuro */
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* Estilo para los inputs que son de solo lectura (Bloqueados) */
+.contenedor-formulario input[readonly] {
+    background-color: #F8FAFC;                   /* Gris ultra claro de sistema */
+    color: #94A3B8;                              /* Texto gris atenuado */
+    border-color: #E2E8F0;
+    cursor: not-allowed;
+}
+
+/* Estilizado del selector desplegable integrado a la paleta clara */
+.contenedor-formulario select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #DDE6ED;                   /* Borde acero */
+    border-radius: 8px;
+    background-color: #FFFFFF;                   /* Fondo blanco para coincidir con inputs */
+    color: #1E293B;                              /* Texto oscuro para alta lectura */
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.contenedor-formulario select:focus {
+    border-color: #0F4C81;                       /* Enfoque Azul Cobalto */
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.15);
+}
+
+/* Opciones nativas del menú desplegable */
+.contenedor-formulario select option {
+    background-color: #FFFFFF;                   /* Fondo blanco limpio */
+    color: #1E293B;                              /* Texto oscuro */
+
  /* Estilos profesionales para los Checkboxes en cuadrícula */
-        .contenedor-materias {
-            text-align: left;
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-        .contenedor-materias .titulo-seccion {
-            font-weight: bold;
-            color: #4a148c;
-            margin-bottom: 8px;
-            display: inline-block;
-        }
-        .grid-checkboxes {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 10px;
-            background: #fdfbfd;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e1bee7;
-        }
-        .opcion-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 5px;
-            transition: background 0.2s ease;
-            font-size: 14px;
-            color: #333;
-        }
-        .opcion-checkbox:hover {
-            background-color: #f3e5f5;
-        }
-        .opcion-checkbox input[type="checkbox"] {
-            accent-color: #4a148c; /* Aplica el color morado nativo al recuadro */
-            width: 17px;
-            height: 17px;
-            cursor: pointer;
-        }
-             /* Estilos profesionales para la botonera del paginador */
-      .paginador {
-          display: flex;
-          justify-content: center;
-          gap: 6px;
-          margin-top: 20px;
-          margin-bottom: 30px;
-      }
-      .paginador a {
-          color: #4a148c;
-          background-color: white;
-          border: 1px solid #e1bee7;
-          padding: 8px 14px;
-          text-decoration: none;
-          border-radius: 4px;
-          font-weight: bold;
-          font-size: 13px;
-          transition: all 0.2s ease;
-      }
-      .paginador a:hover {
-          background-color: #f3e5f5;
-          border-color: #4a148c;
-      }
-      .paginador a.activa {
-          background-color: #4a148c;
-          color: white;
-          border-color: #4a148c;
-          cursor: default;
-      }
-      .paginador a.deshabilitado {
-          color: #ccc;
-          border-color: #eee;
-          cursor: not-allowed;
-          pointer-events: none;
-      }
+.contenedor-materias {
+    text-align: left;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.contenedor-materias .titulo-seccion {
+    font-weight: 600;
+    color: #0F4C81; /* Azul Cobalto Institucional */
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.grid-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    background: #F8FAFC; /* Gris ultra claro de sistema */
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #DDE6ED; /* Borde acero suave */
+}
+
+.opcion-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+    color: #1E293B; /* Texto Gris Oscuro */
+}
+
+.opcion-checkbox:hover {
+    background-color: rgba(15, 76, 129, 0.05); /* Resaltado azul muy suave */
+}
+
+.opcion-checkbox input[type="checkbox"] {
+    accent-color: #0F4C81; /* Aplica el azul institucional al recuadro cuando se marca */
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+
+
+/* Estilos profesionales para la botonera del paginador */
+.paginador {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.paginador a {
+    color: #0F4C81; /* Azul Cobalto Institucional */
+    background-color: #FFFFFF;
+    border: 1px solid #DDE6ED; /* Borde acero suave */
+    padding: 8px 14px;
+    text-decoration: none;
+    border-radius: 6px; /* Esquinas consistentes con el software */
+    font-weight: bold;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.paginador a:hover {
+    background-color: #E8EEF5; /* Fondo azul acero claro */
+    border-color: #0F4C81;
+}
+
+/* Página activa en el paginador */
+.paginador a.activa {
+    background-color: #0F4C81;
+    color: #FFFFFF;
+    border-color: #0F4C81;
+    cursor: default;
+}
+
+/* Flechas o números deshabilitados */
+.paginador a.deshabilitado {
+    color : #94A3B8; /* Gris atenuado estándar */
+    border-color: #E2E8F0;
+    background-color: #F8FAFC;
+    cursor: not-allowed;
+    pointer-events: none;
+}
