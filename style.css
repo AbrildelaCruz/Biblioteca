@@ -156,28 +156,32 @@
 
 /* Botón Guardar del Formulario */
 .boton-guardar {
-    grid-column: 1 / -1;                       
-    background-color: #2A9D8F;                 /* Verde Agua (Color de acción principal) */
+    grid-column: 1 / -1;       /* Se mantiene en su propia fila completa */
+    justify-self: center;       /* ¡Clave! Centra el botón en medio del formulario */
+    width: auto;                /* Hace que el ancho no sea del 100% */
+    min-width: 200px;           /* Le da un tamaño mínimo para que no se vea minúsculo */
+    padding: 12px 30px;         /* Ajusta el tamaño: 12px arriba/abajo y 30px a los lados */
+    
+    background-color: #2A9D8F;  /* Verde Agua de nuestra paleta */
     color: white;
-    padding: 14px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     border: none;
-    border-radius: 8px;                        /* Consistente con el diseño técnico */
+    border-radius: 8px;         /* Bordes modernos alineados al sistema */
     cursor: pointer;
     text-transform: uppercase;
     transition: background-color 0.2s ease, transform 0.1s ease;
-    margin-top: 10px;
+    margin-top: 20px;
     box-shadow: 0 4px 6px rgba(42, 157, 143, 0.15);
 }
 
-/* Efectos interactivos para el botón */
+/* Efectos al interactuar */
 .boton-guardar:hover {
-    background-color: #218074; /* Verde agua más oscuro e institucional */
+    background-color: #218074;  /* Verde más oscuro */
 }
 
 .boton-guardar:active {
-    transform: scale(0.98); /* Pequeño efecto de pulsación al hacer clic */
+    transform: scale(0.98);     /* Efecto visual de hundimiento al clickear */
 }
 
     /* LAS TABLAS DE DATOS */
@@ -313,7 +317,7 @@
 .contenedor-formulario select option {
     background-color: #FFFFFF;                   /* Fondo blanco limpio */
     color: #1E293B;                              /* Texto oscuro */
-
+}
  /* Estilos profesionales para los Checkboxes en cuadrícula */
 .contenedor-materias {
     text-align: left;
@@ -403,4 +407,75 @@
     background-color: #F8FAFC;
     cursor: not-allowed;
     pointer-events: none;
+}
+
+/* SECCIÓN DE MÓDULOS DEL SISTEMA */
+.contenedorpadrere {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 25px; 
+    background-color: rgba(255, 255, 255, 0.9); /* Recuadro blanco de fondo para los botones */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.1); 
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 10;
+}
+
+.Modulos {
+    display: block !important;
+    text-align: center !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 0 20px 0 !important;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0F4C81; /* Azul Cobalto Institucional */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Selector unificado para asegurar que todos los botones hereden el diseño */
+.bton-1, .bton-2, .bton-3, .bton-4 {
+    display: flex !important;         
+    justify-content: center !important; 
+    align-items: center !important;     
+    width: 100% !important;             
+    box-sizing: border-box !important;
+    padding: 14px 28px;     
+    border: 1px solid #DDE6ED;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px; 
+    text-align: center;
+    margin: 8px 0 !important;          
+    gap: 15px;
+    text-decoration: none !important; /* Elimina la línea morada de enlace */
+    
+    /* Colores base: Paleta Moderna */
+    background-color: #E8EEF5 !important; /* Fondo gris-azul acero */
+    color: #1E293B !important;            /* Texto gris oscuro */
+    transition: all .2s ease;
+}
+
+/* Efecto al pasar el mouse por encima */
+.bton-1:hover, .bton-2:hover, .bton-3:hover, .bton-4:hover {
+    background-color: #0F4C81 !important; /* Cambia a Azul Cobalto */
+    color: #FFFFFF !important;            /* Texto cambia a blanco */
+    border-color: #0F4C81 !important;
+    transform: translateY(-1px);
+}
+
+/* Efecto al hacer clic */
+.bton-1:active, .bton-2:active, .bton-3:active, .bton-4:active {
+    background-color: #0B3459 !important; 
+    transform: translateY(0);
 }
