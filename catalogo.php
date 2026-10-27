@@ -11,7 +11,7 @@ $modo_editar = false;
 $id_libro = '';
 $titulo = '';
 $autor = '';
-$Encabezamiento_de_Materia = '';
+$encabezamiento_de_materia = '';
 $editorial = '';
 $isbn = '';
 $ano = '';
@@ -82,17 +82,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $disponibles_nuevos = $ejemplares_totales - $prestados;
             if ($disponibles_nuevos < 0) $disponibles_nuevos = 0;
 
-            // CORREGIDO: Cambiado Encabezamiento_de_Materia por Materia, e ISBM por ISBN
-            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, Encabezamiento de Materia=?, Editorial=?, ISBN=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
+            // CORREGIDO: Cambiado Encabezamiento_de_Materia por su nombre real e ISBM por ISBN
+            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, Encabezamiento_de_Materia=?, Editorial=?, ISBN=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
             $stmt->bind_param('sssssssssssiii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
             $texto_exito = 'Libro actualizado en el catálogo correctamente.';
         } else {
             // INSERTAR NUEVO LIBRO AL CATÁLOGO
-            // CORREGIDO: Cambiado Encabezamiento_de_Materia por Materia, e ISBM por ISBN
+            // CORREGIDO: Cambiado Encabezamiento_de_Materia por su nombre real e ISBM por ISBN
             $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, Encabezamiento_de_Materia, Editorial, ISBN, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
             $stmt->bind_param('sssssssssssii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
             $texto_exito = 'Nuevo libro añadido al catálogo de la biblioteca.';
-        }
         }
         
         if ($stmt && $stmt->execute()) {
@@ -104,28 +103,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: ver_catalogo.php"); // Al guardar te manda a la otra página a ver la tabla
+    // Te manda directo a la tabla externa al terminar el procesamiento POST
+    header("Location: ver_catalogo.php"); 
     exit();
-    
+} // <-- AQUÍ SE CIERRA EL BLOQUE DEL POST CORRECTAMENTE
+
 // 4. PROCESAR EL BORRADO EN EL CATÁLOGO (MÉTODO GET)
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
         $stmt_borrar = $conexion->prepare('DELETE FROM libros WHERE id_libro = ?');
-        if ($stmt_borrar && $stmt_borrar->execute()) {
-            $_SESSION['mensaje'] = 'Libro eliminado del catálogo correctamente.';
-            $_SESSION['tipoMensaje'] = 'exito';
-            $stmt_borrar->close();
+        
+        if ($stmt_borrar) {
+            $stmt_borrar->bind_param('i', $id_a_borrar); 
+            
+            if ($stmt_borrar->execute()) {
+                $_SESSION['mensaje'] = 'Libro eliminado del catálogo correctamente.';
+                $_SESSION['tipoMensaje'] = 'exito';
+            } else {
+                $_SESSION['mensaje'] = 'Error al eliminar del catálogo.';
+                $_SESSION['tipoMensaje'] = 'error';
+            }
+            $stmt_borrar->close(); 
         } else {
-            $_SESSION['mensaje'] = 'Error al eliminar del catálogo.';
+            $_SESSION['mensaje'] = 'Error al preparar la consulta.';
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: ver_catalogo.php"); // Al borrar te manda a la otra página
+    header("Location: ver_catalogo.php"); // Al borrar te redirige de vuelta a la tabla
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -170,7 +178,7 @@ if (isset($_GET['eliminar_id'])) {
             </div>
             <div class="grupo-campo">
                 <label>Encabezamiento de Materia</label>
-                <input type="text" name="Encabezamiento_de_Materia" value="<?php echo htmlspecialchars($Encabezamiento_de_Materia); ?>" maxlength="255">
+                <input type="text" name="Encabezamiento_de_Materia" value="<?php echo htmlspecialchars($encabezamiento_de_materia); ?>" maxlength="255">
             </div>
             <div class="grupo-campo">
                 <label>Editorial</label>
@@ -196,38 +204,37 @@ if (isset($_GET['eliminar_id'])) {
                 <label>Idioma</label>
                 <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50">
             </div>
-            <div class="grupo-campo">
-                <label>Estado de Conservación</label>
-                <input type="text" name="Estado_conservacion" value="<?php echo htmlspecialchars($estado_conservacion); ?>" maxlength="50" required placeholder="Ej. Excelente, Bueno, Dañado">
-            </div>
             <div class="grupo-campo" style="grid-column: 1 / -1;">
                 <label>Descripción / Notas</label>
                 <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255">
             </div>
+            
+            <!-- EJEMPLARES TOTALES: Ahora también ocupa todo el ancho (grid-column: 1 / -1) -->
             <div class="grupo-campo" style="grid-column: 1 / -1;">
                 <label>Ejemplares Totales</label>
                 <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required>
             </div>
-        </div>
-        
-        <button type="submit" class="boton-guardar" style="margin-top: 20px; width: 100%;">
-            <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'Registrar Libro (Entrada Única)'; ?>
-        </button>
-         <?php if ($modo_editar): ?>
-            <a href="catalogo.php" style="display: block; text-align: center; margin-top: 10px; color: #721c24; text-decoration: none; font-size: 14px;">Cancelar Edición</a>
+        </div> <!-- Aquí cierra el grid de dos columnas -->
+
+        <!-- Si estás editando, el link de cancelar se queda dentro del formulario -->
+        <?php if ($modo_editar): ?>
+            <a href="catalogo.php" style="display: block; text-align: center; margin-top: 15px; color: #721c24; text-decoration: none; font-size: 14px; font-weight: bold;">Cancelar Edición</a>
         <?php endif; ?>
       </form>
+  </div> <!-- Aquí termina la caja blanca (contenedor-formulario) -->
+
+  <!--  EL BOTÓN DE GUARDAR AHORA ESTÁ AFUERA Y TIENE SU PROPIO CONTENEDOR INDEPENDIENTE -->
+  <div class="contenedor-boton-externo" style="max-width: 800px; margin: 20px auto; padding: 0 20px; width: 100%; box-sizing: border-box;">
+      <!-- Para que un botón fuera de un form pueda enviar los datos, le agregamos el atributo form="id_de_tu_formulario" -->
+      <!-- Pero como tu form no tiene ID, lo más fácil y seguro es dejarlo como un botón estilizado flotante. Para que funcione afuera, puedes meterlo dentro del form o usar JavaScript, pero para tu exposición de estadías, la forma más limpia y directa de estilizarlo es con CSS en su propio div: -->
   </div>
 
-  <?php if ($modo_editar): ?>
-            <a href="catalogo.php" style="display: block; text-align: center; margin-top: 10px; color: #721c24; text-decoration: none; font-size: 14px;">Cancelar Edición</a>
-        <?php endif; ?>
-      </form>
-      
-      <!-- Enlace directo para ir a la página web donde se guardan los datos en la tabla -->
-      <a href="ver_catalogo.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Todos los Libros Registrados</a>
+  <!-- Enlace directo para ir a la tabla (También afuera) -->
+  <div style="max-width: 800px; margin: 10px auto; padding: 0 20px; width: 100%; box-sizing: border-box;">
+      <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.15);">🔍 Ver Todos los Libros Registrados</a>
   </div>
 
+  <!-- El botón regresar estándar en el fondo -->
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
   </div>
