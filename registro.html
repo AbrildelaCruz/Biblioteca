@@ -3,188 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logobiblioteca.png">
-    <title>Módulos</title>
-    
-    <!-- ESTILOS INTERNOS INTEGRADOS EN LA PALETA MODERNA -->
-    <style>
-        /* FONDO GENERAL DEL SISTEMA */
-        .body2 {
-            background: linear-gradient(-45deg, #FFFFFF, #E8EEF5, #DDE6ED, #E8EEF5);
-            background-size: 400% 400%;
-            height: 100vh;
-            width: 100vw;
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-repeat: no-repeat;
-            animation: cambiarFondo 15s ease infinite;
-            position: relative;          
-            overflow: hidden;             
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-        }
-
-        @keyframes cambiarFondo {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* ANIMACIÓN Y ESTILO DE LAS BURBUJAS DIGITALES */
-        @keyframes flotar {
-            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-            10% { opacity: 0.3; } 
-            90% { opacity: 0.3; }
-            100% { transform: translateY(-110vh) translateX(50px) scale(1.1); opacity: 0; }
-        }
-
-        .burbuja {
-            position: absolute;
-            bottom : -120px;
-            background: rgba(15, 76, 129, 0.03); 
-            border : 1px solid rgba(15, 76, 129, 0.08);
-            border-radius : 50%;
-            box-shadow : 0 0 12px rgba(232, 238, 245, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.6);
-            animation : flotar 16s linear infinite;
-            z-index: 1;
-        }
-
-        /* Tiempos y posiciones de las burbujas */
-        .burbuja:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-duration: 18s; animation-delay: 0s; }
-        .burbuja:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 14s; animation-delay: 2s; }
-        .burbuja:nth-child(3) { left: 40%; width: 120px; height: 120px; animation-duration: 22s; animation-delay: 4s; filter: blur(1px); } 
-        .burbuja:nth-child(4) { left: 55%; width: 60px; height: 60px; animation-duration: 16s; animation-delay: 1s; }
-        .burbuja:nth-child(5) { left: 70%; width: 90px; height: 90px; animation-duration: 20s; animation-delay: 5s; }
-        .burbuja:nth-child(6) { left: 85%; width: 30px; height: 30px; animation-duration: 12s; animation-delay: 3s; }
-        .burbuja:nth-child(7) { left: 50%; width: 50px; height: 50px; animation-duration: 17s; animation-delay: 7s; }
-        .burbuja:nth-child(8) { left: 80%; width: 110px; height: 110px; animation-duration: 24s; animation-delay: 2s; filter: blur(1px); }
-
-        /* CONTENEDOR CENTRAL (TARJETA) */
-        .contenedorpadrere {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 90%;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 30px; 
-            background-color: rgba(255, 255, 255, 0.92); 
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(15, 76, 129, 0.08); 
-            border: 1px solid rgba(232, 238, 245, 0.7);
-            z-index: 10;
-        }
-
-        .Modulos {
-            display: block !important;
-            text-align: center !important;
-            width: 100% !important;
-            padding: 0 !important;
-            margin: 0 0 25px 0 !important;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #0F4C81; /* Azul Cobalto */
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* DISEÑO RECTANGULAR DE LOS BOTONES */
-        .bton-1, .bton-2, .bton-3 {
-            display: flex !important;         
-            justify-content: center !important; 
-            align-items: center !important;     
-            width: 100% !important;             
-            box-sizing: border-box !important;
-            padding: 14px 28px !important;     
-            border: 1px solid #DDE6ED !important;
-            font-size: 16px !important;
-            font-weight: bold !important;
-            cursor: pointer !important;
-            border-radius: 8px !important; 
-            text-align: center !important;
-            margin: 8px 0 !important;          
-            text-decoration: none !important; /* Elimina por completo la línea morada */
-            
-            background-color: #E8EEF5 !important; /* Gris-Azul Acero */
-            color: #1E293B !important;            /* Texto Oscuro */
-            transition: all .2s ease !important;
-        }
-
-        /* INTERACCIÓN (HOVER) */
-        .bton-1:hover, .bton-2:hover, .bton-3:hover {
-            background-color: #0F4C81 !important; /* Azul Cobalto al pasar el mouse */
-            color: #FFFFFF !important;            /* Texto Blanco */
-            border-color: #0F4C81 !important;
-            transform: translateY(-1px) !important;
-        }
-
-        .bton-1:active, .bton-2:active, .bton-3:active {
-            background-color: #0B3459 !important; 
-            transform: translateY(0) !important;
-        }
-
-        /* BOTÓN FLOTANTE REGRESAR */
-        .z1 {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            z-index: 1000;
-        }
-
-        .z2 {
-            display: inline-block;
-            padding: 11px 22px;
-            color: #1E293B;             
-            text-decoration: none;     
-            border-radius: 8px;                       
-            font-weight: bold;         
-            transition: all 0.2s ease;
-            background-color: #DDE6ED; 
-            border: 1px solid #CBD5E1;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-        }
-
-        .z2:hover {
-            background-color: #CBD5E1;
-            transform: translateY(-2px);
-        }
-    </style>
+    <title>Panel de Control - Biblioteca Sullivan</title>
+    <!-- Tu archivo unificado de diseño externo -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="body2">
 
-    <!-- Contenedor animado de las burbujas -->
     <div class="contenedor-burbujas">
         <div class="burbuja"></div>
         <div class="burbuja"></div>
         <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
     </div>
 
-    <!-- Menú central en tarjeta flotante -->
-    <div class="contenedorpadrere">
-        <h1 class="Modulos">MÓDULOS</h1>
+    <!-- 🔔 PANEL DE NOTIFICACIONES DINÁMICO (CAMPANITA) -->
+    <div class="contenedor-notificaciones">
+        <h3 class="titulo-notificaciones">
+            <span class="campana-alerta">🔔</span> Panel de Entregas Pendientes
+        </h3>
+        <!-- JavaScript inyectará las alertas aquí adentro automáticamente -->
+        <div class="lista-alertas" id="panel-alertas">
+            <div class="aviso-vacio">Cargando notificaciones del sistema...</div>
+        </div>
+    </div>
+
+    <!-- 🎛️ CONTENEDOR PADRE ORIGINAL TOTALMENTE ORGANIZADO -->
+    <div class="contenedorpadrere" style="position: relative !important; top: 0 !important; left: 0 !important; transform: none !important; margin: 10px auto 40px auto; max-width: 450px;">
+        <span class="Modulos">Panel de Módulos</span>
         
-        <a class="bton-1" href="profesores.php">PROFESORES</a>
-        <a class="bton-2" href="alumnos.php">ALUMNOS</a>
-        <a class="bton-3" href="catalogo.php">CATÁLOGO</a>
-         <a class="bton-3" href="prestamos.php">PRÉSTAMOS</a>
+        <!-- BLOQUE 1: GESTIÓN ESCOLAR E INVENTARIO -->
+        <div style="width: 100%; text-align: center;">
+            <span class="subtitulo-menu">📝 Altas y Registros</span>
+            <a class="bton-1" href="profesores.php">👨‍🏫 Registrar Profesores</a>
+            <a class="bton-2" href="alumnos.php">👥 Registrar Alumnos</a>
+            <a class="bton-1" href="catalogo.php">✍️ Registrar Libros Nuevos</a>
+            <a class="bton-4" href="ver_catalogo.php">📊 Ver Inventario Completo</a>
+        </div>
+
+        <!-- BLOQUE 2: OPERACIÓN DIARIA (SUSTITUYE EL PAPEL Y REVISA QUIÉN DEBE) -->
+        <div class="seccion-menu" style="width: 100%; text-align: center;">
+            <span class="subtitulo-menu">⚡ Operación de Préstamos</span>
+            <!-- Aquí prestas/apartas con semáforo y buscador dinámico -->
+            <a class="bton-3" href="catalogo_interactivo.php">🟢 Catálogo Interactivo</a>
+            <!-- Aquí revisas el cuaderno digital de quién debe, cuándo entrega y asientas devoluciones -->
+            <a class="bton-4" href="ver_prestamos.php">📋 Bitácora de Préstamos</a>
+        </div>
     </div>
 
-    <!-- Botón Regresar de la esquina -->
-    <div class="z1">
-        <a class="z2" href="index.html">REGRESAR</a>
-    </div>
+    <!-- 🚀 JAVASCRIPT: Conecta el panel con la base de datos de manera interna -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var contenedorAlertas = document.getElementById("panel-alertas");
+
+        fetch("obtener_alertas.php")
+            .then(response => response.json())
+            .then(data => {
+                contenedorAlertas.innerHTML = ""; 
+                var tieneAlertasCriticas = false;
+
+                if (data.length > 0) {
+                    data.forEach(function(alerta) {
+                        var claseTarjeta = "";
+                        var mensajeTiempo = "";
+
+                        if (alerta.dias < 0) {
+                            claseTarjeta = "entrega-vencida";
+                            mensajeTiempo = "⚠️ RETRASADO POR " + Math.abs(alerta.dias) + " DÍAS";
+                            tieneAlertasCriticas = true;
+                        } else if (alerta.dias === 0) {
+                            claseTarjeta = "entrega-hoy";
+                            mensajeTiempo = "⏳ ENTREGA HOY";
+                            tieneAlertasCriticas = true;
+                        } else if (alerta.dias <= 3) {
+                            claseTarjeta = "entrega-proxima";
+                            mensajeTiempo = "📅 Entrega en " + alerta.dias + " días";
+                            tieneAlertasCriticas = true;
+                        }
+
+                        if (claseTarjeta !== "") {
+                            var tarjeta = document.createElement("div");
+                            tarjeta.className = "tarjeta-aviso " + claseTarjeta;
+                            tarjeta.innerHTML = "<div><strong>" + mensajeTiempo + "</strong> — " +
+                                                "<u>" + alerta.persona + "</u> debe devolver el libro " +
+                                                "<b>\"" + alerta.libro + "\"</b> (Límite: " + alerta.fecha_limite + ")</div>";
+                            contenedorAlertas.appendChild(tarjeta);
+                        }
+                    });
+                }
+
+                if (!tieneAlertasCriticas) {
+                    contenedorAlertas.innerHTML = '<div class="aviso-vacio">🟢 No hay entregas críticas registradas para hoy ni para los siguientes días.</div>';
+                }
+            })
+            .catch(error => {
+                console.error("Error al cargar las alertas:", error);
+                contenedorAlertas.innerHTML = '<div class="aviso-vacio" style="color: #991B1B;">❌ Hubo un problema al conectar con el servidor de notificaciones.</div>';
+            });
+    });
+    </script>
 </body>
 </html>
-      
