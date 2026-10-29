@@ -159,7 +159,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
   </table>
 
   <div class="z1">
-      <a class="z2" href="registros.html">REGRESAR</a>
+      <a class="z2" href="registro.html">REGRESAR</a>
   </div>
 </body>
 </html>
