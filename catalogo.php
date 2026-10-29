@@ -163,19 +163,18 @@ if (isset($_GET['eliminar_id'])) {
   <div class="contenedor-formulario" style="max-width: 800px;">
       <h2><?php echo $modo_editar ? '📝 Modificar Libro del Catálogo' : '📚 Registro de Libros'; ?></h2>
       
-      <!-- Agregamos un ID al formulario para manejarlo con JS -->
       <form method="post" action="catalogo.php" id="formLibro">
         <input type="hidden" name="id_libro" value="<?php echo $id_libro; ?>">
 
-        <!-- Bloque de campos superiores en dos columnas balanceadas -->
+        <!-- Bloque de campos superiores en CSS Grid -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             
-            <!-- 🔄 CAMBIO: Título de Libro ahora incluye el botón Buscar al lado derecho -->
+            <!-- Título de Libro incluye el botón Buscar al lado derecho -->
             <div class="grupo-campo">
                 <label>Título del Libro</label>
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="input_Titulo" name="Titulo" value="<?php echo htmlspecialchars($titulo); ?>" maxlength="255" style="flex: 1;">
-                    <button type="button" id="btnBuscarLibro" style="background-color: #007bff; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">🔍 Buscar</button>
+                    <button type="button" id="btnBuscarLibro" style="background-color: #007bff; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold; white-space: nowrap;">🔍 Buscar</button>
                 </div>
             </div>
             
@@ -194,7 +193,6 @@ if (isset($_GET['eliminar_id'])) {
                 <input type="text" id="input_Editorial" name="Editorial" value="<?php echo htmlspecialchars($editorial); ?>" maxlength="100">
             </div>
             
-            <!-- 🔄 CAMBIO: El campo ISBN vuelve a ser un input normal sin botón dedicado -->
             <div class="grupo-campo">
                 <label>ISBN / Código</label>
                 <input type="text" id="input_ISBN" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>" maxlength="50" style="width: 100%; box-sizing: border-box;">
@@ -215,30 +213,34 @@ if (isset($_GET['eliminar_id'])) {
                 <input type="text" id="input_Pais" name="Pais" value="<?php echo htmlspecialchars($pais); ?>" maxlength="50">
             </div>
             
+            <!-- 🛠️ CORRECCIÓN CSS: Forzamos a que ocupen las 2 columnas del Grid para que no se oculten -->
+            
             <!-- IDIOMA -->
-            <div class="grupo-campo" style="margin-bottom: 20px; width: 100%;">
+            <div class="grupo-campo" style="grid-column: span 2; width: 100%;">
                 <label style="display: block; margin-bottom: 8px; font-weight: bold;">Idioma</label>
                 <input type="text" id="input_Idioma" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50" style="width: 100%; box-sizing: border-box;">
             </div>
 
             <!-- DESCRIPCIÓN -->
-            <div class="grupo-campo" style="margin-bottom: 20px; width: 100%;">
+            <div class="grupo-campo" style="grid-column: span 2; width: 100%;">
                 <label style="display: block; margin-bottom: 8px; font-weight: bold;">Descripción / Notas</label>
                 <input type="text" id="input_descripcion" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255" style="width: 100%; box-sizing: border-box;">
             </div>
 
             <!-- EJEMPLARES TOTALES -->
-            <div class="grupo-campo" style="margin-bottom: 25px; width: 100%;">
+            <div class="grupo-campo" style="grid-column: span 2; margin-bottom: 10px; width: 100%;">
                 <label style="display: block; margin-bottom: 8px; font-weight: bold;">Ejemplares Totales</label>
                 <input type="number" id="input_Ejemplares" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" style="width: 100%; box-sizing: border-box;">
             </div>
 
             <!-- BOTÓN GUARDAR -->
-            <button type="submit" class="boton-guardar" style="width: 100%; padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer; box-sizing: border-box;">
-                <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
-            </button>
+            <div class="grupo-campo" style="grid-column: span 2; width: 100%;">
+                <button type="submit" class="boton-guardar" style="width: 100%; padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer; box-sizing: border-box;">
+                    <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
+                </button>
+            </div>
 
-            <div style="margin-top: 20px; width: 100%;">
+            <div style="grid-column: span 2; margin-top: 5px; width: 100%;">
                 <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-sizing: border-box;">🔍 Ver Todos los Libros Registrados</a>
             </div>
 
@@ -252,10 +254,9 @@ if (isset($_GET['eliminar_id'])) {
 
   <script src="main.js"></script>
 
-  <!-- 🚀 NUEVA LÓGICA DE BÚSQUEDA AUTOMÁTICA -->
+  <!-- 🚀 LÓGICA DE BÚSQUEDA AUTOMÁTICA COMPLETA -->
   <script>
   document.getElementById('btnBuscarLibro').addEventListener('click', function() {
-      // 1. Recopilamos el valor actual escrito en cada campo
       const datosBusqueda = {
           Titulo: document.getElementById('input_Titulo').value,
           Autor: document.getElementById('input_Autor').value,
@@ -269,7 +270,6 @@ if (isset($_GET['eliminar_id'])) {
           Idioma: document.getElementById('input_Idioma').value
       };
 
-      // Verificar si al menos un campo tiene texto
       const tieneCriterio = Object.values(datosBusqueda).some(valor => valor.trim() !== "");
       
       if (!tieneCriterio) {
@@ -277,7 +277,6 @@ if (isset($_GET['eliminar_id'])) {
           return;
       }
 
-      // 2. Realizar petición asíncrona al servidor backend
       fetch('buscar_libro.php', {
           method: 'POST',
           headers: {
@@ -288,7 +287,7 @@ if (isset($_GET['eliminar_id'])) {
       .then(response => response.json())
       .then(data => {
           if (data.success && data.libro) {
-              // 3. Rellenar dinámicamente los campos si el registro existe en la base de datos
+              // Rellenar dinámicamente mapeando las columnas de la BD
               document.getElementById('input_Titulo').value = data.libro.Titulo || '';
               document.getElementById('input_Autor').value = data.libro.Autor || '';
               document.getElementById('input_Materia').value = data.libro.Encabezamiento_de_Materia || '';
@@ -296,7 +295,10 @@ if (isset($_GET['eliminar_id'])) {
               document.getElementById('input_ISBN').value = data.libro.ISBN || '';
               document.getElementById('input_ano').value = data.libro.ano || '';
               document.getElementById('input_clasificacion').value = data.libro.clasificacion || '';
-              document.getElementById('input_Pais').value = data.libro.Pais || '';
+              
+              // 🔄 ASIGNACIÓN MÁGICA: Mapea 'Pais' (con P mayúscula de tu tabla) al input
+              document.getElementById('input_Pais').value = data.libro.Pais || data.libro.pais || '';
+              
               document.getElementById('input_Idioma').value = data.libro.Idioma || '';
               document.getElementById('input_descripcion').value = data.libro.descripcion || '';
               document.getElementById('input_Ejemplares').value = data.libro.Ejemplares_totales || '1';
@@ -306,7 +308,7 @@ if (isset($_GET['eliminar_id'])) {
       })
       .catch(error => {
           console.error('Error en la búsqueda:', error);
-          alert('Ocurrió un error al conectar con el servidor.');
+          alert('Ocurrió un error al procesar la búsqueda en el servidor.');
       });
   });
   </script>
