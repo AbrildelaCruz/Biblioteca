@@ -319,7 +319,7 @@
     flex-direction: column;
     gap:15;
     margin-top: 25px;
-    border-size: border-box;
+    border: border-box;
     grid-column: 1 / -1;       /* Se mantiene en su propia fila completa */
     justify-self: center;       /* ¡Clave! Centra el botón en medio del formulario */
     width: 100;                /* Hace que el ancho no sea del 100% */
@@ -774,52 +774,4 @@
     font-weight: bold;
     padding: 20px;
     display: none;
-}
-/* HEADER DE PRESTAMO*/
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Estilos del contenedor del header */
-.main-h{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 10%;
-  background-color: #1a1a1a;
-  color: #ffffff;
-}
-
-/* Estilos del Logo */
-.log a {
-  font-size: 24px;
-  font-weight: bold;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-/* Estilos de la navegación */
-.navegacion ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
-
-.navegacion a {
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 16px;
-}
-
-.navegacion a:hover {
-  color: #00adb5; /* Cambia de color al pasar el cursor */
-}
-
-.acciones{
-  font-size: 24px;
-  font-weight: bold;
-  color: #ffffff;
-  text-decoration: none;
 }
