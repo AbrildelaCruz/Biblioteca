@@ -40,7 +40,10 @@ if (isset($_GET['editar_id'])) {
             $isbn = $libro_data['ISBN'];
             $ano = $libro_data['ano'] ?? '';
             $clasificacion = $libro_data['clasificacion'] ?? '';
-            $pais = $libro_data['Pais'];
+            
+            // 🔄 SOLUCCIÓN: Forzamos la comprobación exacta de 'Pais' cuidando mayúsculas y minúsculas
+            $pais = $libro_data['Pais'] ?? $libro_data['pais'] ?? '';
+            
             $idioma = $libro_data['Idioma'];
             $descripcion = $libro_data['descripcion'] ?? '';
             $estado_conservacion = $libro_data['Estado_conservación'] ?? $libro_data['Estado_conservacion'] ?? 'Excelente';
@@ -60,7 +63,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isbn = trim($_POST['ISBN'] ?? '');
     $ano = trim($_POST['ano'] ?? '');
     $clasificacion = trim($_POST['clasificacion'] ?? '');
-    $pais = trim($_POST['Pais'] ?? '');
+    
+    // 🔄 SOLUCCIÓN POST: Capturamos 'Pais' de forma segura sin importar cómo lo envíe el formulario
+    $pais = trim($_POST['Pais'] ?? $_POST['pais'] ?? '');
+    
     $idioma = trim($_POST['Idioma'] ?? '');
     $descripcion = trim($_POST['descripcion'] ?? '');
     $estado_conservacion = trim($_POST['Estado_conservacion'] ?? 'Excelente');
@@ -258,6 +264,7 @@ if (isset($_GET['eliminar_id'])) {
           ISBN: document.getElementById('input_ISBN').value,
           ano: document.getElementById('input_ano').value,
           clasificacion: document.getElementById('input_clasificacion').value,
+          descripcion: document.getElementById('input_descripcion').value,
           Pais: document.getElementById('input_Pais').value,
           Idioma: document.getElementById('input_Idioma').value
       };
