@@ -54,11 +54,106 @@
     padding: 20px;
     box-sizing: border-box;
 }
+.seccion-menu {
+    width: 100%;
+    border-top: 2px dashed #DDE6ED;
+    margin-top: 15px;
+    padding-top: 10px;
+}
 
-@keyframes cambiarFondo {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.subtitulo-menu {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #475569;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+/*CAMPANITA DE NOTIFICACIONES*/
+.contenedor-notificaciones {
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08);
+    border: 1px solid rgba(232, 238, 245, 0.6);
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+.titulo-notificaciones {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #0F4C81;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.campana-alerta {
+    font-size: 24px;
+    display: inline-block;
+    animation: agitarCampana 2.5s ease infinite;
+}
+
+@keyframes agitarCampana {
+    0%, 100% { transform: rotate(0); }
+    10% { transform: rotate(15deg); }
+    20% { transform: rotate(-10deg); }
+    30% { transform: rotate(5deg); }
+    40% { transform: rotate(-5deg); }
+    50% { transform: rotate(0); }
+}
+
+.lista-alertas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tarjeta-aviso {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 5px solid;
+    background-color: #F8FAFC;
+    color: #1E293B;
+}
+
+.entrega-vencida {
+    border-left-color: #DC3545;
+    background-color: #FEF2F2;
+    color: #991B1B;
+}
+
+.entrega-hoy {
+    border-left-color: #FFC107;
+    background-color: #FFFBEB;
+    color: #92400E;
+}
+
+.entrega-proxima {
+    border-left-color: #2A9D8F;
+    background-color: #F0FDF4;
+    color: #166534;
+}
+
+.aviso-vacio {
+    text-align: center;
+    padding: 15px;
+    color: #475569;
+    font-style: italic;
 }
 
 /* ANIMACIÓN DE FLOTADO: Movimiento más suave y controlado */
@@ -513,3 +608,106 @@
         .boton-buscar-inline:active {
             transform: scale(0.98);
         }
+        /*catalogo_interactivo*/
+        .contenedor-busqueda {
+    width: 90%;
+    max-width: 500px;
+    margin: 0 auto 25px auto;
+    text-align: center;
+}
+
+.input-busqueda {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+    border: 2px solid #DDE6ED;
+    border-radius: 30px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(15, 76, 129, 0.03);
+}
+
+.input-busqueda:focus {
+    border-color: #0F4C81;
+    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.15);
+}
+
+/* Rejilla adaptativa para las tarjetas de los libros */
+.grid-catalogo {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+/* Tarjeta individual de libro */
+.tarjeta-libro {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.08);
+    border: 1px solid #DDE6ED;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tarjeta-libro:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(15, 76, 129, 0.12);
+}
+
+.info-libro h3 {
+    color: #0F4C81;
+    margin: 0 0 8px 0;
+    font-size: 18px;
+}
+
+.info-libro p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #475569;
+}
+
+/* Etiquetas del Semáforo de Disponibilidad */
+.semaforo {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.disponible { 
+    background-color: #D1FAE5; 
+    color: #065F46; 
+}
+
+.agotado { 
+    background-color: #FEE2E2; 
+    color: #991B1B; 
+}
+
+/* Zona del formulario dentro de la tarjeta */
+.formulario-prestamo {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #E2E8F0;
+}
+
+/* Letrero de aviso cuando no hay coincidencias */
+#mensaje-vacio {
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 16px;
+    color: #475569;
+    font-weight: bold;
+    padding: 20px;
+    display: none;
+}
