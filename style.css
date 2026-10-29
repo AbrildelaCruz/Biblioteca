@@ -54,6 +54,103 @@
     padding: 20px;
     box-sizing: border-box;
 }
+
+
+/*CAMPANITA DE NOTIFICACIONES*/
+.dashboard-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    width: 95% !important;
+    max-width: 1100px !important;
+    margin: 50px auto !important;
+    gap: 40px !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+}
+
+/* Columna Izquierda: Libera tu contenedor de módulos original */
+.columna-izquierda {
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: flex-end !important; /* Alinea los módulos hacia el centro */
+}
+
+/* Fuerza al contenedor original a no encimarse ni flotar de forma absoluta */
+.columna-izquierda .contenedorpadrere {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 400px !important;
+}
+
+/* Columna Derecha: El nuevo panel fijo de notificaciones en su lugar exacto */
+.panel-notificaciones-derecho {
+    width: 100% !important;
+    max-width: 380px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 25px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08) !important;
+    border: 1px solid rgba(232, 238, 245, 0.6) !important;
+    box-sizing: border-box !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    text-align: left !important;
+}
+
+/* Subsecciones internas del Menú */
+.dashboard-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    width: 95% !important;
+    max-width: 1100px !important;
+    margin: 50px auto !important;
+    gap: 40px !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+}
+
+/* Columna Izquierda: Libera tu contenedor de módulos original */
+.columna-izquierda {
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: flex-end !important; /* Alinea los módulos hacia el centro */
+}
+
+/* Fuerza al contenedor original a no encimarse ni flotar de forma absoluta */
+.columna-izquierda .contenedorpadrere {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 400px !important;
+}
+
+/* Columna Derecha: El nuevo panel fijo de notificaciones en su lugar exacto */
+.panel-notificaciones-derecho {
+    width: 100% !important;
+    max-width: 380px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 25px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08) !important;
+    border: 1px solid rgba(232, 238, 245, 0.6) !important;
+    box-sizing: border-box !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    text-align: left !important;
+}
+
+/* Subsecciones internas del Menú */
 .seccion-menu {
     width: 100%;
     border-top: 2px dashed #DDE6ED;
@@ -69,39 +166,6 @@
     text-transform: uppercase;
     margin-bottom: 8px;
     letter-spacing: 0.5px;
-}
-
-/*CAMPANITA DE NOTIFICACIONES*/
-.contenedor-notificaciones {
-    width: 100%;
-    max-width: 700px;
-    margin: 20px auto;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08);
-    border: 1px solid rgba(232, 238, 245, 0.6);
-    z-index: 10;
-    box-sizing: border-box;
-}
-
-.titulo-notificaciones {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: #0F4C81;
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.campana-alerta {
-    font-size: 24px;
-    display: inline-block;
-    animation: agitarCampana 2.5s ease infinite;
 }
 
 @keyframes agitarCampana {
@@ -710,4 +774,52 @@
     font-weight: bold;
     padding: 20px;
     display: none;
+}
+/* HEADER DE PRESTAMO*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos del contenedor del header */
+.main-h{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10%;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Estilos del Logo */
+.log a {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* Estilos de la navegación */
+.navegacion ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navegacion a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.navegacion a:hover {
+  color: #00adb5; /* Cambia de color al pasar el cursor */
+}
+
+.acciones{
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  text-decoration: none;
 }
