@@ -15,38 +15,43 @@
         <div class="burbuja"></div>
     </div>
 
-    <!-- 🔔 PANEL DE NOTIFICACIONES DINÁMICO (CAMPANITA) -->
-    <div class="contenedor-notificaciones">
-        <h3 class="titulo-notificaciones">
-            <span class="campana-alerta">🔔</span> Panel de Entregas Pendientes
-        </h3>
-        <!-- JavaScript inyectará las alertas aquí adentro automáticamente -->
-        <div class="lista-alertas" id="panel-alertas">
-            <div class="aviso-vacio">Cargando notificaciones del sistema...</div>
-        </div>
-    </div>
-
-    <!-- 🎛️ CONTENEDOR PADRE ORIGINAL TOTALMENTE ORGANIZADO -->
-    <div class="contenedorpadrere" style="position: relative !important; top: 0 !important; left: 0 !important; transform: none !important; margin: 10px auto 40px auto; max-width: 450px;">
-        <span class="Modulos">Panel de Módulos</span>
+    <!-- MAQUETA DEL DASHBOARD (IZQUIERDA: MENÚ | DERECHA: ALERTAS) -->
+    <div class="dashboard-layout">
         
-        <!-- BLOQUE 1: GESTIÓN ESCOLAR E INVENTARIO -->
-        <div style="width: 100%; text-align: center;">
-            <span class="subtitulo-menu">📝 Altas y Registros</span>
-            <a class="bton-1" href="profesores.php">👨‍🏫 Registrar Profesores</a>
-            <a class="bton-2" href="alumnos.php">👥 Registrar Alumnos</a>
-            <a class="bton-1" href="catalogo.php">✍️ Registrar Libros Nuevos</a>
-            <a class="bton-4" href="ver_catalogo.php">📊 Ver Inventario Completo</a>
+        <!-- COLUMNA IZQUIERDA: TU CONTENEDOR PADRE ORIGINAL -->
+        <div class="columna-izquierda">
+            <div class="contenedorpadrere" style="position: relative !important; top: 0 !important; left: 0 !important; transform: none !important; margin: 0; width: 100%; max-width: 450px;">
+                <span class="Modulos">Panel de Módulos</span>
+                
+                <!-- BLOQUE 1: GESTIÓN ESCOLAR E INVENTARIO -->
+                <div style="width: 100%; text-align: center;">
+                    <span class="subtitulo-menu">📝 Altas y Registros</span>
+                    <a class="bton-1" href="profesores.php">👨‍🏫 Registrar Profesores</a>
+                    <a class="bton-2" href="alumnos.php">👥 Registrar Alumnos</a>
+                    <a class="bton-1" href="catalogo.php">✍️ Registrar Libros Nuevos</a>
+                    <a class="bton-4" href="ver_catalogo.php">📊 Ver Inventario Completo</a>
+                </div>
+
+                <!-- BLOQUE 2: OPERACIÓN DIARIA -->
+                <div class="seccion-menu" style="width: 100%; text-align: center;">
+                    <span class="subtitulo-menu">⚡ Operación de Préstamos</span>
+                    <a class="bton-3" href="catalogo_interactivo.php">🟢 Catálogo Interactivo</a>
+                    <a class="bton-4" href="ver_prestamos.php">📋 Bitácora de Préstamos</a>
+                </div>
+            </div>
         </div>
 
-        <!-- BLOQUE 2: OPERACIÓN DIARIA (SUSTITUYE EL PAPEL Y REVISA QUIÉN DEBE) -->
-        <div class="seccion-menu" style="width: 100%; text-align: center;">
-            <span class="subtitulo-menu">⚡ Operación de Préstamos</span>
-            <!-- Aquí prestas/apartas con semáforo y buscador dinámico -->
-            <a class="bton-3" href="catalogo_interactivo.php">🟢 Catálogo Interactivo</a>
-            <!-- Aquí revisas el cuaderno digital de quién debe, cuándo entrega y asientas devoluciones -->
-            <a class="bton-4" href="ver_prestamos.php">📋 Bitácora de Préstamos</a>
+        <!-- COLUMNA DERECHA: EL PANEL DE NOTIFICACIONES LATERAL -->
+        <div class="panel-notificaciones-derecho">
+            <h3 class="titulo-notificaciones">
+                <span class="campana-alerta">🔔</span> Entregas
+            </h3>
+            <!-- JavaScript inyectará las alertas aquí adentro automáticamente -->
+            <div class="lista-alertas" id="panel-alertas">
+                <div class="aviso-vacio">Cargando notificaciones...</div>
+            </div>
         </div>
+
     </div>
 
     <!-- 🚀 JAVASCRIPT: Conecta el panel con la base de datos de manera interna -->
@@ -67,38 +72,42 @@
 
                         if (alerta.dias < 0) {
                             claseTarjeta = "entrega-vencida";
-                            mensajeTiempo = "⚠️ RETRASADO POR " + Math.abs(alerta.dias) + " DÍAS";
+                            mensajeTiempo = "⚠️ RETRASADO";
                             tieneAlertasCriticas = true;
                         } else if (alerta.dias === 0) {
                             claseTarjeta = "entrega-hoy";
-                            mensajeTiempo = "⏳ ENTREGA HOY";
+                            mensajeTiempo = "⏳ HOY";
                             tieneAlertasCriticas = true;
                         } else if (alerta.dias <= 3) {
                             claseTarjeta = "entrega-proxima";
-                            mensajeTiempo = "📅 Entrega en " + alerta.dias + " días";
+                            mensajeTiempo = "📅 En " + alerta.dias + " días";
                             tieneAlertasCriticas = true;
                         }
 
                         if (claseTarjeta !== "") {
                             var tarjeta = document.createElement("div");
                             tarjeta.className = "tarjeta-aviso " + claseTarjeta;
-                            tarjeta.innerHTML = "<div><strong>" + mensajeTiempo + "</strong> — " +
-                                                "<u>" + alerta.persona + "</u> debe devolver el libro " +
-                                                "<b>\"" + alerta.libro + "\"</b> (Límite: " + alerta.fecha_limite + ")</div>";
+                            tarjeta.innerHTML = "<div><strong>" + mensajeTiempo + "</strong><br>" +
+                                                "<u>" + alerta.persona + "</u> tiene " +
+                                                "<b>\"" + alerta.libro + "\"</b></div>";
                             contenedorAlertas.appendChild(tarjeta);
                         }
                     });
                 }
 
                 if (!tieneAlertasCriticas) {
-                    contenedorAlertas.innerHTML = '<div class="aviso-vacio">🟢 No hay entregas críticas registradas para hoy ni para los siguientes días.</div>';
+                    contenedorAlertas.innerHTML = '<div class="aviso-vacio">🟢 Sin entregas críticas en los próximos días.</div>';
                 }
             })
             .catch(error => {
                 console.error("Error al cargar las alertas:", error);
-                contenedorAlertas.innerHTML = '<div class="aviso-vacio" style="color: #991B1B;">❌ Hubo un problema al conectar con el servidor de notificaciones.</div>';
+                contenedorAlertas.innerHTML = '<div class="aviso-vacio" style="color: #991B1B;">❌ Error de conexión.</div>';
             });
     });
+
     </script>
+    <div class="z1">
+      <a class="z2" href="index.html">REGRESAR</a>
+  </div>
 </body>
 </html>
