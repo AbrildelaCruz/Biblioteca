@@ -1,46 +1,77 @@
 <?php
 require_once 'conexion.php';
 
-// Iniciar sesión si no está iniciada para evitar errores con las alertas
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 1. RECUPERAR ALERTAS DE LA SESIÓN TRAS GUARDAR O ELIMINAR
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-// ==========================================
-//        CONFIGURACIÓN DEL PAGINADOR
-// ==========================================
-$registros_por_pagina = 10; // Cantidad de profesores por página
+// 1. CAPTURAR EL TÉRMINO DE BÚSQUEDA
+$busqueda = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
 
-// Obtener la página actual desde la URL, si no existe por defecto es la página 1
-$pagina_actual = isset($_GET['pagina']) ? filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT) : 1;
+$registros_por_pagina = 10; // Cantidad de profesores por página
+$pagina_actual = isset($_GET['pagina']) ? filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT) : null;
+
+// ==========================================
+//   NUEVO: REDIRECCIÓN AUTOMÁTICA A LA PÁGINA DEL PROFESOR
+// ==========================================
+if ($busqueda !== '' && $pagina_actual === null) {
+    try {
+        // Obtenemos todos los profesores ordenados tal cual se muestran en la tabla
+        $sql_posicion = "SELECT id_profesores, Nombre FROM profesores ORDER BY id_profesores ASC";
+        $res_posicion = $conexion->query($sql_posicion);
+        
+        $indice_registro = -1;
+        $contador = 0;
+        
+        while ($fila_pos = $res_posicion->fetch_assoc()) {
+            // Buscamos coincidencia del nombre (insensible a mayúsculas/minúsculas)
+            if (mb_stripos($fila_pos['Nombre'], $busqueda) !== false) {
+                $indice_registro = $contador;
+                break; // Detener en el primer profesor que coincida
+            }
+            $contador++;
+        }
+        
+        // Si encontramos al profesor, calculamos matemáticamente su página exacta
+        if ($indice_registro != -1) {
+            $pagina_calculada = floor($indice_registro / $registros_por_pagina) + 1;
+            
+            // Redirigimos al usuario a esa página específica manteniendo la búsqueda viva
+            header("Location: ver_profesores.php?pagina=" . $pagina_calculada . "&buscar=" . urlencode($busqueda));
+            exit();
+        }
+    } catch (Exception $e) {
+        // Si hay un error, continúa el flujo normal
+    }
+}
+
+// Si no se buscó nada o ya se calculó la página, definir valor por defecto
 if (!$pagina_actual || $pagina_actual < 1) {
     $pagina_actual = 1;
 }
 
-// Calcular desde qué registro de la base de datos se debe empezar a leer (OFFSET)
+// Calcular desde qué registro leer (OFFSET)
 $desplazamiento = ($pagina_actual - 1) * $registros_por_pagina;
 
-// Contar el total de profesores existentes para calcular las páginas necesarias
+// Contar el total de profesores existentes para el paginador
 $sql_total = "SELECT COUNT(*) AS total FROM profesores";
 $resultado_total = $conexion->query($sql_total);
 $fila_total = $resultado_total->fetch_assoc();
 $total_registros = $fila_total['total'];
 
-// Calcular el número total de páginas (redondeando hacia arriba)
+// Calcular el número total de páginas
 $total_paginas = ceil($total_registros / $registros_por_pagina);
 
-// 2. CONSULTAR REGISTROS DE PROFESORES LIMITADOS CORRESPONDIENTES A LA PÁGINA ACTIVA
+// 2. CONSULTAR REGISTROS LIMITADOS CORRESPONDIENTES A LA PÁGINA ACTIVA
 $sql_datos = "SELECT * FROM profesores ORDER BY id_profesores ASC LIMIT ? OFFSET ?";
 $stmt = $conexion->prepare($sql_datos);
 $stmt->bind_param("ii", $registros_por_pagina, $desplazamiento);
 $stmt->execute();
 $resultado = $stmt->get_result();
-// ==========================================
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -52,7 +83,7 @@ $resultado = $stmt->get_result();
     <link rel="icon" type="image/png" href="logobiblioteca.png">
     
     <style>
-        /* Estilos profesionales para la botonera del paginador */
+        /* Estilos profesionales para el paginador */
         .paginador {
             display: flex;
             justify-content: center;
@@ -61,31 +92,48 @@ $resultado = $stmt->get_result();
             margin-bottom: 30px;
         }
         .paginador a {
-            color: #4a148c;
+            color: #0F4C81; 
             background-color: white;
-            border: 1px solid #e1bee7;
+            border: 1px solid #DDE6ED; 
             padding: 8px 14px;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: bold;
             font-size: 13px;
             transition: all 0.2s ease;
         }
         .paginador a:hover {
-            background-color: #f3e5f5;
-            border-color: #4a148c;
+            background-color: #E8EEF5; 
+            border-color: #0F4C81;
         }
         .paginador a.activa {
-            background-color: #4a148c;
+            background-color: #0F4C81;
             color: white;
-            border-color: #4a148c;
+            border-color: #0F4C81;
             cursor: default;
         }
         .paginador a.deshabilitado {
-            color: #ccc;
-            border-color: #eee;
+            color: #94A3B8;
+            border-color: #E2E8F0;
+            background-color: #F8FAFC;
             cursor: not-allowed;
             pointer-events: none;
+        }
+
+        /* DISEÑO DE LA FILA MARCADA / RESALTADA TRAS BUSCAR */
+        .tabla-datos tr.fila-resaltada {
+            background-color: rgba(42, 157, 143, 0.2) !important; 
+            border-left: 5px solid #2A9D8F; 
+        }
+        .tabla-datos tr.fila-resaltada td {
+            color: #114B43 !important; 
+            font-weight: 600;
+        }
+        .tabla-datos tr.fila-resaltada:nth-child(even) {
+            background-color: rgba(42, 157, 143, 0.2) !important;
+        }
+        .tabla-datos tr.fila-resaltada:hover {
+            background-color: rgba(42, 157, 143, 0.3) !important;
         }
     </style>
 </head>
@@ -98,17 +146,17 @@ $resultado = $stmt->get_result();
     </div>
 
     <?php if ($mensaje !== ''): ?>
-    <div class="alerta <?php echo $tipoMensaje; ?>" style="padding: 10px; margin: 15px auto; max-width: 700px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
+    <div class="alerta" style="padding: 12px; margin: 20px auto; max-width: 700px; text-align: center; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: <?php echo $tipoMensaje === 'exito' ? '#E8F5E9' : '#FFEBEE'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#2E7D32' : '#C62828'; ?>; border: 1px solid <?php echo $tipoMensaje === 'exito' ? '#C8E6C9' : '#FFCDD2'; ?>;">
         <?php echo $mensaje; ?>
     </div>
     <?php endif; ?>
 
-    <h2 style="text-align: center; color: white; margin-top: 30px;">👨‍🏫 Panel de Control - Profesores de la Institución</h2>
+    <h2 style="text-align: center; color: white; margin-top: 30px; font-family: 'Segoe UI', Arial, sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">👨‍🏫 Panel de Control - Profesores de la Institución</h2>
 
     <table class="tabla-datos" style="max-width: 85%; margin: 30px auto; font-size: 13px;">
         <thead>
             <tr>
-                <th>N°</th> <!-- Cambiado de ID a N° consecutivo -->
+                <th>N°</th> 
                 <th>Nombre del Profesor</th>
                 <th>Materia(s) Asignada(s)</th>
                 <th>Acciones</th>
@@ -116,27 +164,29 @@ $resultado = $stmt->get_result();
         </thead>
         <tbody>
             <?php if ($resultado && $resultado->num_rows > 0): 
-                // A. INICIALIZAMOS EL CONTADOR USANDO EL DESPLAZAMIENTO DE LA PÁGINA
                 $num = $desplazamiento + 1;
                 
                 while ($fila = $resultado->fetch_assoc()): 
-                    // Obtener la llave primaria real en plural para los enlaces ocultos
                     $id_actual = $fila['id_profesores'];
                     $materias_docente = $fila['Materia'] ?? $fila['materia'] ?? '-';
+                    $nombre_docente = $fila['Nombre'] ?? $fila['nombre'] ?? '';
+
+                    // Comprobamos si el nombre contiene la palabra buscada
+                    $clase_resaltado = '';
+                    if ($busqueda !== '' && mb_stripos($nombre_docente, $busqueda) !== false) {
+                        $clase_resaltado = 'fila-resaltada';
+                    }
                 ?>
-                <tr>
-                    <!-- B. REEMPLAZAMOS EL ID REAL POR NUESTRO CONTADOR VISUAL -->
+                <tr class="<?php echo $clase_resaltado; ?>">
                     <td style="font-weight: bold; text-align: center;"><?php echo $num; ?></td>
-                    <td><b><?php echo htmlspecialchars($fila['Nombre'] ?? $fila['nombre'] ?? ''); ?></b></td>
-                    <td><span style="color: #4a148c; font-weight: 500;"><?php echo htmlspecialchars($materias_docente); ?></span></td>
+                    <td><b><?php echo htmlspecialchars($nombre_docente); ?></b></td>
+                    <td><span style="color: #0F4C81; font-weight: 500;"><?php echo htmlspecialchars($materias_docente); ?></span></td>
                     <td>
-                        <!-- Los botones conservan internamente su ID real para que PHP sepa a quién procesar -->
-                        <a href="profesores.php?editar_id=<?php echo $id_actual; ?>" style="text-decoration: none; padding: 3px 6px; background-color: #007bff; border-radius: 3px; color: white; font-size: 11px; margin-right: 5px;">Editar</a>
-                        <a href="profesores.php?eliminar_id=<?php echo $id_actual; ?>" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px;" onclick="return confirm('¿Seguro que deseas eliminar este profesor?');">Eliminar</a>
+                        <a href="profesores.php?editar_id=<?php echo $id_actual; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #007bff; border-radius: 4px; color: white; font-size: 11px; margin-right: 5px; font-weight: bold;">Editar</a>
+                        <a href="profesores.php?eliminar_id=<?php echo $id_actual; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #f8d7da; border-radius: 4px; color: #721c24; font-size: 11px; font-weight: bold;" onclick="return confirm('¿Seguro que deseas eliminar este profesor?');">Eliminar</a>
                     </td>
                 </tr>
                 <?php 
-                // C. LE SUMAMOS 1 AL CONTADOR PARA EL SIGUIENTE RENGLÓN
                 $num++; 
                 ?>
             <?php endwhile; 
@@ -153,24 +203,22 @@ $resultado = $stmt->get_result();
     ========================================== -->
     <?php if ($total_paginas > 1): ?>
     <div class="paginador">
-        <!-- Botón Anterior -->
-        <a href="?pagina=<?php echo $pagina_actual - 1; ?>" class="<?php echo ($pagina_actual <= 1) ? 'deshabilitado' : ''; ?>">« Anterior</a>
+        <?php $query_buscar = ($busqueda !== '') ? '&buscar=' . urlencode($busqueda) : ''; ?>
 
-        <!-- Lista de números de página -->
+        <a href="?pagina=<?php echo $pagina_actual - 1; ?><?php echo $query_buscar; ?>" class="<?php echo ($pagina_actual <= 1) ? 'deshabilitado' : ''; ?>">« Anterior</a>
+
         <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-            <a href="?pagina=<?php echo $i; ?>" class="<?php echo ($pagina_actual == $i) ? 'activa' : ''; ?>">
+            <a href="?pagina=<?php echo $i; ?><?php echo $query_buscar; ?>" class="<?php echo ($pagina_actual == $i) ? 'activa' : ''; ?>">
                 <?php echo $i; ?>
             </a>
         <?php endfor; ?>
 
-        <!-- Botón Siguiente -->
-        <a href="?pagina=<?php echo $pagina_actual + 1; ?>" class="<?php echo ($pagina_actual >= $total_paginas) ? 'deshabilitado' : ''; ?>">Siguiente »</a>
+        <a href="?pagina=<?php echo $pagina_actual + 1; ?><?php echo $query_buscar; ?>" class="<?php echo ($pagina_actual >= $total_paginas) ? 'deshabilitado' : ''; ?>">Siguiente »</a>
     </div>
     <?php endif; ?>
-    <!-- ========================================== -->
 
     <div style="text-align: center; margin-bottom: 40px;">
-        <a href="profesores.php" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Registrar Nuevo Profesor</a>
+        <a href="profesores.php" style="display: inline-block; padding: 12px 24px; background-color: #2A9D8F; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#218074'" onmouseout="this.style.backgroundColor='#2A9D8F'">➕ Registrar Nuevo Profesor</a>
     </div>
 
     <div class="z1">
