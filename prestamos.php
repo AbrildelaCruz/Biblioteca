@@ -8,15 +8,19 @@
 </head>
 <body>
     <header>
-        <nav >
+        <div class="titulo">
+            <h1><a href="#">Préstamo</a></h1>
+        </div>
+
+        <nav>
             <ul>
                 <li><a href="#profesores">Profesores</a></li>
                 <li><a href="#alumnos">alumnos</a></li>
-                <li><a href="#libros_prestados">Libros_Prestados</a></li>
+                <li><a href="#catologo">Libros_Prestados</a></li>
+                
             </ul>
             </nav>
 </header>
-
     
 </body>
 </html>

@@ -134,60 +134,12 @@ if (isset($_GET['eliminar_id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo Maestro - Libros</title>
+  <title> Registro - Libros</title>
   <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
   <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
-     <div style="display: flex; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 15px; box-sizing: border-box;">
-
-      <!-- 🔔 BARRA LATERAL IZQUIERDA: ALERTAS DE ENTREGAS PARA HOY -->
-      <div class="sidebar-alertas" style="flex: 1; max-width: 300px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); height: fit-content; box-sizing: border-box;">
-          <h3 style="margin-top: 0; color: #4a148c; font-size: 16px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-              🔔 Entregas de Hoy
-          </h3>
-          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
-              <?php
-              // Consultamos la tabla de préstamos cruzando datos para saber quién entrega hoy
-              // NOTA: Ajusta los nombres de tus columnas e ID según tu base de datos real
-              $fecha_hoy = date('Y-m-d');
-              $query_alertas = "SELECT p.id_prestamo, prof.Nombre AS Profesor, lib.Titulo AS Libro 
-                                FROM prestamos p 
-                                INNER JOIN profesores prof ON p.id_profesor = prof.id_profesor
-                                INNER JOIN libros lib ON p.id_libro = lib.id_libro
-                                WHERE p.fecha_devolucion_esperada = ? AND p.fecha_devolucion_real IS NULL";
-              
-              $stmt_alertas = $conexion->prepare($query_alertas);
-              if ($stmt_alertas) {
-                  $stmt_alertas->bind_param('s', $fecha_hoy);
-                  $stmt_alertas->execute();
-                  $res_alertas = $stmt_alertas->get_result();
-                  
-                  if ($res_alertas->num_rows > 0) {
-                      while ($alerta = $res_alertas->fetch_assoc()) {
-                          ?>
-                          <!-- Notificación Dinámica estilo Tarjeta en Alerta -->
-                          <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                              <span style="display: block; font-size: 11px; color: #856404; font-weight: bold;">⚠️ DEBE ENTREGAR HOY</span>
-                              <strong style="display: block; font-size: 13px; color: #333; margin-top: 3px;"><?php echo htmlspecialchars($alerta['Profesor']); ?></strong>
-                              <span style="display: block; font-size: 12px; color: #666; font-style: italic;">Libro: <?php echo htmlspecialchars($alerta['Libro']); ?></span>
-                          </div>
-                          <?php
-                      }
-                  } else {
-                      echo '<p style="font-size: 13px; color: #888; text-align: center; margin: 10px 0;">✅ No hay entregas pendientes para el día de hoy.</p>';
-                  }
-                  $stmt_alertas->close();
-              } else {
-                  echo '<p style="font-size: 12px; color: #721c24;">Error al cargar alertas dinámicas.</p>';
-              }
-              ?>
-          </div>
-      </div>
-
-      <!-- 📊 COLUMNA DERECHA: AQUÍ VA TU FORMULARIO ORIGINAL DE CATÁLOGO (Abarca el resto de la pantalla) -->
-      <div style="flex: 2; box-sizing: border-box;">
-
+    
   <div class="contenedor-burbujas">
       <div class="burbuja"></div>
       <div class="burbuja"></div>
@@ -205,108 +157,151 @@ if (isset($_GET['eliminar_id'])) {
   <div class="contenedor-formulario" style="max-width: 800px;">
       <h2><?php echo $modo_editar ? '📝 Modificar Libro del Catálogo' : '📚 Registro de Libros'; ?></h2>
       
-      <form method="post" action="catalogo.php">
+      <!-- Agregamos un ID al formulario para manejarlo con JS -->
+      <form method="post" action="catalogo.php" id="formLibro">
         <input type="hidden" name="id_libro" value="<?php echo $id_libro; ?>">
 
         <!-- Bloque de campos superiores en dos columnas balanceadas -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            
+            <!-- 🔄 CAMBIO: Título de Libro ahora incluye el botón Buscar al lado derecho -->
             <div class="grupo-campo">
                 <label>Título del Libro</label>
-                <input type="text" name="Titulo" value="<?php echo htmlspecialchars($titulo); ?>" maxlength="255" required>
-            </div>
-            <div class="grupo-campo">
-                <label>Autor</label>
-                <input type="text" name="Autor" value="<?php echo htmlspecialchars($autor); ?>" maxlength="255" required>
-            </div>
-            <div class="grupo-campo">
-                <label>Encabezamiento de Materia</label>
-                <input type="text" name="Encabezamiento_de_Materia" value="<?php echo htmlspecialchars($encabezamiento_de_materia); ?>" maxlength="255">
-            </div>
-            <div class="grupo-campo">
-                <label>Editorial</label>
-                <input type="text" name="Editorial" value="<?php echo htmlspecialchars($editorial); ?>" maxlength="100">
-            </div>
-           <div class="grupo-campo">
-                <label>ISBN / Código</label>
                 <div style="display: flex; gap: 8px;">
-                    <!-- Le ponemos el id="isbn_input" para que JavaScript lo encuentre -->
-                    <input type="text" id="isbn_input" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>" maxlength="50" style="flex: 1;">
-                    <!-- Botón express que activa la magia de Google Books -->
-                    <button type="button" onclick="buscarLibroPorISBN()" style="background-color: #007bff; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">🔍 Buscar</button>
+                    <input type="text" id="input_Titulo" name="Titulo" value="<?php echo htmlspecialchars($titulo); ?>" maxlength="255" style="flex: 1;">
+                    <button type="button" id="btnBuscarLibro" style="background-color: #007bff; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">🔍 Buscar</button>
                 </div>
             </div>
+            
+            <div class="grupo-campo">
+                <label>Autor</label>
+                <input type="text" id="input_Autor" name="Autor" value="<?php echo htmlspecialchars($autor); ?>" maxlength="255">
+            </div>
+            
+            <div class="grupo-campo">
+                <label>Encabezamiento de Materia</label>
+                <input type="text" id="input_Materia" name="Encabezamiento_de_Materia" value="<?php echo htmlspecialchars($encabezamiento_de_materia); ?>" maxlength="255">
+            </div>
+            
+            <div class="grupo-campo">
+                <label>Editorial</label>
+                <input type="text" id="input_Editorial" name="Editorial" value="<?php echo htmlspecialchars($editorial); ?>" maxlength="100">
+            </div>
+            
+            <!-- 🔄 CAMBIO: El campo ISBN vuelve a ser un input normal sin botón dedicado -->
+            <div class="grupo-campo">
+                <label>ISBN / Código</label>
+                <input type="text" id="input_ISBN" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>" maxlength="50" style="width: 100%; box-sizing: border-box;">
+            </div>
+            
             <div class="grupo-campo">
                 <label>Año</label>
-                <input type="number" name="ano" value="<?php echo htmlspecialchars($ano); ?>" max="9999">
+                <input type="number" id="input_ano" name="ano" value="<?php echo htmlspecialchars($ano); ?>" max="9999">
             </div>
+            
             <div class="grupo-campo">
                 <label>Clasificación</label>
-                <input type="text" name="clasificacion" value="<?php echo htmlspecialchars($clasificacion); ?>" maxlength="100">
+                <input type="text" id="input_clasificacion" name="clasificacion" value="<?php echo htmlspecialchars($clasificacion); ?>" maxlength="100">
             </div>
+            
             <div class="grupo-campo">
                 <label>País</label>
-                <input type="text" name="Pais" value="<?php echo htmlspecialchars($pais); ?>" maxlength="50">
+                <input type="text" id="input_Pais" name="Pais" value="<?php echo htmlspecialchars($pais); ?>" maxlength="50">
             </div>
-             <!-- 🟢 IDIOMA: Al estar fuera del primer grid, se estira de lado a lado automáticamente -->
-          <div class="grupo-campo" style="margin-bottom: 20px; width: 100%;">
-              <label style="display: block; margin-bottom: 8px; font-weight: bold;">Idioma</label>
-              <input type="text" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50" style="width: 100%; box-sizing: border-box;">
-          </div>
+            
+            <!-- IDIOMA -->
+            <div class="grupo-campo" style="margin-bottom: 20px; width: 100%;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">Idioma</label>
+                <input type="text" id="input_Idioma" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>" maxlength="50" style="width: 100%; box-sizing: border-box;">
+            </div>
 
-          <!-- 🟢 DESCRIPCIÓN: Ocupa todo el ancho completo -->
-          <div class="grupo-campo" style="margin-bottom: 20px; width: 100%;">
-              <label style="display: block; margin-bottom: 8px; font-weight: bold;">Descripción / Notas</label>
-              <input type="text" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255" style="width: 100%; box-sizing: border-box;">
-          </div>
+            <!-- DESCRIPCIÓN -->
+            <div class="grupo-campo" style="margin-bottom: 20px; width: 100%;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">Descripción / Notas</label>
+                <input type="text" id="input_descripcion" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255" style="width: 100%; box-sizing: border-box;">
+            </div>
 
-          <!-- 🟢 EJEMPLARES TOTALES: Ocupa todo el ancho completo -->
-          <div class="grupo-campo" style="margin-bottom: 25px; width: 100%;">
-              <label style="display: block; margin-bottom: 8px; font-weight: bold;">Ejemplares Totales</label>
-              <input type="number" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required style="width: 100%; box-sizing: border-box;">
-          </div>
+            <!-- EJEMPLARES TOTALES -->
+            <div class="grupo-campo" style="margin-bottom: 25px; width: 100%;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">Ejemplares Totales</label>
+                <input type="number" id="input_Ejemplares" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" style="width: 100%; box-sizing: border-box;">
+            </div>
 
-          <!-- 🟢 TU BOTÓN ORIGINAL: Libre de las columnas, abarcando el 100% de forma limpia -->
-          <button type="submit" class="boton-guardar" style="width: 100%; padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer; box-sizing: border-box;">
-              <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
-          </button>
+            <!-- BOTÓN GUARDAR -->
+            <button type="submit" class="boton-guardar" style="width: 100%; padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer; box-sizing: border-box;">
+                <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
+            </button>
 
-                    <div style="margin-top: 20px; width: 100%;">
-              <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-sizing: border-box;">🔍 Ver Todos los Libros Registrados</a>
-          </div>
+            <div style="margin-top: 20px; width: 100%;">
+                <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-sizing: border-box;">🔍 Ver Todos los Libros Registrados</a>
+            </div>
 
-        </div> <!-- Cierra el div del grid -->
-      </form> <!-- 🟢 TRUCO MAESTRO 1: Cerramos el formulario aquí para liberar las columnas -->
-  </div> <!-- 🟢 TRUCO MAESTRO 2: Cerramos la tarjeta blanca original aquí -->
-
-  <!-- 🚀 SEGUNDO BLOQUE INDEPENDIENTE: Genera una nueva tarjeta limpia justo abajo para tus 3 campos extendidos -->
-  <div class="contenedor-formulario" style="max-width: 800px; margin: -10px auto 20px auto; padding: 20px; box-sizing: border-box; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-      
-      <!-- Abrimos un segundo formulario que apunta al mismo archivo para que procese los datos -->
-      <form method="post" action="catalogo.php">
-          <!-- Pasamos los datos ocultos para que PHP no pierda el hilo si estás editando -->
-          <input type="hidden" name="id_libro" value="<?php echo $id_libro; ?>">
-          <input type="hidden" name="Titulo" value="<?php echo htmlspecialchars($titulo); ?>">
-          <input type="hidden" name="Autor" value="<?php echo htmlspecialchars($autor); ?>">
-          <input type="hidden" name="Encabezamiento_de_Materia" value="<?php echo htmlspecialchars($encabezamiento_de_materia); ?>">
-          <input type="hidden" name="Editorial" value="<?php echo htmlspecialchars($editorial); ?>">
-          <input type="hidden" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>">
-          <input type="hidden" name="ano" value="<?php echo htmlspecialchars($ano); ?>">
-          <input type="hidden" name="clasificacion" value="<?php echo htmlspecialchars($clasificacion); ?>">
-          <input type="hidden" name="Pais" value="<?php echo htmlspecialchars($pais); ?>">
-
-         
-          <?php if ($modo_editar): ?>
-              <a href="catalogo.php" style="display: block; text-align: center; margin-top: 15px; color: #721c24; text-decoration: none; font-size: 14px; font-weight: bold;">Cancelar Edición</a>
-          <?php endif; ?>
-
-
-      </form>
+        </div>
+      </form> 
   </div> 
 
- 
   <div class="z1">
       <a class="z2" href="registro.html">REGRESAR</a>
   </div>
-    <script src="main.js"></script>
+
+  <script src="main.js"></script>
+
+  <!-- 🚀 NUEVA LÓGICA DE BÚSQUEDA AUTOMÁTICA -->
+  <script>
+  document.getElementById('btnBuscarLibro').addEventListener('click', function() {
+      // 1. Recopilamos el valor actual escrito en cada campo
+      const datosBusqueda = {
+          Titulo: document.getElementById('input_Titulo').value,
+          Autor: document.getElementById('input_Autor').value,
+          Encabezamiento_de_Materia: document.getElementById('input_Materia').value,
+          Editorial: document.getElementById('input_Editorial').value,
+          ISBN: document.getElementById('input_ISBN').value,
+          ano: document.getElementById('input_ano').value,
+          clasificacion: document.getElementById('input_clasificacion').value,
+          Pais: document.getElementById('input_Pais').value,
+          Idioma: document.getElementById('input_Idioma').value
+      };
+
+      // Verificar si al menos un campo tiene texto
+      const tieneCriterio = Object.values(datosBusqueda).some(valor => valor.trim() !== "");
+      
+      if (!tieneCriterio) {
+          alert("Por favor, rellena al menos un campo para realizar la búsqueda.");
+          return;
+      }
+
+      // 2. Realizar petición asíncrona al servidor backend
+      fetch('buscar_libro.php', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datosBusqueda)
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success && data.libro) {
+              // 3. Rellenar dinámicamente los campos si el registro existe en la base de datos
+              document.getElementById('input_Titulo').value = data.libro.Titulo || '';
+              document.getElementById('input_Autor').value = data.libro.Autor || '';
+              document.getElementById('input_Materia').value = data.libro.Encabezamiento_de_Materia || '';
+              document.getElementById('input_Editorial').value = data.libro.Editorial || '';
+              document.getElementById('input_ISBN').value = data.libro.ISBN || '';
+              document.getElementById('input_ano').value = data.libro.ano || '';
+              document.getElementById('input_clasificacion').value = data.libro.clasificacion || '';
+              document.getElementById('input_Pais').value = data.libro.Pais || '';
+              document.getElementById('input_Idioma').value = data.libro.Idioma || '';
+              document.getElementById('input_descripcion').value = data.libro.descripcion || '';
+              document.getElementById('input_Ejemplares').value = data.libro.Ejemplares_totales || '1';
+          } else {
+              alert('No se encontró ningún libro que coincida con los datos ingresados.');
+          }
+      })
+      .catch(error => {
+          console.error('Error en la búsqueda:', error);
+          alert('Ocurrió un error al conectar con el servidor.');
+      });
+  });
+  </script>
 </body>
 </html>
