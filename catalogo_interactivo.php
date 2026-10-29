@@ -22,57 +22,16 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo Interactivo - Biblioteca Sullivan</title>
+    <!-- Tu archivo de estilos externo unificado -->
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
-    <style>
-        /* Estilos específicos para la sección interactiva de tarjetas */
-        .grid-catalogo {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            width: 90%;
-            max-width: 1200px;
-            margin: 20px auto;
-        }
-        .tarjeta-libro {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(15, 76, 129, 0.08);
-            border: 1px solid #DDE6ED;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .info-libro h3 {
-            color: #0F4C81;
-            margin: 0 0 8px 0;
-            font-size: 18px;
-        }
-        .info-libro p {
-            margin: 4px 0;
-            font-size: 14px;
-            color: #475569;
-        }
-        .semaforo {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-top: 10px;
-        }
-        .disponible { background-color: #D1FAE5; color: #065F46; }
-        .agotado { background-color: #FEE2E2; color: #991B1B; }
-        
-        .formulario-prestamo {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px dashed #E2E8F0;
-        }
-    </style>
 </head>
 <body class="body2">
+
+    <div class="contenedor-burbujas">
+        <div class="burbuja"></div>
+        <div class="burbuja"></div>
+        <div class="burbuja"></div>
+    </div>
 
     <!-- ALERTAS DEL SISTEMA -->
     <?php if ($mensaje !== ''): ?>
@@ -82,17 +41,24 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <?php endif; ?>
 
     <h2 style="color: #0F4C81; text-align: center; margin-top: 20px;">📚 Catálogo Digital Interactivo</h2>
-    <p style="text-align: center; color: #475569; margin-bottom: 30px;">Selecciona un libro disponible para realizar un préstamo o apartado inmediato.</p>
+    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Busca un libro por su título y procésalo al instante.</p>
+
+    <!-- BARRA DE BÚSQUEDA DINÁMICA -->
+    <div class="contenedor-busqueda">
+        <input type="text" id="buscador" class="input-busqueda" placeholder="🔍 Escribe el título del libro para filtrar...">
+    </div>
 
     <!-- CUADRÍCULA DE TARJETAS VISUALES -->
-    <div class="grid-catalogo">
+    <div class="grid-catalogo" id="lista-libros">
+        <div id="mensaje-vacio">❌ No se encontraron libros que coincidan con la búsqueda.</div>
+
         <?php if ($libros_res && $libros_res->num_rows > 0): ?>
             <?php while($libro = $libros_res->fetch_assoc()): 
                 $es_disponible = ($libro['Ejemplares_disponibles'] > 0);
             ?>
                 <div class="tarjeta-libro">
                     <div class="info-libro">
-                        <h3><?php echo htmlspecialchars($libro['Titulo']); ?></h3>
+                        <h3 class="titulo-libro"><?php echo htmlspecialchars($libro['Titulo']); ?></h3>
                         <p><b>Autor:</b> <?php echo htmlspecialchars($libro['Autor']); ?></p>
                         <p><b>Editorial:</b> <?php echo htmlspecialchars($libro['Editorial']); ?></p>
                         <p><b>En Estantería:</b> <?php echo $libro['Ejemplares_disponibles'] ?? 0; ?> copias</p>
@@ -108,7 +74,6 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
                     <!-- FORMULARIO DE ACCIÓN DIRECTA -->
                     <?php if ($es_disponible): ?>
                         <div class="formulario-prestamo">
-                            <!-- Envia los datos al nuevo archivo procesar_movimiento.php -->
                             <form action="procesar_movimiento.php" method="POST" style="display: flex; flex-direction: column; gap: 8px;">
                                 <input type="hidden" name="id_libro" value="<?php echo $libro['id_libro']; ?>">
                                 
@@ -118,7 +83,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
                                     <option value="profesor">Profesor</option>
                                 </select>
 
-                                <!-- Selector de Alumnos (Se muestra dinámicamente) -->
+                                <!-- Selector de Alumnos -->
                                 <select name="id_usuario" id="select_alumno_<?php echo $libro['id_libro']; ?>" style="display:none;">
                                     <option value="">Selecciona el Alumno...</option>
                                     <?php 
@@ -129,7 +94,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
                                     ?>
                                 </select>
 
-                                <!-- Selector de Profesores (Se muestra dinámicamente) -->
+                                <!-- Selector de Profesores -->
                                 <select name="id_usuario" id="select_profesor_<?php echo $libro['id_libro']; ?>" style="display:none;" disabled>
                                     <option value="">Selecciona el Docente...</option>
                                     <?php 
@@ -158,8 +123,37 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
         <a class="z2" href="registro.html">REGRESAR</a>
     </div>
 
-    <!-- SCRIPT INTERACTIVO PARA ALTERNAR SELECTORES -->
+    <!-- SCRIPTS INTERACTIVOS (Alternar selectores y Motor de búsqueda) -->
     <script>
+    // 1. MOTOR DE FILTRADO EN TIEMPO REAL
+    document.getElementById('buscador').addEventListener('input', function() {
+        var filtro = this.value.toLowerCase().trim();
+        var tarjetas = document.getElementsByClassName('tarjeta-libro');
+        var mensajeVacio = document.getElementById('mensaje-vacio');
+        var encontrados = 0;
+
+        for (var i = 0; i < tarjetas.length; i++) {
+            var tituloElemento = tarjetas[i].querySelector('.titulo-libro');
+            if (tituloElemento) {
+                var textoTitulo = tituloElemento.textContent.toLowerCase();
+                
+                if (textoTitulo.includes(filtro)) {
+                    tarjetas[i].style.display = 'flex';
+                    encontrados++;
+                } else {
+                    tarjetas[i].style.display = 'none';
+                }
+            }
+        }
+
+        if (encontrados === 0 && filtro !== "") {
+            mensajeVacio.style.display = 'block';
+        } else {
+            mensajeVacio.style.display = 'none';
+        }
+    });
+
+    // 2. LÓGICA DE SELECTORES DINÁMICOS
     function alternarUsuarios(selector, idLibro) {
         var selectAlumno = document.getElementById('select_alumno_' + idLibro);
         var selectProfesor = document.getElementById('select_profesor_' + idLibro);
@@ -168,7 +162,6 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
             selectAlumno.style.display = 'block';
             selectAlumno.disabled = false;
             selectAlumno.required = true;
-            
             selectProfesor.style.display = 'none';
             selectProfesor.disabled = true;
             selectProfesor.required = false;
@@ -176,7 +169,6 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
             selectProfesor.style.display = 'block';
             selectProfesor.disabled = false;
             selectProfesor.required = true;
-            
             selectAlumno.style.display = 'none';
             selectAlumno.disabled = true;
             selectAlumno.required = false;
