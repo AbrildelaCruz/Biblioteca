@@ -81,7 +81,7 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
   </div>
 
   <div class="z1">
-    <a class="z2" href="registro.html">REGRESAR</a>
+    <a class="z2" href="registro.php">REGRESAR</a>
   </div>
 </body>
 

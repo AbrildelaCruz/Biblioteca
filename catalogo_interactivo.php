@@ -131,7 +131,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     </div>
 
     <div class="z1">
-        <a class="z2" href="registro.html">REGRESAR</a>
+        <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 
     <!-- SCRIPTS INTERACTIVOS (Alternar selectores y Motor de búsqueda) -->

@@ -145,7 +145,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejempl
         }
     </script>
     <div class="z1">
-        <a class="z2" href="registro.html">REGRESAR</a>
+        <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 </body>
 

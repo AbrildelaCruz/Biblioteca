@@ -55,63 +55,39 @@ if (isset($_GET['editar_id'])) {
 
 // 3. PROCESAR EL FORMULARIO (REGISTRO O ACTUALIZACIÓN - MÉTODO POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_libro_post = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
-    $titulo = trim($_POST['Titulo'] ?? '');
-    $autor = trim($_POST['Autor'] ?? '');
-    $encabezamiento_de_materia = trim($_POST['Encabezamiento_de_Materia'] ?? '');
+    $titulo    = trim($_POST['Titulo'] ?? '');
+    $autor     = trim($_POST['Autor'] ?? '');
+    $categoria = trim($_POST['Categoria'] ?? '');
     $editorial = trim($_POST['Editorial'] ?? '');
-    $isbn = trim($_POST['ISBN'] ?? '');
-    $ano = trim($_POST['ano'] ?? '');
-    $clasificacion = trim($_POST['clasificacion'] ?? '');
+    $edicion   = trim($_POST['Edicion'] ?? '');
+    $isbn      = trim($_POST['ISBN'] ?? ''); // O 'ISBM' según tu columna real de la BD
+    $pais      = trim($_POST['Pais'] ?? '');
+    $idioma    = trim($_POST['Idioma'] ?? '');
+    $conservacion = trim($_POST['Estado_conservacion'] ?? 'Excelente');
+    $ejemplares = intval($_POST['Ejemplares_totales'] ?? 1); // Cantidad de libros físicos que entran
 
-    // 🔄 SOLUCCIÓN POST: Capturamos 'Pais' de forma segura sin importar cómo lo envíe el formulario
-    $pais = trim($_POST['Pais'] ?? $_POST['pais'] ?? '');
-
-    $idioma = trim($_POST['Idioma'] ?? '');
-    $descripcion = trim($_POST['descripcion'] ?? '');
-    $estado_conservacion = trim($_POST['Estado_conservacion'] ?? 'Excelente');
-    $ejemplares_totales = filter_input(INPUT_POST, 'Ejemplares_totales', FILTER_VALIDATE_INT);
-
-    if ($titulo === '' || $autor === '' || $ejemplares_totales === false || $ejemplares_totales < 0) {
-        $_SESSION['mensaje'] = 'El título, autor y la cantidad de ejemplares son obligatorios.';
+    if ($titulo === '' || $autor === '' || $ejemplares < 1) {
+        $_SESSION['mensaje'] = 'Título, Autor y Ejemplares Totales son campos obligatorios.';
         $_SESSION['tipoMensaje'] = 'error';
     } else {
-        if (!empty($id_libro_post)) {
-            // ACTUALIZAR LIBRO EXISTENTE EN EL CATÁLOGO (MODO EDICIÓN)
-            $stmt_calc = $conexion->prepare('SELECT Ejemplares_prestados FROM libros WHERE id_libro = ?');
-            $stmt_calc->bind_param('i', $id_libro_post);
-            $stmt_calc->execute();
-            $res_calc = $stmt_calc->get_result()->fetch_assoc();
-            $prestados = $res_calc['Ejemplares_prestados'] ?? 0;
-            $stmt_calc->close();
-
-            $disponibles_nuevos = $ejemplares_totales - $prestados;
-            if ($disponibles_nuevos < 0)
-                $disponibles_nuevos = 0;
-
-            $stmt = $conexion->prepare('UPDATE libros SET Titulo=?, Autor=?, Encabezamiento_de_Materia=?, Editorial=?, ISBN=?, ano=?, clasificacion=?, Pais=?, Idioma=?, descripcion=?, Estado_conservación=?, Ejemplares_totales=?, Ejemplares_disponibles=? WHERE id_libro=?');
-            $stmt->bind_param('sssssssssssiii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $disponibles_nuevos, $id_libro_post);
-            $texto_exito = 'Libro actualizado en el catálogo correctamente.';
-        } else {
-            // INSERTAR NUEVO LIBRO AL CATÁLOGO
-            $stmt = $conexion->prepare('INSERT INTO libros (Titulo, Autor, Encabezamiento_de_Materia, Editorial, ISBN, ano, clasificacion, Pais, Idioma, descripcion, Estado_conservación, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)');
-            $stmt->bind_param('sssssssssssii', $titulo, $autor, $encabezamiento_de_materia, $editorial, $isbn, $ano, $clasificacion, $pais, $idioma, $descripcion, $estado_conservacion, $ejemplares_totales, $ejemplares_totales);
-            $texto_exito = 'Nuevo libro añadido al catálogo de la biblioteca.';
-        }
+        // 🚀 LA MAGIA DE LA INGENIERÍA:
+        // Mandamos a guardar los $ejemplares en Totales y en Disponibles, y ponemos 0 en Prestados.
+        $stmt = $conexion->prepare("INSERT INTO libros (Titulo, Autor, Categoria, Editorial, Edicion, ISBN, Pais, Idioma, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados, Estado_conservacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)");
+        $stmt->bind_param("ssssssssiis", $titulo, $autor, $categoria, $editorial, $edicion, $isbn, $pais, $idioma, $ejemplares, $ejemplares, $conservacion);
 
         if ($stmt && $stmt->execute()) {
-            $_SESSION['mensaje'] = $texto_exito;
+            $_SESSION['mensaje'] = "¡Libro registrado exitosamente en el catálogo e inventario!";
             $_SESSION['tipoMensaje'] = 'exito';
             $stmt->close();
         } else {
-            $_SESSION['mensaje'] = 'Error al guardar en el catálogo: ' . $conexion->error;
+            $_SESSION['mensaje'] = 'Error al registrar en la base de datos: ' . $conexion->error;
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: ver_catalogo.php");
+    // Redirección PRG para que el F5 no te duplique el libro
+    header("Location: ver_catalogo.php"); 
     exit();
 }
-
 // 4. PROCESAR EL BORRADO EN EL CATÁLOGO (MÉTODO GET)
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
@@ -179,9 +155,7 @@ if (isset($_GET['eliminar_id'])) {
                     <div style="display: flex; gap: 8px;">
                         <input type="text" id="input_Titulo" name="Titulo"
                             value="<?php echo htmlspecialchars($titulo); ?>" maxlength="255" style="flex: 1;">
-                        <button type="button" id="btnBuscarLibro"
-                            style="background-color: #007bff; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold; white-space: nowrap;">🔍
-                            Buscar</button>
+                       
                     </div>
                 </div>
 
@@ -271,7 +245,7 @@ if (isset($_GET['eliminar_id'])) {
     </div>
 
     <div class="z1">
-        <a class="z2" href="registro.html">REGRESAR</a>
+        <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 
     <script src="main.js"></script>

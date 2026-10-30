@@ -53,6 +53,52 @@ if (isset($_GET['devolver_id'])) {
     exit();
 }
 
+// 🚀 NUEVA LÓGICA: PROCESAR REPORTE DE LIBRO PERDIDO
+// ===================================================
+if (isset($_GET['perdido_id'])) {
+    $id_prestamo_perdido = filter_input(INPUT_GET, 'perdido_id', FILTER_VALIDATE_INT);
+    
+    if ($id_prestamo_perdido) {
+        $fecha_hoy = date('Y-m-d');
+        
+        // Buscar qué libro está asociado a este préstamo
+        $stmt_buscar = $conexion->prepare("SELECT id_libro FROM prestamos WHERE id_prestamo = ?");
+        $stmt_buscar->bind_param("i", $id_prestamo_perdido);
+        $stmt_buscar->execute();
+        $res_buscar = $stmt_buscar->get_result()->fetch_assoc();
+        $stmt_buscar->close();
+        
+        if ($res_buscar) {
+            $id_libro_update = $res_buscar['id_libro'];
+            
+            $conexion->begin_transaction();
+            try {
+                // Cerrar el préstamo marcándolo como 'Perdido' en el estado
+                $stmt_perdido = $conexion->prepare("UPDATE prestamos SET fecha_devolucion_real = ?, estado_libro = 'Perdido' WHERE id_prestamo = ?");
+                $stmt_perdido->bind_param("si", $fecha_hoy, $id_prestamo_perdido);
+                $stmt_perdido->execute();
+                $stmt_perdido->close();
+                
+                // AJUSTE DE INVENTARIO: Restamos 1 de Ejemplares Totales y 1 de Ejemplares Prestados
+                $stmt_upd_lib = $conexion->prepare("UPDATE libros SET Ejemplares_totales = GREATEST(0, Ejemplares_totales - 1), Ejemplares_prestados = GREATEST(0, Ejemplares_prestados - 1) WHERE id_libro = ?");
+                $stmt_upd_lib->bind_param("i", $id_libro_update);
+                $stmt_upd_lib->execute();
+                $stmt_upd_lib->close();
+                
+                $conexion->commit();
+                $_SESSION['mensaje'] = "⚠️ Libro reportado como perdido. El inventario total ha sido descontado.";
+                $_SESSION['tipoMensaje'] = 'error'; 
+                
+            } catch (Exception $e) {
+                $conexion->rollback();
+                $_SESSION['mensaje'] = "Error al procesar el extravío.";
+                $_SESSION['tipoMensaje'] = 'error';
+            }
+        }
+    }
+    header("Location: prestamos.php");
+    exit();
+}
 // ==========================================
 // 2. CONSULTAR EL HISTORIAL DE PRÉSTAMOS
 // ==========================================
@@ -72,6 +118,55 @@ $sql_bitacora = "SELECT
                  ORDER BY p.id_prestamo DESC";
 
 $resultado_bitacora = $conexion->query($sql_bitacora);
+
+// 2. PROCESAR ACCIÓN NUEVA: REPORTAR LIBRO EXTRAVIADO
+// ===================================================
+if (isset($_GET['perdido_id'])) {
+    $id_prestamo_perdido = filter_input(INPUT_GET, 'perdido_id', FILTER_VALIDATE_INT);
+    
+    if ($id_prestamo_perdido) {
+        $fecha_hoy = date('Y-m-d');
+        
+        // A. Buscar qué libro está asociado a este préstamo
+        $stmt_buscar = $conexion->prepare("SELECT id_libro FROM prestamos WHERE id_prestamo = ?");
+        $stmt_buscar->bind_param("i", $id_prestamo_perdido);
+        $stmt_buscar->execute();
+        $res_buscar = $stmt_buscar->get_result()->fetch_assoc();
+        $stmt_buscar->close();
+        
+        if ($res_buscar) {
+            $id_libro_update = $res_buscar['id_libro'];
+            
+            $conexion->begin_transaction();
+            try {
+                // B. Cerrar el préstamo marcándolo como 'Perdido' en el estado
+                $stmt_perdido = $conexion->prepare("UPDATE prestamos SET fecha_devolucion_real = ?, estado_libro = 'Perdido' WHERE id_prestamo = ?");
+                $stmt_perdido->bind_param("si", $fecha_hoy, $id_prestamo_perdido);
+                $stmt_perdido->execute();
+                $stmt_perdido->close();
+                
+                // C. AJUSTE DE INVENTARIO: El libro ya no existe físicamente.
+                // Restamos 1 de Ejemplares Totales y 1 de Ejemplares Prestados (Disponibles se queda igual)
+                $stmt_upd_lib = $conexion->prepare("UPDATE libros SET Ejemplares_totales = GREATEST(0, Ejemplares_totales - 1), Ejemplares_prestados = GREATEST(0, Ejemplares_prestados - 1) WHERE id_libro = ?");
+                $stmt_upd_lib->bind_param("i", $id_libro_update);
+                $stmt_upd_lib->execute();
+                $stmt_upd_lib->close();
+                
+                $conexion->commit();
+                $_SESSION['mensaje'] = "⚠️ Libro reportado como perdido. El inventario total de la biblioteca ha sido descontado.";
+                $_SESSION['tipoMensaje'] = 'error'; // Usamos rojo de advertencia
+                
+            } catch (Exception $e) {
+                $conexion->rollback();
+                $_SESSION['mensaje'] = "Error al procesar el reporte de extravío.";
+                $_SESSION['tipoMensaje'] = 'error';
+            }
+        }
+    }
+    header("Location: prestamos.php");
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -145,13 +240,13 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                         </td>
                         <td>
                             <?php if (!$entregado): ?>
-                                <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>"
-                                    style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;"
-                                    onclick="return confirm('¿Confirmas que el libro ha sido devuelto físicamente?');">
-                                    📥 Recibir
-                                </a>
+                             <!-- Tu botón verde de siempre para recibir el libro -->
+                                <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
+        
+                                 <!-- ¡EL BOTÓN NUEVO! Queda justo a un lado -->
+                                <a href="prestamos.php?perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
                             <?php else: ?>
-                                <span style="color: #475569; font-size: 11px; font-weight: bold;">Completado</span>
+                                 <span style="font-weight: bold; color: #475569;">Completado</span>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -164,9 +259,10 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
             <?php endif; ?>
         </tbody>
     </table>
+    
 
     <div class="z1">
-        <a class="z2" href="registro.html">REGRESAR</a>
+        <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 </body>
 

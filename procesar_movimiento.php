@@ -5,80 +5,79 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-date_default_timezone_set('America/Mexico_City');
-
+// Asegurarnos de que los datos vengan por método POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_libro = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
-    $tipo_usuario = $_POST['tipo_usuario'] ?? ''; // 'alumno' o 'profesor'
-    $id_usuario = filter_input(INPUT_POST, 'id_usuario', FILTER_VALIDATE_INT);
-    $accion = $_POST['accion'] ?? ''; // 'prestar' o 'apartar'
+    $tipo_usuario = trim($_POST['tipo_usuario'] ?? '');
+    $id_usuario   = filter_input(INPUT_POST, 'id_usuario', FILTER_VALIDATE_INT);
+    $id_libro     = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
+    $accion       = trim($_POST['accion'] ?? 'prestar');
+    
+    // Configurar fechas automáticas (Hoy y la fecha límite)
+    date_default_timezone_set('America/Mexico_City');
+    $fecha_salida = date('Y-m-d');
+    
+    // Si es préstamo damos 9 días; si es apartado damos 2 días (48 horas)
+    $dias_limite  = ($accion === 'apartar') ? 2 : 9;
+    $fecha_esperada = date('Y-m-d', strtotime("+$dias_limite days"));
 
-    if (!$id_libro || !$id_usuario || !in_array($accion, ['prestar', 'apartar'])) {
-        $_SESSION['mensaje'] = 'Faltan datos obligatorios para procesar el movimiento.';
+    // Validaciones iniciales de seguridad
+    if (empty($tipo_usuario) || !$id_usuario || !$id_libro) {
+        $_SESSION['mensaje'] = '⚠️ Error: No se seleccionó correctamente al usuario o al libro.';
         $_SESSION['tipoMensaje'] = 'error';
-        header("Location: ver_catalogo.php");
+        header("Location: nuevo_prestamo.php");
         exit();
     }
 
-    $id_alumnos = ($tipo_usuario === 'alumno') ? $id_usuario : null;
-    $id_profesores = ($tipo_usuario === 'profesor') ? $id_usuario : null;
+    // 1. PASO CRÍTICO: Verificar si el libro tiene copias disponibles en la estantería
+    $stmt_stock = $conexion->prepare("SELECT Ejemplares_disponibles FROM libros WHERE id_libro = ?");
+    $stmt_stock->bind_param("i", $id_libro);
+    $stmt_stock->execute();
+    $res_stock = $stmt_stock->get_result()->fetch_assoc();
+    $stmt_stock->close();
+
+    if (!$res_stock || $res_stock['Ejemplares_disponibles'] <= 0) {
+        $_SESSION['mensaje'] = '❌ No se puede procesar: Este libro ya no cuenta con existencias disponibles en la estantería.';
+        $_SESSION['tipoMensaje'] = 'error';
+        header("Location: nuevo_prestamo.php");
+        exit();
+    }
+
+    // 2. INICIAR TRANSACCIÓN SEGURA EN MYSQL
+    $conexion->begin_transaction();
 
     try {
-        // 1. Validar existencias del libro
-        $stmt_lib = $conexion->prepare("SELECT Titulo, Ejemplares_disponibles FROM libros WHERE id_libro = ?");
-        $stmt_lib->bind_param("i", $id_libro);
-        $stmt_lib->execute();
-        $resultado_lib = $stmt_lib->get_result();
-        $libro = $resultado_lib->fetch_assoc();
-        $stmt_lib->close();
+        // Inicializar variables para mapear si es alumno o profesor
+        $id_alumno = ($tipo_usuario === 'alumno') ? $id_usuario : null;
+        $id_profesor = ($tipo_usuario === 'profesor') ? $id_usuario : null;
+        $movimiento_texto = ($accion === 'apartar') ? 'Apartado' : 'Prestado';
 
-        if (!$libro) {
-            throw new Exception("El libro seleccionado no existe.");
-        }
-
-        if ($libro['Ejemplares_disponibles'] <= 0) {
-            $_SESSION['mensaje'] = "No hay ejemplares disponibles de '{$libro['Titulo']}' en este momento.";
-            $_SESSION['tipoMensaje'] = 'error';
-            header("Location: ver_catalogo.php");
-            exit();
-        }
-
-        // 2. Definir plazos y el tipo de movimiento exacto
-        $fecha_salida = date('Y-m-d');
-        if ($accion === 'apartar') {
-            $fecha_esperada = date('Y-m-d', strtotime('+2 days'));
-            $tipo_movimiento = 'Apartado';
-            $alerta_texto = "🟡 NOTIFICACIÓN: El libro '{$libro['Titulo']}' ha sido APARTADO. Guardar hasta el $fecha_esperada.";
-        } else {
-            $fecha_esperada = date('Y-m-d', strtotime('+9 days'));
-            $tipo_movimiento = 'Prestado';
-            $alerta_texto = "🔴 NOTIFICACIÓN: Préstamo registrado para '{$libro['Titulo']}'. Fecha límite: $fecha_esperada.";
-        }
-
-        // 3. Insertar en tu tabla 'prestamos' incluyendo la nueva columna
-        $stmt_ins = $conexion->prepare("INSERT INTO prestamos (id_alumnos, id_profesores, id_libro, Cantidad, tipo_movimiento, fecha_salida, fecha_devolucion_esperada, Renovacion) VALUES (?, ?, ?, 1, ?, ?, ?, 'No')");
-        $stmt_ins->bind_param("iiissss", $id_alumnos, $id_profesores, $id_libro, $tipo_movimiento, $fecha_salida, $fecha_esperada);
-
-        if ($stmt_ins->execute()) {
-            // 4. Actualizar contadores en la tabla 'libros'
-            $stmt_upd = $conexion->prepare("UPDATE libros SET Ejemplares_disponibles = Ejemplares_disponibles - 1, Ejemplares_prestados = Ejemplares_prestados + 1 WHERE id_libro = ?");
-            $stmt_upd->bind_param("i", $id_libro);
-            $stmt_upd->execute();
-            $stmt_upd->close();
-
-            $_SESSION['mensaje'] = $alerta_texto;
-            $_SESSION['tipoMensaje'] = 'exito';
-        } else {
-            throw new Exception("Error al insertar el movimiento.");
-        }
+        // Insertar la transacción en la tabla unificada de préstamos
+        $stmt_ins = $conexion->prepare("INSERT INTO prestamos (id_libro, id_alumnos, id_profesores, Cantidad, fecha_salida, fecha_devolucion_esperada, tipo_movimiento, Renovacion) VALUES (?, ?, ?, 1, ?, ?, ?, 0)");
+        $stmt_ins->bind_param("iiissss", $id_libro, $id_alumno, $id_profesor, $fecha_salida, $fecha_esperada, $movimiento_texto);
+        $stmt_ins->execute();
         $stmt_ins->close();
 
+        // 3. EFECTO INVENTARIO DINÁMICO: Restamos 1 a disponibles y sumamos 1 a prestados
+        $stmt_upd = $conexion->prepare("UPDATE libros SET Ejemplares_disponibles = Ejemplares_disponibles - 1, Ejemplares_prestados = Ejemplares_prestados + 1 WHERE id_libro = ?");
+        $stmt_upd->bind_param("i", $id_libro);
+        $stmt_upd->execute();
+        $stmt_upd->close();
+
+        // Si todo sale bien, confirmamos los cambios en MariaDB
+        $conexion->commit();
+
+        $_SESSION['mensaje'] = "🎉 ¡Movimiento registrado con éxito! El inventario ha sido actualizado automáticamente.";
+        $_SESSION['tipoMensaje'] = 'exito';
+
     } catch (Exception $e) {
-        $_SESSION['mensaje'] = 'Error: ' . $e->getMessage();
+        // Si algo llega a fallar, revertimos todo para no corromper tus tablas
+        $conexion->rollback();
+        $_SESSION['mensaje'] = 'Error grave en el servidor: ' . $e->getMessage();
         $_SESSION['tipoMensaje'] = 'error';
     }
 
-    header("Location: catalogo_interactivo.php");
+    // Redirección limpia al formulario express
+    header("Location: nuevo_prestamo.php");
     exit();
 }
 ?>

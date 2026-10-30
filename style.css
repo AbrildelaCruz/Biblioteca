@@ -832,3 +832,78 @@
     padding: 20px;
     display: none;
 }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Contenedor que ocupará toda la pantalla */
+#pantalla-biblioteca {
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-image 0.2s ease-in-out; /* Suaviza el cambio entre imágenes */
+}
+
+/* --- Estados del Fondo --- */
+.fondo-cerrado {
+    background-image: url('puertas-cerradas.jpg'); /* Imagen donde están cerradas */
+}
+
+.fondo-semiabierto {
+    background-image: url('puertas-semiabiertas.jpg'); /* Imagen donde se están abriendo */
+}
+
+.fondo-abierto {
+    background-image: url('puertas-abiertas.jpg'); /* Imagen abierta por completo */
+}
+
+/* Interfaz flotante */
+.interfaz-bienvenida {
+    text-align: center;
+    transition: opacity 0.4s ease;
+}
+
+.ocultar {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Botón estilizado */
+#btn-entrar {
+    padding: 18px 45px;
+    font-size: 1.3rem;
+    color: #ffffff;
+    background-color: #b38f43; /* Un tono dorado/madera acorde a la biblioteca */
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+}
+
+#btn-entrar:hover {
+    background-color: #947432;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.7);
+}
+
+/* Ocultar la zona de precarga del HTML */
+.precarga {
+    display: none;
+}

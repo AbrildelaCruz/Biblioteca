@@ -198,7 +198,7 @@ if ($es_edicion && $id_editar) {
     </div>
 
     <div class="z1" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
-        <a class="z2" href="registro.html" style="text-decoration: none; font-weight: bold;">REGRESAR</a>
+        <a class="z2" href="registro.php" style="text-decoration: none; font-weight: bold;">REGRESAR</a>
     </div>
 
     <!-- SCRIPT DE JAVASCRIPT PARA PROCESAR LA BÚSQUEDA DINÁMICA -->

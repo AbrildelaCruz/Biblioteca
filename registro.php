@@ -1,3 +1,4 @@
+<?php require_once 'conexion.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -53,18 +54,18 @@
         $fecha_hoy = date('Y-m-d');
         
         // Consulta exacta uniendo préstamos con alumnos, profesores y libros
-        $sql_alertas = "SELECT 
-                            l.Titulo AS Libro,
-                            p.fecha_devolucion_esperada AS FechaLimite,
-                            COALESCE(a.Nombre, prof.Nombre, 'Desconocido') AS Persona,
-                            DATEDIFF(p.fecha_devolucion_esperada, '$fecha_hoy') AS DiasRestantes,
-                        FROM prestamos p,
-                        JOIN libros l ON p.id_libro = l.id_libro,
-                        LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos,
-                        LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores,
-                        WHERE p.fecha_devolucion_real IS NULL ,
-                        ORDER BY p.fecha_devolucion_esperada ASC ,
-                        LIMIT 5";
+       $sql_alertas = "SELECT 
+                    l.Titulo AS Libro,
+                    p.fecha_devolucion_esperada AS FechaLimite,
+                    COALESCE(a.Nombre, prof.Nombre, 'Desconocido') AS Persona,
+                    DATEDIFF(p.fecha_devolucion_esperada, '$fecha_hoy') AS DiasRestantes
+                FROM prestamos p
+                JOIN libros l ON p.id_libro = l.id_libro
+                LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos
+                LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores
+                WHERE p.fecha_devolucion_real IS NULL 
+                ORDER BY p.fecha_devolucion_esperada ASC 
+                LIMIT 5";
 
         $res_alertas = $conexion->query($sql_alertas);
 

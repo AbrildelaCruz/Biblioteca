@@ -159,7 +159,7 @@ $resultado = $stmt->get_result();
     </div>
 
     <div class="z1">
-        <a class="z2" href="registro.html">REGRESAR</a>
+        <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 </body>
 

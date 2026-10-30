@@ -4,12 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Sullivan</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
-<body class="body1">
-    <div class="btn1">
-        <a class="A_uno" href="registro.html">ENTRAR</a>
+
+ <!-- Contenedor principal del fondo -->
+    <div id="pantalla-biblioteca" class="fondo-cerrado">
+        
+        <!-- Elementos del frente -->
+     <div class="interfaz-bienvenida">
+         <button id="btn-entrar" class="A_uno" href="registro.php">Ingresar al Sistema</button>
+     </div>
+
     </div>
-</body>
+
+    <!-- Precarga oculta para que las imágenes estén listas en memoria sin parpadeos -->
+    <div class="precarga">
+        <img src="puertas-semiabiertas.jpg" alt="preload">
+        <img src="puertas-abiertas.jpg" alt="preload">
+    </div>
+
+    <script src="script.js"></script>
 </html>
