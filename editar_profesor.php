@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $stmt_update = $conexion->prepare("UPDATE profesores SET Nombre = ?, Materia = ? WHERE id_Profesores = ?");
             $stmt_update->bind_param("ssi", $Nombre, $Materia, $id_profesor);
-            
+
             if ($stmt_update->execute()) {
                 $_SESSION['mensaje'] = 'Docente actualizado correctamente.';
                 $_SESSION['tipoMensaje'] = 'exito';
@@ -62,6 +62,7 @@ $materias_actuales = array_map('trim', explode(',', $profesor['Materia']));
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,23 +70,26 @@ $materias_actuales = array_map('trim', explode(',', $profesor['Materia']));
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 
 </head>
+
 <body class="body2">
 
     <?php if (isset($mensaje_error)): ?>
-    <div class="alerta error" style="padding: 10px; margin: 15px auto; max-width: 600px; text-align: center; border-radius: 5px; font-weight: bold; background-color: #f8d7da; color: #721c24;">
-        <?php echo $mensaje_error; ?>
-    </div>
+        <div class="alerta error"
+            style="padding: 10px; margin: 15px auto; max-width: 600px; text-align: center; border-radius: 5px; font-weight: bold; background-color: #f8d7da; color: #721c24;">
+            <?php echo $mensaje_error; ?>
+        </div>
     <?php endif; ?>
 
     <div class="contenedor-formulario">
         <h2>Editar Docente</h2>
-        
+
         <form action="editar_profesor.php?id=<?php echo $id_profesor; ?>" method="POST">
             <div class="grupo-campo">
                 <label>Nombre del Profesor</label>
-                <input type="text" name="Nombre" value="<?php echo htmlspecialchars($profesor['Nombre']); ?>" maxlength="100" required>
+                <input type="text" name="Nombre" value="<?php echo htmlspecialchars($profesor['Nombre']); ?>"
+                    maxlength="100" required>
             </div>
-            
+
             <div class="contenedor-materias">
                 <span class="titulo-seccion">Academia</span>
                 <div class="grid-checkboxes">
@@ -94,25 +98,30 @@ $materias_actuales = array_map('trim', explode(',', $profesor['Materia']));
                         Iformatica, Contabilidad y Electronica', $materias_actuales) ? 'checked' : ''; ?>> Informática, Contabilidad y Electrónica
                     </label>
                     <label class="opcion-checkbox">
-                        <input type="checkbox" name="Materia[]" value="Gastronomia y Enfermeria" <?php echo in_array('Gastronomia y Enfermeria', $materias_actuales) ? 'checked' : ''; ?>> Gastronomía y Enfermería
+                        <input type="checkbox" name="Materia[]" value="Gastronomia y Enfermeria" <?php echo in_array('Gastronomia y Enfermeria', $materias_actuales) ? 'checked' : ''; ?>> Gastronomía y
+                        Enfermería
                     </label>
                     <label class="opcion-checkbox">
-                        <input type="checkbox" name="Materia[]" value="Educacion Fisica Y Artes" <?php echo in_array('Educacion Fisica Y Artes', $materias_actuales) ? 'checked' : ''; ?>> Educacion Fisica Y Artes
+                        <input type="checkbox" name="Materia[]" value="Educacion Fisica Y Artes" <?php echo in_array('Educacion Fisica Y Artes', $materias_actuales) ? 'checked' : ''; ?>> Educacion
+                        Fisica Y Artes
                     </label>
                     <label class="opcion-checkbox">
-                        <input type="checkbox" name="Materia[]" value="Manufactura del Vestido" <?php echo in_array('Manufactura del Vestido', $materias_actuales) ? 'checked' : ''; ?>> Manufactura del Vestido
+                        <input type="checkbox" name="Materia[]" value="Manufactura del Vestido" <?php echo in_array('Manufactura del Vestido', $materias_actuales) ? 'checked' : ''; ?>> Manufactura
+                        del Vestido
                     </label>
                     <label class="opcion-checkbox">
-                        <input type="checkbox" name="Materia[]" value="Lengua y Comunicacion" <?php echo in_array('Lengua y Comunicacion', $materias_actuales) ? 'checked' : ''; ?>> Lengua y Comunicación
+                        <input type="checkbox" name="Materia[]" value="Lengua y Comunicacion" <?php echo in_array('Lengua y Comunicacion', $materias_actuales) ? 'checked' : ''; ?>> Lengua y
+                        Comunicación
                     </label>
                 </div>
             </div>
-            
+
             <div class="botones-acciones">
                 <button type="submit" class="boton-guardar">Actualizar Cambios</button>
                 <a href="profesores.php" class="boton-cancelar">Cancelar</a>
             </div>
-        </form> 
-    </div> 
+        </form>
+    </div>
 </body>
+
 </html>

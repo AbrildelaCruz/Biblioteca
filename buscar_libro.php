@@ -38,17 +38,17 @@ if ($stmt) {
     // Vinculamos los parámetros dinámicamente
     $stmt->bind_param($tipos, ...$valores);
     $stmt->execute();
-    
+
     // Obtenemos el resultado
     $resultado = $stmt->get_result();
     $libro = $resultado->fetch_assoc();
-    
+
     if ($libro) {
         echo json_encode(['success' => true, 'libro' => $libro]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Libro no encontrado']);
     }
-    
+
     $stmt->close();
 } else {
     echo json_encode(['success' => false, 'message' => 'Error en la preparación de la consulta']);

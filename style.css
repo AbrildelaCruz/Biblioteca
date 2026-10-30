@@ -168,6 +168,63 @@
     letter-spacing: 0.5px;
 }
 
+.panel-notificaciones-derecho {
+    width: 100%;
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08);
+    border: 1px solid rgba(232, 238, 245, 0.6);
+    max-height: 75vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.lista-alertas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 🟥 Estado 1: Libro retrasado (Rojo institucional) */
+.entrega-vencida {
+    border-left-color: #DC3545 !important;
+    background-color: #FFF5F5 !important;
+}
+.entrega-vencida span:first-child {
+    color: #DC3545 !important;
+}
+
+/* 🟨 Estado 2: Entrega hoy mismo (Amarillo preventivo) */
+.entrega-hoy {
+    border-left-color: #FFC107 !important;
+    background-color: #FFFDF0 !important;
+}
+.entrega-hoy span:first-child {
+    color: #B78103 !important;
+}
+
+/* 🟩 Estado 3: Próximas entregas a tiempo (Verde agua de tu paleta) */
+.entrega-proxima {
+    border-left-color: #2A9D8F !important;
+    background-color: #F4FBF9 !important;
+}
+.entrega-proxima span:first-child {
+    color: #2A9D8F !important;
+}
+
+.aviso-vacio {
+    text-align: center;
+    padding: 25px;
+    color: #475569;
+    font-style: italic;
+    font-size: 14px;
+    background: #F8FAFC;
+    border-radius: 8px;
+    border: 1px dashed #CBD5E1;
+}
+
 @keyframes agitarCampana {
     0%, 100% { transform: rotate(0); }
     10% { transform: rotate(15deg); }

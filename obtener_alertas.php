@@ -23,12 +23,12 @@ $resultado = $conexion->query($sql);
 $alertas = [];
 
 if ($resultado && $resultado->num_rows > 0) {
-    while($fila = $resultado->fetch_assoc()) {
+    while ($fila = $resultado->fetch_assoc()) {
         $alertas[] = [
             "libro" => $fila['Libro'],
             "persona" => $fila['Persona'],
             "fecha_limite" => date('d/m/Y', strtotime($fila['FechaLimite'])),
-            "dias" => (int)$fila['DiasRestantes']
+            "dias" => (int) $fila['DiasRestantes']
         ];
     }
 }

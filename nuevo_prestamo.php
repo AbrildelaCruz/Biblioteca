@@ -17,12 +17,14 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejempl
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Salida de Libro - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 </head>
+
 <body class="body2">
 
     <div class="contenedor-burbujas">
@@ -32,17 +34,18 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejempl
     </div>
 
     <?php if ($mensaje !== ''): ?>
-        <div class="alerta <?php echo $tipoMensaje; ?>" style="padding: 10px; margin: 15px auto; max-width: 700px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
+        <div class="alerta <?php echo $tipoMensaje; ?>"
+            style="padding: 10px; margin: 15px auto; max-width: 700px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
             <?php echo $mensaje; ?>
         </div>
     <?php endif; ?>
 
     <div class="contenedor-formulario" style="max-width: 600px;">
         <h2>Formulario de Préstamos / Apartados</h2>
-        
+
         <!-- Envía los datos directos al archivo procesar_movimiento.php que ya creamos -->
         <form action="procesar_movimiento.php" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-            
+
             <div class="grupo-campo">
                 <label>1. Tipo de Usuario</label>
                 <select name="tipo_usuario" required onchange="alternarFormulario(this)">
@@ -57,8 +60,9 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejempl
                 <label>2. Selecciona al Alumno</label>
                 <select name="id_usuario" id="select_alumno">
                     <option value="">-- Buscar Alumno --</option>
-                    <?php while($al = $alumnos_res->fetch_assoc()): ?>
-                        <option value="<?php echo $al['id_Alumnos']; ?>"><?php echo htmlspecialchars($al['Nombre']); ?></option>
+                    <?php while ($al = $alumnos_res->fetch_assoc()): ?>
+                        <option value="<?php echo $al['id_Alumnos']; ?>"><?php echo htmlspecialchars($al['Nombre']); ?>
+                        </option>
                     <?php endwhile; ?>
                 </select>
             </div>
@@ -68,8 +72,9 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejempl
                 <label>2. Selecciona al Docente</label>
                 <select name="id_usuario" id="select_profesor" disabled>
                     <option value="">-- Buscar Profesor --</option>
-                    <?php while($prof = $profesores_res->fetch_assoc()): ?>
-                        <option value="<?php echo $prof['id_profesores']; ?>"><?php echo htmlspecialchars($prof['Nombre']); ?></option>
+                    <?php while ($prof = $profesores_res->fetch_assoc()): ?>
+                        <option value="<?php echo $prof['id_profesores']; ?>">
+                            <?php echo htmlspecialchars($prof['Nombre']); ?></option>
                     <?php endwhile; ?>
                 </select>
             </div>
@@ -79,8 +84,9 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejempl
                 <select name="id_libro" required>
                     <option value="">-- Buscar Título del Libro --</option>
                     <?php if ($libros_res && $libros_res->num_rows > 0): ?>
-                        <?php while($lib = $libros_res->fetch_assoc()): ?>
-                            <option value="<?php echo $lib['id_libro']; ?>"><?php echo htmlspecialchars($lib['Titulo']); ?></option>
+                        <?php while ($lib = $libros_res->fetch_assoc()): ?>
+                            <option value="<?php echo $lib['id_libro']; ?>"><?php echo htmlspecialchars($lib['Titulo']); ?>
+                            </option>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <option value="" disabled>❌ No hay libros disponibles en estanterías</option>
@@ -108,38 +114,39 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejempl
 
     <!-- SCRIPT DE INTERACCIÓN LIMPINA -->
     <script>
-    function alternarFormulario(control) {
-        var bloqueAl = document.getElementById('bloque_alumno');
-        var bloqueProf = document.getElementById('bloque_profesor');
-        var selectAl = document.getElementById('select_alumno');
-        var selectProf = document.getElementById('select_profesor');
+        function alternarFormulario(control) {
+            var bloqueAl = document.getElementById('bloque_alumno');
+            var bloqueProf = document.getElementById('bloque_profesor');
+            var selectAl = document.getElementById('select_alumno');
+            var selectProf = document.getElementById('select_profesor');
 
-        if (control.value === 'alumno') {
-            bloqueAl.style.display = 'block';
-            selectAl.disabled = false;
-            selectAl.required = true;
+            if (control.value === 'alumno') {
+                bloqueAl.style.display = 'block';
+                selectAl.disabled = false;
+                selectAl.required = true;
 
-            bloqueProf.style.display = 'none';
-            selectProf.disabled = true;
-            selectProf.required = false;
-        } else if (control.value === 'profesor') {
-            bloqueProf.style.display = 'block';
-            selectProf.disabled = false;
-            selectProf.required = true;
+                bloqueProf.style.display = 'none';
+                selectProf.disabled = true;
+                selectProf.required = false;
+            } else if (control.value === 'profesor') {
+                bloqueProf.style.display = 'block';
+                selectProf.disabled = false;
+                selectProf.required = true;
 
-            bloqueAl.style.display = 'none';
-            selectAl.disabled = true;
-            selectAl.required = false;
-        } else {
-            bloqueAl.style.display = 'none';
-            bloqueProf.style.display = 'none';
-            selectAl.disabled = true;
-            selectProf.disabled = true;
+                bloqueAl.style.display = 'none';
+                selectAl.disabled = true;
+                selectAl.required = false;
+            } else {
+                bloqueAl.style.display = 'none';
+                bloqueProf.style.display = 'none';
+                selectAl.disabled = true;
+                selectProf.disabled = true;
+            }
         }
-    }
     </script>
     <div class="z1">
         <a class="z2" href="registro.html">REGRESAR</a>
-  </div>
+    </div>
 </body>
+
 </html>

@@ -1,9 +1,9 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start(); 
+    session_start();
 }
 $servidor = "localhost";
-$usuario  = "root";
+$usuario = "root";
 $password = "";
 $base_datos = "biblioteca-bd";
 

@@ -44,69 +44,62 @@
 
         <!-- COLUMNA DERECHA: EL PANEL DE NOTIFICACIONES LATERAL -->
         <div class="panel-notificaciones-derecho">
-            <h3 class="titulo-notificaciones">
-                <span class="campana-alerta">🔔</span> Entregas
-            </h3>
-            <!-- JavaScript inyectará las alertas aquí adentro automáticamente -->
-            <div class="lista-alertas" id="panel-alertas">
-                <div class="aviso-vacio">Cargando notificaciones...</div>
-            </div>
-        </div>
+    <h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+        🔔 Alertas de Devolución
+    </h3>
+    <div class="lista-alertas">
+        <?php
+        date_default_timezone_set('America/Mexico_City');
+        $fecha_hoy = date('Y-m-d');
+        
+        // Consulta exacta uniendo préstamos con alumnos, profesores y libros
+        $sql_alertas = "SELECT 
+                            l.Titulo AS Libro,
+                            p.fecha_devolucion_esperada AS FechaLimite,
+                            COALESCE(a.Nombre, prof.Nombre, 'Desconocido') AS Persona,
+                            DATEDIFF(p.fecha_devolucion_esperada, '$fecha_hoy') AS DiasRestantes,
+                        FROM prestamos p,
+                        JOIN libros l ON p.id_libro = l.id_libro,
+                        LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos,
+                        LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores,
+                        WHERE p.fecha_devolucion_real IS NULL ,
+                        ORDER BY p.fecha_devolucion_esperada ASC ,
+                        LIMIT 5";
 
+        $res_alertas = $conexion->query($sql_alertas);
+
+        if ($res_alertas && $res_alertas->num_rows > 0) {
+            while($alerta = $res_alertas->fetch_assoc()) {
+                $dias = (int)$alerta['DiasRestantes'];
+                
+                // Semáforo inteligente basado en los días restantes
+                if ($dias < 0) {
+                    $clase_aviso = "entrega-vencida";
+                    $texto_tiempo = "⚠️ VENCIDO POR " . abs($dias) . " DÍAS";
+                } elseif ($dias === 0) {
+                    $clase_aviso = "entrega-hoy";
+                    $texto_tiempo = "🚨 ENTREGA HOY";
+                } else {
+                    $clase_aviso = "entrega-proxima";
+                    $texto_tiempo = "🟢 Quedan " . $dias . " días";
+                }
+            ?>
+                <!-- Tarjeta de Alerta Estilizada -->
+                <div class="tarjeta-aviso <?php echo $clase_aviso; ?>" style="padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; font-size: 13px; line-height: 1.4;">
+                    <span style="display: block; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
+                        <?php echo $texto_tiempo; ?>
+                    </span>
+                    <strong style="display: block; color: #1E293B; font-size: 14px;"><?php echo htmlspecialchars($alerta['Persona']); ?></strong>
+                    <span style="display: block; color: #475569;">Libro: <i><?php echo htmlspecialchars($alerta['Libro']); ?></i></span>
+                </div>
+                <?php
+            }
+        } else {
+            echo '<div class="aviso-vacio">✅ No hay libros pendientes de devolución ni retrasos en el sistema.</div>';
+        }
+        ?>
     </div>
-
-    <!-- 🚀 JAVASCRIPT: Conecta el panel con la base de datos de manera interna -->
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var contenedorAlertas = document.getElementById("panel-alertas");
-
-        fetch("obtener_alertas.php")
-            .then(response => response.json())
-            .then(data => {
-                contenedorAlertas.innerHTML = ""; 
-                var tieneAlertasCriticas = false;
-
-                if (data.length > 0) {
-                    data.forEach(function(alerta) {
-                        var claseTarjeta = "";
-                        var mensajeTiempo = "";
-
-                        if (alerta.dias < 0) {
-                            claseTarjeta = "entrega-vencida";
-                            mensajeTiempo = "⚠️ RETRASADO";
-                            tieneAlertasCriticas = true;
-                        } else if (alerta.dias === 0) {
-                            claseTarjeta = "entrega-hoy";
-                            mensajeTiempo = "⏳ HOY";
-                            tieneAlertasCriticas = true;
-                        } else if (alerta.dias <= 3) {
-                            claseTarjeta = "entrega-proxima";
-                            mensajeTiempo = "📅 En " + alerta.dias + " días";
-                            tieneAlertasCriticas = true;
-                        }
-
-                        if (claseTarjeta !== "") {
-                            var tarjeta = document.createElement("div");
-                            tarjeta.className = "tarjeta-aviso " + claseTarjeta;
-                            tarjeta.innerHTML = "<div><strong>" + mensajeTiempo + "</strong><br>" +
-                                                "<u>" + alerta.persona + "</u> tiene " +
-                                                "<b>\"" + alerta.libro + "\"</b></div>";
-                            contenedorAlertas.appendChild(tarjeta);
-                        }
-                    });
-                }
-
-                if (!tieneAlertasCriticas) {
-                    contenedorAlertas.innerHTML = '<div class="aviso-vacio">🟢 Sin entregas críticas en los próximos días.</div>';
-                }
-            })
-            .catch(error => {
-                console.error("Error al cargar las alertas:", error);
-                contenedorAlertas.innerHTML = '<div class="aviso-vacio" style="color: #991B1B;">❌ Error de conexión.</div>';
-            });
-    });
-
-    </script>
+</div>
     <div class="z1">
       <a class="z2" href="index.html">REGRESAR</a>
   </div>

@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fecha_salida = date('Y-m-d');
         if ($accion === 'apartar') {
             $fecha_esperada = date('Y-m-d', strtotime('+2 days'));
-            $tipo_movimiento = 'Apartado'; 
+            $tipo_movimiento = 'Apartado';
             $alerta_texto = "🟡 NOTIFICACIÓN: El libro '{$libro['Titulo']}' ha sido APARTADO. Guardar hasta el $fecha_esperada.";
         } else {
             $fecha_esperada = date('Y-m-d', strtotime('+9 days'));
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // 3. Insertar en tu tabla 'prestamos' incluyendo la nueva columna
         $stmt_ins = $conexion->prepare("INSERT INTO prestamos (id_alumnos, id_profesores, id_libro, Cantidad, tipo_movimiento, fecha_salida, fecha_devolucion_esperada, Renovacion) VALUES (?, ?, ?, 1, ?, ?, ?, 'No')");
         $stmt_ins->bind_param("iiissss", $id_alumnos, $id_profesores, $id_libro, $tipo_movimiento, $fecha_salida, $fecha_esperada);
-        
+
         if ($stmt_ins->execute()) {
             // 4. Actualizar contadores en la tabla 'libros'
             $stmt_upd = $conexion->prepare("UPDATE libros SET Ejemplares_disponibles = Ejemplares_disponibles - 1, Ejemplares_prestados = Ejemplares_prestados + 1 WHERE id_libro = ?");
