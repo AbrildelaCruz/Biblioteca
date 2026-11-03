@@ -12,7 +12,6 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 // ==========================================
 // 1. PROCESAR ACCIÓN: REGISTRAR DEVOLUCIÓN
 // ==========================================
-
 if (isset($_GET['devolver_id'])) {
     $id_prestamo_dev = filter_input(INPUT_GET, 'devolver_id', FILTER_VALIDATE_INT);
 
@@ -49,12 +48,11 @@ if (isset($_GET['devolver_id'])) {
             $stmt_dev->close();
         }
     }
-    // Redirige a este mismo archivo
     header("Location: prestamos.php");
     exit();
 }
 
-// 🚀 NUEVA LÓGICA: PROCESAR REPORTE DE LIBRO PERDIDO
+// 🚀 PROCESAR REPORTE DE LIBRO PERDIDO
 // ===================================================
 if (isset($_GET['perdido_id'])) {
     $id_prestamo_perdido = filter_input(INPUT_GET, 'perdido_id', FILTER_VALIDATE_INT);
@@ -100,6 +98,7 @@ if (isset($_GET['perdido_id'])) {
     header("Location: prestamos.php");
     exit();
 }
+
 // ==========================================
 // 2. CONSULTAR EL HISTORIAL DE PRÉSTAMOS
 // ==========================================
@@ -119,55 +118,6 @@ $sql_bitacora = "SELECT
                  ORDER BY p.id_prestamo DESC";
 
 $resultado_bitacora = $conexion->query($sql_bitacora);
-
-// 2. PROCESAR ACCIÓN NUEVA: REPORTAR LIBRO EXTRAVIADO
-// ===================================================
-if (isset($_GET['perdido_id'])) {
-    $id_prestamo_perdido = filter_input(INPUT_GET, 'perdido_id', FILTER_VALIDATE_INT);
-    
-    if ($id_prestamo_perdido) {
-        $fecha_hoy = date('Y-m-d');
-        
-        // A. Buscar qué libro está asociado a este préstamo
-        $stmt_buscar = $conexion->prepare("SELECT id_libro FROM prestamos WHERE id_prestamo = ?");
-        $stmt_buscar->bind_param("i", $id_prestamo_perdido);
-        $stmt_buscar->execute();
-        $res_buscar = $stmt_buscar->get_result()->fetch_assoc();
-        $stmt_buscar->close();
-        
-        if ($res_buscar) {
-            $id_libro_update = $res_buscar['id_libro'];
-            
-            $conexion->begin_transaction();
-            try {
-                // B. Cerrar el préstamo marcándolo como 'Perdido' en el estado
-                $stmt_perdido = $conexion->prepare("UPDATE prestamos SET fecha_devolucion_real = ?, estado_libro = 'Perdido' WHERE id_prestamo = ?");
-                $stmt_perdido->bind_param("si", $fecha_hoy, $id_prestamo_perdido);
-                $stmt_perdido->execute();
-                $stmt_perdido->close();
-                
-                // C. AJUSTE DE INVENTARIO: El libro ya no existe físicamente.
-                // Restamos 1 de Ejemplares Totales y 1 de Ejemplares Prestados (Disponibles se queda igual)
-                $stmt_upd_lib = $conexion->prepare("UPDATE libros SET Ejemplares_totales = GREATEST(0, Ejemplares_totales - 1), Ejemplares_prestados = GREATEST(0, Ejemplares_prestados - 1) WHERE id_libro = ?");
-                $stmt_upd_lib->bind_param("i", $id_libro_update);
-                $stmt_upd_lib->execute();
-                $stmt_upd_lib->close();
-                
-                $conexion->commit();
-                $_SESSION['mensaje'] = "⚠️ Libro reportado como perdido. El inventario total de la biblioteca ha sido descontado.";
-                $_SESSION['tipoMensaje'] = 'error'; // Usamos rojo de advertencia
-                
-            } catch (Exception $e) {
-                $conexion->rollback();
-                $_SESSION['mensaje'] = "Error al procesar el reporte de extravío.";
-                $_SESSION['tipoMensaje'] = 'error';
-            }
-        }
-    }
-    header("Location: prestamos.php");
-    exit();
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -195,15 +145,14 @@ if (isset($_GET['perdido_id'])) {
     <?php endif; ?>
 
     <h2 style="text-align: center; color: #0F4C81; margin-top: 30px;">📋 Bitácora General de Préstamos y Apartados</h2>
-    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Cuaderno digital de control para registrar
-        devoluciones y revisar el historial.</p>
+    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Cuaderno digital de control para registrar devoluciones y revisar el historial.</p>
 
-        <!-- 🔍 BARRA DE BÚSQUEDA EN TIEMPO REAL PARA LA BITÁCORA -->
-<div class="contenedor-busqueda" style="width: 95%; max-width: 500px; margin: 0 auto 20px auto; text-align: center;">
-    <input type="text" id="buscador-bitacora" class="input-busqueda" 
-           placeholder="🔍 Busca por título de libro o nombre de usuario..." 
-           style="width: 100%; padding: 12px 20px; font-size: 15px; border: 2px solid #DDE6ED; border-radius: 30px; outline: none; box-sizing: border-box; box-shadow: 0 4px 6px rgba(15, 76, 129, 0.03);">
-</div>
+    <!-- 🔍 BARRA DE BÚSQUEDA EN TIEMPO REAL PARA LA BITÁCORA -->
+    <div class="contenedor-busqueda" style="width: 95%; max-width: 500px; margin: 0 auto 20px auto; text-align: center;">
+        <input type="text" id="buscador-bitacora" class="input-busqueda" 
+               placeholder="🔍 Busca por título de libro o nombre de usuario..." 
+               style="width: 100%; padding: 12px 20px; font-size: 15px; border: 2px solid #DDE6ED; border-radius: 30px; outline: none; box-sizing: border-box; box-shadow: 0 4px 6px rgba(15, 76, 129, 0.03);">
+    </div>
 
     <table class="tabla-datos" style="max-width: 95%; margin: 20px auto; font-size: 13px;">
         <thead>
@@ -221,99 +170,38 @@ if (isset($_GET['perdido_id'])) {
         </thead>
         <tbody>
             <?php if ($resultado_bitacora && $resultado_bitacora->num_rows > 0): ?>
-                <?php while ($fila = $resultado_bitacora->fetch_assoc()):
+                <?php 
+                date_default_timezone_set('America/Mexico_City');
+                $fecha_hoy_timestamp = strtotime(date('Y-m-d'));
+                
+                while ($fila = $resultado_bitacora->fetch_assoc()):
                     $entregado = ($fila['fecha_devolucion_real'] !== null);
                     $es_apartado = ($fila['tipo_movimiento'] === 'Apartado');
+                    
+                    // Cálculo dinámico para la asignación de color a la fila
+                    $clase_fila = ''; 
+                    if (!$entregado) {
+                        $fecha_limite_timestamp = strtotime($fila['fecha_devolucion_esperada']);
+                        $segundos_diferencia = $fecha_limite_timestamp - $fecha_hoy_timestamp;
+                        $dias_restantes = round($segundos_diferencia / (60 * 60 * 24));
+                        
+                        if ($dias_restantes < 0) {
+                            $clase_fila = 'entrega-vencida';
+                        } elseif ($dias_restantes == 0) {
+                            $clase_fila = 'entrega-hoy';
+                        } else {
+                            $clase_fila = 'entrega-proxima';
+                        }
+                    }
                     ?>
-                    <tr>
+                    <tr class="<?php echo $clase_fila; ?>">
                         <td style="font-weight: bold; text-align: center;"><?php echo $fila['id_prestamo']; ?></td>
                         <td><b><?php echo htmlspecialchars($fila['Libro']); ?></b></td>
                         <td><u><?php echo htmlspecialchars($fila['Persona']); ?></u></td>
                         <td><?php echo $fila['TipoPersona']; ?></td>
                         <td>
-                            <span
-                                style="padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; background-color: <?php echo $es_apartado ? '#FFFBEB' : '#EFF6FF'; ?>; color: <?php echo $es_apartado ? '#92400E' : '#1E40AF'; ?>;">
+                            <span style="padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; background-color: <?php echo $es_apartado ? '#FFFBEB' : '#EFF6FF'; ?>; color: <?php echo $es_apartado ? '#92400E' : '#1E40AF'; ?>;">
                                 <?php echo htmlspecialchars($fila['tipo_movimiento'] ?? 'Prestado'); ?>
                             </span>
                         </td>
                         <td><?php echo date('d/m/Y', strtotime($fila['fecha_salida'])); ?></td>
-                        <td><?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_esperada'])); ?></td>
-                        <td>
-                            <?php if ($entregado): ?>
-                                <span style="color: green; font-weight: bold;">✔
-                                    <?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_real'])); ?></span>
-                            <?php else: ?>
-                                <span style="color: #94A3B8; font-style: italic;">Pendiente</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-    <?php if (!$entregado): ?>
-        <!-- Tu botón verde de siempre para recibir el libro -->
-        <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
-         
-        <script>
-// MOTOR DE FILTRADO EN TIEMPO REAL PARA LA BITÁCORA
-document.getElementById('buscador-bitacora').addEventListener('input', function () {
-    var filtro = this.value.toLowerCase().trim();
-    // Apuntamos directamente a las filas del cuerpo de tu tabla existente
-    var filas = document.querySelectorAll('.tabla-datos tbody tr');
-
-    filas.forEach(function(fila) {
-        // Ignoramos la fila de "No se han registrado préstamos" si llega a aparecer
-        if (fila.cells.length < 3) return;
-
-        // Capturamos el texto del Libro (Celda 2) y de la Persona (Celda 3)
-        var textoLibro = fila.cells[1].textContent.toLowerCase();
-        var textoPersona = fila.cells[2].textContent.toLowerCase();
-
-        // Si el término coincide con el libro O con la persona, la fila se queda visible
-        if (textoLibro.includes(filtro) || textoPersona.includes(filtro)) {
-            fila.style.display = '';
-        } else {
-            fila.style.display = 'none'; // Si no, se oculta sutilmente
-        }
-    });
-});
-</script>
-
-        <!-- 🔄 NUEVO BOTÓN DE RENOVACIÓN DE FILA (Agrupador temporal de memoria) -->
-        <button type="button" 
-                onclick="prepararRenovacion('<?php echo strtolower($fila['TipoPersona']); ?>', '<?php echo htmlspecialchars($fila['Persona'], ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars($fila['Libro'], ENT_QUOTES, 'UTF-8'); ?>')" 
-                style="padding: 4px 8px; background-color: #0F4C81; border: none; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px; cursor: pointer; font-family: 'Segoe UI', Arial, sans-serif;">
-            🔄 Renovar
-        </button>
-
-        <!-- Tu botón rojo de siempre para marcar como perdido -->
-        <a href="prestamos.php?perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
-    <?php else: ?>
-         <span style="font-weight: bold; color: #475569;">Completado</span>
-    <?php endif; ?>
-</td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="9" style="text-align: center; font-weight: bold; padding: 20px;">No se ha registrado ningún
-                        préstamo o apartado en el sistema todavía.</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-    
-
-    <div class="z1">
-        <a class="z2" href="registro.php">REGRESAR</a>
-    </div>
-<script>
-function prepararRenovacion(rol, nombrePersona, tituloLibro) {
-    // Guardamos los datos de la fila de forma temporal
-    sessionStorage.setItem('renovar_rol', rol);
-    sessionStorage.setItem('renovar_nombre', nombrePersona);
-    sessionStorage.setItem('renovar_libro', tituloLibro);
-    
-    // Redireccionamos de inmediato al formulario inteligente de préstamos
-    window.location.href = 'nuevo_prestamo.php';
-}
-</script>
-</body>
-</html>

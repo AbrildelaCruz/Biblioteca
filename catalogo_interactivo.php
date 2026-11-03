@@ -268,41 +268,5 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
             }
         }
     </script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // === CONFIGURACIÓN ===
-    const cantidadBurbujas = 25; // Modifica este número para añadir más o menos burbujas
-    const contenedor = document.body; // Se añadirán directamente al fondo del cuerpo
-    
-    for (let i = 0; i < cantidadBurbujas; i++) {
-        const burbuja = document.createElement('div');
-        burbuja.classList.add('burbuja');
-
-        // 1. Posición horizontal aleatoria (entre 0% y 95% de la pantalla)
-        burbuja.style.left = `${Math.random() * 95}%`;
-        
-        // 2. Tamaño aleatorio (entre 30px y 120px)
-        const tamano = Math.random() * 90 + 30;
-        burbuja.style.width = `${tamano}px`;
-        burbuja.style.height = `${tamano}px`;
-
-        // 3. Duración de animación aleatoria (entre 12s y 24s) para simular diferentes pesos
-        const duracion = Math.random() * 12 + 12;
-        burbuja.style.animationDuration = `${duracion}s`;
-
-        // 4. Retraso aleatorio (hasta 15s) para que no salgan todas al mismo tiempo al cargar
-        burbuja.style.animationDelay = `${Math.random() * 15}s`;
-
-        // 5. Aplicar desenfoque sutil a las burbujas más grandes (efecto de profundidad)
-        if (tamano > 90) {
-            burbuja.style.filter = "blur(1px)";
-        }
-
-        contenedor.appendChild(burbuja);
-    }
-});
-</script>
-
 </body>
-
 </html>
