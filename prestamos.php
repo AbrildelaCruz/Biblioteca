@@ -198,6 +198,13 @@ if (isset($_GET['perdido_id'])) {
     <p style="text-align: center; color: #475569; margin-bottom: 20px;">Cuaderno digital de control para registrar
         devoluciones y revisar el historial.</p>
 
+        <!-- 🔍 BARRA DE BÚSQUEDA EN TIEMPO REAL PARA LA BITÁCORA -->
+<div class="contenedor-busqueda" style="width: 95%; max-width: 500px; margin: 0 auto 20px auto; text-align: center;">
+    <input type="text" id="buscador-bitacora" class="input-busqueda" 
+           placeholder="🔍 Busca por título de libro o nombre de usuario..." 
+           style="width: 100%; padding: 12px 20px; font-size: 15px; border: 2px solid #DDE6ED; border-radius: 30px; outline: none; box-sizing: border-box; box-shadow: 0 4px 6px rgba(15, 76, 129, 0.03);">
+</div>
+
     <table class="tabla-datos" style="max-width: 95%; margin: 20px auto; font-size: 13px;">
         <thead>
             <tr>
@@ -243,6 +250,31 @@ if (isset($_GET['perdido_id'])) {
     <?php if (!$entregado): ?>
         <!-- Tu botón verde de siempre para recibir el libro -->
         <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
+         
+        <script>
+// MOTOR DE FILTRADO EN TIEMPO REAL PARA LA BITÁCORA
+document.getElementById('buscador-bitacora').addEventListener('input', function () {
+    var filtro = this.value.toLowerCase().trim();
+    // Apuntamos directamente a las filas del cuerpo de tu tabla existente
+    var filas = document.querySelectorAll('.tabla-datos tbody tr');
+
+    filas.forEach(function(fila) {
+        // Ignoramos la fila de "No se han registrado préstamos" si llega a aparecer
+        if (fila.cells.length < 3) return;
+
+        // Capturamos el texto del Libro (Celda 2) y de la Persona (Celda 3)
+        var textoLibro = fila.cells[1].textContent.toLowerCase();
+        var textoPersona = fila.cells[2].textContent.toLowerCase();
+
+        // Si el término coincide con el libro O con la persona, la fila se queda visible
+        if (textoLibro.includes(filtro) || textoPersona.includes(filtro)) {
+            fila.style.display = '';
+        } else {
+            fila.style.display = 'none'; // Si no, se oculta sutilmente
+        }
+    });
+});
+</script>
 
         <!-- 🔄 NUEVO BOTÓN DE RENOVACIÓN DE FILA (Agrupador temporal de memoria) -->
         <button type="button" 
