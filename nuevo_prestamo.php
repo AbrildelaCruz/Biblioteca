@@ -232,41 +232,41 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
             });
         }
     </script>
-
     <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // === CONFIGURACIÓN ===
-    const cantidadBurbujas = 25; // Modifica este número para añadir más o menos burbujas
-    const contenedor = document.body; // Se añadirán directamente al fondo del cuerpo
-    
-    for (let i = 0; i < cantidadBurbujas; i++) {
-        const burbuja = document.createElement('div');
-        burbuja.classList.add('burbuja');
+    // 1. Verificamos si existen datos guardados por el botón "Renovar"
+    const rol = sessionStorage.getItem('renovar_rol');
+    const nombre = sessionStorage.getItem('renovar_nombre');
+    const libro = sessionStorage.getItem('renovar_libro');
 
-        // 1. Posición horizontal aleatoria (entre 0% y 95% de la pantalla)
-        burbuja.style.left = `${Math.random() * 95}%`;
-        
-        // 2. Tamaño aleatorio (entre 30px y 120px)
-        const tamano = Math.random() * 90 + 30;
-        burbuja.style.width = `${tamano}px`;
-        burbuja.style.height = `${tamano}px`;
-
-        // 3. Duración de animación aleatoria (entre 12s y 24s) para simular diferentes pesos
-        const duracion = Math.random() * 12 + 12;
-        burbuja.style.animationDuration = `${duracion}s`;
-
-        // 4. Retraso aleatorio (hasta 15s) para que no salgan todas al mismo tiempo al cargar
-        burbuja.style.animationDelay = `${Math.random() * 15}s`;
-
-        // 5. Aplicar desenfoque sutil a las burbujas más grandes (efecto de profundidad)
-        if (tamano > 90) {
-            burbuja.style.filter = "blur(1px)";
+    if (rol && nombre && libro) {
+        // 2. Rellenamos el selector de rol e invocamos tu función nativa para abrir los campos
+        const selectRol = document.getElementById('rol_usuario');
+        if (selectRol) {
+            selectRol.value = rol;
+            alternarCamposRol(rol); // Ejecuta tu lógica para mostrar bloques de Alumno/Profesor
         }
 
-        contenedor.appendChild(burbuja);
+        // 3. Inyectamos el nombre del usuario y disparamos tu buscador AJAX nativo
+        const inputBuscarUser = document.getElementById('input_nombre_buscar');
+        if (inputBuscarUser) {
+            inputBuscarUser.value = nombre;
+            buscarUsuarioPorAJAX(); // Busca en tu base de datos y rellena los campos bloqueados
+        }
+
+        // 4. Inyectamos el título del libro y disparamos tu localizador AJAX nativo
+        const inputBuscarLibro = document.getElementById('input_Titulo');
+        if (inputBuscarLibro) {
+            inputBuscarLibro.value = libro;
+            buscarLibroPorAJAX(); // Busca el libro en las estanterías e inyecta las llaves ocultas
+        }
+
+        // 5. Limpiamos la memoria temporal para que el formulario vuelva a la normalidad en la próxima carga
+        sessionStorage.removeItem('renovar_rol');
+        sessionStorage.removeItem('renovar_nombre');
+        sessionStorage.removeItem('renovar_libro');
     }
 });
-
-    </script>
+</script>
 </body>
 </html>

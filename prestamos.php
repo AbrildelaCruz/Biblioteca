@@ -12,6 +12,7 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 // ==========================================
 // 1. PROCESAR ACCIÓN: REGISTRAR DEVOLUCIÓN
 // ==========================================
+
 if (isset($_GET['devolver_id'])) {
     $id_prestamo_dev = filter_input(INPUT_GET, 'devolver_id', FILTER_VALIDATE_INT);
 
@@ -239,16 +240,23 @@ if (isset($_GET['perdido_id'])) {
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if (!$entregado): ?>
-                             <!-- Tu botón verde de siempre para recibir el libro -->
-                                <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
-        
-                                 <!-- ¡EL BOTÓN NUEVO! Queda justo a un lado -->
-                                <a href="prestamos.php?perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
-                            <?php else: ?>
-                                 <span style="font-weight: bold; color: #475569;">Completado</span>
-                            <?php endif; ?>
-                        </td>
+    <?php if (!$entregado): ?>
+        <!-- Tu botón verde de siempre para recibir el libro -->
+        <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
+
+        <!-- 🔄 NUEVO BOTÓN DE RENOVACIÓN DE FILA (Agrupador temporal de memoria) -->
+        <button type="button" 
+                onclick="prepararRenovacion('<?php echo strtolower($fila['TipoPersona']); ?>', '<?php echo htmlspecialchars($fila['Persona'], ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars($fila['Libro'], ENT_QUOTES, 'UTF-8'); ?>')" 
+                style="padding: 4px 8px; background-color: #0F4C81; border: none; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px; cursor: pointer; font-family: 'Segoe UI', Arial, sans-serif;">
+            🔄 Renovar
+        </button>
+
+        <!-- Tu botón rojo de siempre para marcar como perdido -->
+        <a href="prestamos.php?perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
+    <?php else: ?>
+         <span style="font-weight: bold; color: #475569;">Completado</span>
+    <?php endif; ?>
+</td>
                     </tr>
                 <?php endwhile; ?>
             <?php else: ?>
@@ -265,38 +273,15 @@ if (isset($_GET['perdido_id'])) {
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    // === CONFIGURACIÓN ===
-    const cantidadBurbujas = 25; // Modifica este número para añadir más o menos burbujas
-    const contenedor = document.body; // Se añadirán directamente al fondo del cuerpo
+function prepararRenovacion(rol, nombrePersona, tituloLibro) {
+    // Guardamos los datos de la fila de forma temporal
+    sessionStorage.setItem('renovar_rol', rol);
+    sessionStorage.setItem('renovar_nombre', nombrePersona);
+    sessionStorage.setItem('renovar_libro', tituloLibro);
     
-    for (let i = 0; i < cantidadBurbujas; i++) {
-        const burbuja = document.createElement('div');
-        burbuja.classList.add('burbuja');
-
-        // 1. Posición horizontal aleatoria (entre 0% y 95% de la pantalla)
-        burbuja.style.left = `${Math.random() * 95}%`;
-        
-        // 2. Tamaño aleatorio (entre 30px y 120px)
-        const tamano = Math.random() * 90 + 30;
-        burbuja.style.width = `${tamano}px`;
-        burbuja.style.height = `${tamano}px`;
-
-        // 3. Duración de animación aleatoria (entre 12s y 24s) para simular diferentes pesos
-        const duracion = Math.random() * 12 + 12;
-        burbuja.style.animationDuration = `${duracion}s`;
-
-        // 4. Retraso aleatorio (hasta 15s) para que no salgan todas al mismo tiempo al cargar
-        burbuja.style.animationDelay = `${Math.random() * 15}s`;
-
-        // 5. Aplicar desenfoque sutil a las burbujas más grandes (efecto de profundidad)
-        if (tamano > 90) {
-            burbuja.style.filter = "blur(1px)";
-        }
-
-        contenedor.appendChild(burbuja);
-    }
-});
+    // Redireccionamos de inmediato al formulario inteligente de préstamos
+    window.location.href = 'nuevo_prestamo.php';
+}
 </script>
 </body>
 </html>

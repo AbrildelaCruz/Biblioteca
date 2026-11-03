@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Insertar la transacción en la tabla unificada de préstamos
         $stmt_ins = $conexion->prepare("INSERT INTO prestamos (id_libro, id_alumnos, id_profesores, Cantidad, fecha_salida, fecha_devolucion_esperada, tipo_movimiento, Renovacion) VALUES (?, ?, ?, 1, ?, ?, ?, 0)");
-        $stmt_ins->bind_param("iiissss", $id_libro, $id_alumno, $id_profesor, $fecha_salida, $fecha_esperada, $movimiento_texto);
+        $stmt_ins->bind_param("iiisss", $id_libro, $id_alumno, $id_profesor, $fecha_salida, $fecha_esperada, $movimiento_texto);
         $stmt_ins->execute();
         $stmt_ins->close();
 
