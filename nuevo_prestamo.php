@@ -8,12 +8,6 @@ if (session_status() === PHP_SESSION_NONE) {
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
-
-// 1. Cargar alumnos, profesores y libros para los desplegables
-$alumnos_res = $conexion->query("SELECT id_Alumnos, Nombre FROM alumnos ORDER BY Nombre ASC");
-$profesores_res = $conexion->query("SELECT id_profesores, Nombre FROM profesores ORDER BY Nombre ASC");
-// Solo traer libros que tengan ejemplares disponibles
-$libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejemplares_disponibles > 0 ORDER BY Titulo ASC");
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -40,113 +34,203 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo FROM libros WHERE Ejempl
         </div>
     <?php endif; ?>
 
-    <div class="contenedor-formulario" style="max-width: 600px;">
-        <h2>Formulario de Préstamos / Apartados</h2>
+    <div class="contenedor-formulario" style="max-width: 700px;">
+        <h2>Formulario de Préstamos Inteligente</h2>
 
-        <!-- Envía los datos directos al archivo procesar_movimiento.php que ya creamos -->
-        <form action="procesar_movimiento.php" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+        <form action="procesar_movimiento.php" method="POST">
+            <!-- Llaves Primarias Ocultas para inyectar directo a la Base de Datos -->
+            <input type="hidden" id="id_usuario_final" name="id_usuario" value="">
+            <input type="hidden" id="id_libro_final" name="id_libro" value="">
 
-            <div class="grupo-campo">
-                <label>1. Tipo de Usuario</label>
-                <select name="tipo_usuario" required onchange="alternarFormulario(this)">
-                    <option value="">-- Selecciona una opción --</option>
-                    <option value="alumno">Alumno</option>
-                    <option value="profesor">Profesor</option>
-                </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left;">
+                
+                <!-- 1. SELECCIÓN DE ROL -->
+                <div class="grupo-campo" style="grid-column: span 2;">
+                    <label>1. Tipo de Usuario (Rol)</label>
+                    <select name="tipo_usuario" id="rol_usuario" required onchange="alternarCamposRol(this.value)">
+                        <option value="">-- Selecciona una opción --</option>
+                        <option value="alumno">Alumno</option>
+                        <option value="profesor">Profesor</option>
+                    </select>
+                </div>
+
+                <!-- BLOQUE BÚSQUEDA AUTOMÁTICA DE USUARIO -->
+                <div class="grupo-campo" id="bloque_buscador_usuario" style="grid-column: span 2; display: none;">
+                    <label id="label_buscar_usuario">Nombre a buscar</label>
+                    <div class="campo-buscar-inline">
+                        <input type="text" id="input_nombre_buscar" placeholder="Teclea el nombre y presiona buscar...">
+                        <button type="button" class="boton-buscar-ajax" onclick="buscarUsuarioPorAJAX()">🔍 Buscar</button>
+                    </div>
+                </div>
+
+                <!-- CAMPOS AUTOCOMPLETADOS DEL ALUMNO -->
+                <div class="grupo-campo bloque-alumno" style="display: none;">
+                    <label>Madre Encargada</label>
+                    <input type="text" id="input_Madre" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+                <div class="grupo-campo bloque-alumno" style="display: none;">
+                    <label>Familia</label>
+                    <input type="text" id="input_Familia" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+                <div class="grupo-campo bloque-alumno" style="display: none;">
+                    <label>Piso</label>
+                    <input type="text" id="input_Piso" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+                <div class="grupo-campo bloque-alumno" style="display: none;">
+                    <label>Grupo</label>
+                    <input type="text" id="input_Grupo" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+
+                <!-- CAMPOS AUTOCOMPLETADOS DEL PROFESOR -->
+                <div class="grupo-campo bloque-profesor" style="display: none; grid-column: span 2;">
+                    <label>Academia / Materia(s) Asignada(s)</label>
+                    <input type="text" id="input_Materia" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+
+                <!-- BLOQUE BÚSQUEDA AUTOMÁTICA DEL LIBRO -->
+                <div class="grupo-campo" style="grid-column: span 2; border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 5px;">
+                    <label>3. Título del Libro a llevarse</label>
+                    <div class="campo-buscar-inline">
+                        <input type="text" id="input_Titulo" placeholder="Escribe el nombre del libro para localizarlo...">
+                        <button type="button" class="boton-buscar-ajax" style="background-color: #4a148c;" onclick="buscarLibroPorAJAX()">🔍 Localizar</button>
+                    </div>
+                </div>
+
+                <div class="grupo-campo">
+                    <label>Autor</label>
+                    <input type="text" id="input_Autor" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+                <div class="grupo-campo">
+                    <label>Editorial</label>
+                    <input type="text" id="input_Editorial" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+                <div class="grupo-campo">
+                    <label>ISBN</label>
+                    <input type="text" id="input_ISBN" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+                <div class="grupo-campo">
+                    <label>Idioma</label>
+                    <input type="text" id="input_Idioma" readonly style="background-color: #f8fafc; color: #64748b;">
+                </div>
+
+                <div class="grupo-campo" style="grid-column: span 2;">
+                    <label>4. Acción a realizar</label>
+                    <select name="accion" required>
+                        <option value="prestar">Prestar Libro (Entrega en 9 días)</option>
+                        <option value="apartar">Apartar Libro (Reservar por 48 horas)</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- Selector de Alumnos (Oculto por defecto) -->
-            <div class="grupo-campo" id="bloque_alumno" style="display: none;">
-                <label>2. Selecciona al Alumno</label>
-                <select name="id_usuario" id="select_alumno">
-                    <option value="">-- Buscar Alumno --</option>
-                    <?php while ($al = $alumnos_res->fetch_assoc()): ?>
-                        <option value="<?php echo $al['id_Alumnos']; ?>"><?php echo htmlspecialchars($al['Nombre']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-
-            <!-- Selector de Profesores (Oculto por defecto) -->
-            <div class="grupo-campo" id="bloque_profesor" style="display: none;">
-                <label>2. Selecciona al Docente</label>
-                <select name="id_usuario" id="select_profesor" disabled>
-                    <option value="">-- Buscar Profesor --</option>
-                    <?php while ($prof = $profesores_res->fetch_assoc()): ?>
-                        <option value="<?php echo $prof['id_profesores']; ?>">
-                            <?php echo htmlspecialchars($prof['Nombre']); ?></option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-
-            <div class="grupo-campo">
-                <label>3. Libro a llevarse</label>
-                <select name="id_libro" required>
-                    <option value="">-- Buscar Título del Libro --</option>
-                    <?php if ($libros_res && $libros_res->num_rows > 0): ?>
-                        <?php while ($lib = $libros_res->fetch_assoc()): ?>
-                            <option value="<?php echo $lib['id_libro']; ?>"><?php echo htmlspecialchars($lib['Titulo']); ?>
-                            </option>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <option value="" disabled>❌ No hay libros disponibles en estanterías</option>
-                    <?php endif; ?>
-                </select>
-            </div>
-
-            <div class="grupo-campo">
-                <label>4. Acción a realizar</label>
-                <select name="accion" required>
-                    <option value="prestar">Prestar Libro (Entrega en 9 días)</option>
-                    <option value="apartar">Apartar Libro (Reservar por 48 horas)</option>
-                </select>
-            </div>
-
-            <button type="submit" class="boton-guardar" style="width: 100%; margin-top: 10px;">
-                🚀 Registrar Movimiento
+            <button type="submit" class="boton-guardar" style="width: 100%; margin-top: 15px; background-color: #2A9D8F;">
+                🚀 Registrar Movimiento Completo
             </button>
         </form>
     </div>
 
     <div class="z1">
-        <a class="z2" href="registros.html">REGRESAR</a>
-    </div>
-
-    <!-- SCRIPT DE INTERACCIÓN LIMPINA -->
-    <script>
-        function alternarFormulario(control) {
-            var bloqueAl = document.getElementById('bloque_alumno');
-            var bloqueProf = document.getElementById('bloque_profesor');
-            var selectAl = document.getElementById('select_alumno');
-            var selectProf = document.getElementById('select_profesor');
-
-            if (control.value === 'alumno') {
-                bloqueAl.style.display = 'block';
-                selectAl.disabled = false;
-                selectAl.required = true;
-
-                bloqueProf.style.display = 'none';
-                selectProf.disabled = true;
-                selectProf.required = false;
-            } else if (control.value === 'profesor') {
-                bloqueProf.style.display = 'block';
-                selectProf.disabled = false;
-                selectProf.required = true;
-
-                bloqueAl.style.display = 'none';
-                selectAl.disabled = true;
-                selectAl.required = false;
-            } else {
-                bloqueAl.style.display = 'none';
-                bloqueProf.style.display = 'none';
-                selectAl.disabled = true;
-                selectProf.disabled = true;
-            }
-        }
-    </script>
-    <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
-</body>
 
+    <!-- 🚀 LÓGICA DE INTERACCIÓN INTERACTIVA ASÍNCRONA -->
+    <script>
+        function alternarCamposRol(rol) {
+            document.getElementById('id_usuario_final').value = "";
+            document.getElementById('input_nombre_buscar').value = "";
+            document.getElementById('input_Madre').value = "";
+            document.getElementById('input_Familia').value = "";
+            document.getElementById('input_Piso').value = "";
+            document.getElementById('input_Grupo').value = "";
+            document.getElementById('input_Materia').value = "";
+
+            var buscadorUsuario = document.getElementById('bloque_buscador_usuario');
+            var alumnosCampos = document.querySelectorAll('.bloque-alumno');
+            var profesoresCampos = document.querySelectorAll('.bloque-profesor');
+
+            if (rol === 'alumno' || rol === 'profesor') {
+                buscadorUsuario.style.display = 'block';
+                document.getElementById('label_buscar_usuario').innerText = "2. Buscar Nombre del " + rol.toUpperCase();
+                
+                alumnosCampos.forEach(el => el.style.display = (rol === 'alumno') ? 'block' : 'none');
+                profesoresCampos.forEach(el => el.style.display = (rol === 'profesor') ? 'block' : 'none');
+            } else {
+                buscadorUsuario.style.display = 'none';
+                alumnosCampos.forEach(el => el.style.display = 'none');
+                profesoresCampos.forEach(el => el.style.display = 'none');
+            }
+        }
+
+        function buscarUsuarioPorAJAX() {
+            const rol = document.getElementById('rol_usuario').value;
+            const nombre = document.getElementById('input_nombre_buscar').value.trim();
+
+            if (nombre === "") {
+                alert("Por favor, escribe un nombre primero.");
+                return;
+            }
+
+            fetch('buscar_usuario.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rol: rol, nombre: nombre })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    // Mapea las mayúsculas exactas de tus tablas relacionales
+                    document.getElementById('id_usuario_final').value = data.data.id_Alumnos || data.data.id_profesores;
+                    document.getElementById('input_nombre_buscar').value = data.data.Nombre;
+                    
+                    if (rol === 'alumno') {
+                        document.getElementById('input_Madre').value = data.data.Madre_encargada || '-';
+                        document.getElementById('input_Familia').value = data.data.Familia || '-';
+                        document.getElementById('input_Piso').value = data.data.Piso || '-';
+                        document.getElementById('input_Grupo').value = data.data.Grupo || '-';
+                    } else {
+                        document.getElementById('input_Materia').value = data.data.Materia || '-';
+                    }
+                } else {
+                    alert(data.message || 'No se encontró el registro.');
+                }
+            })
+            .catch(err => console.error('Error:', err));
+        }
+        function buscarLibroPorAJAX() {
+            const titulo = document.getElementById('input_Titulo').value.trim();
+
+            if (titulo === "") {
+                alert("Por favor, escribe el título del libro.");
+                return;
+            }
+
+            // Mapeo adaptado a lo que lee tu script 'buscar_libro.php'
+            const payload = { Titulo: titulo, Autor: '', Editorial: '', ISBN: '' };
+
+            fetch('buscar_libro.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.libro) {
+                    // Inyectamos las llaves primarias y datos reales en las cajas bloqueadas
+                    document.getElementById('id_libro_final').value = data.libro.id_libro;
+                    document.getElementById('input_Titulo').value = data.libro.Titulo;
+                    document.getElementById('input_Autor').value = data.libro.Autor || '-';
+                    document.getElementById('input_Editorial').value = data.libro.Editorial || '-';
+                    document.getElementById('input_ISBN').value = data.libro.ISBN || '-';
+                    document.getElementById('input_Idioma').value = data.libro.Idioma || '-';
+                    alert('📚 Libro localizado en las estanterías e inyectado con éxito.');
+                } else {
+                    alert('No se encontró ningún libro con ese título.');
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Error al procesar la búsqueda del libro.");
+            });
+        }
+    </script>
+</body>
 </html>
