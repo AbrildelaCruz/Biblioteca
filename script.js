@@ -7,14 +7,14 @@ document.getElementById('btn-entrar').addEventListener('click', function() {
 
     // 2. Cambiar a puertas Semiabiertas tras 300 milisegundos
     setTimeout(function() {
-        contenedor.classList.remove('fondo-cerrado');
-        contenedor.classList.add('fondo-semiabierto');
+        contenedor.classList.remove('puertas-cerradas');
+        contenedor.classList.add('puertas-semiabiertas');
     }, 300);
 
     // 3. Cambiar a puertas Abiertas tras 800 milisegundos totales
     setTimeout(function() {
-        contenedor.classList.remove('fondo-semiabierto');
-        contenedor.classList.add('fondo-abierto');
+        contenedor.classList.remove('puertas-semiabiertas');
+        contenedor.classList.add('puertas-abiertas');
     }, 900);
 
     // 4. Redireccionar al bloque de módulos tras 1.7 segundos (cuando ya se aprecie el interior)
