@@ -1,22 +1,43 @@
-.body1 {
-    background-image: url('fondosullivanv.jpg');
-    background-repeat: no-repeat;
-    display: flex;
-    justify-content: center; 
-    align-items: center;     
-    height: 100vh;     
-    width: 100vw;      
-    margin: 0;  
-    background-size: cover;        
-    background-position: center;   
-    background-attachment: fixed;
+/* --- Reinicio básico --- */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
-.btn1 {
-    display: inline-block; 
-    justify-content: center;  
-    align-items: center; 
-    font-size: 30px;
+/* --- Contenedor del fondo --- */
+#pantalla-biblioteca {
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-image 0.2s ease-in-out;
+}
+
+/* --- Estados Dinámicos de las imágenes (.jpg) --- */
+.fondo-cerrado {
+    background-image: url('../puertas-cerradas.jpg'); /* El ../ sale de css/ hacia la raíz */
+}
+
+.fondo-semiabierto {
+    background-image: url('../puertas-semiabiertas.jpg');
+}
+
+.fondo-abierto {
+    background-image: url('../puertas-abiertas.jpg');
+}
+
+/* --- Ocultar el botón al dar clic --- */
+.ocultar {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
 /* BOTÓN DE ENTRADA PRINCIPAL */

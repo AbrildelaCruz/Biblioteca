@@ -44,7 +44,7 @@
         </div>
 
         <!-- COLUMNA DERECHA: EL PANEL DE NOTIFICACIONES LATERAL -->
-        <div class="panel-notificaciones-derecho">
+       <div class="panel-notificaciones-derecho">
     <h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
         🔔 Alertas de Devolución
     </h3>
@@ -53,19 +53,21 @@
         date_default_timezone_set('America/Mexico_City');
         $fecha_hoy = date('Y-m-d');
         
-        // Consulta exacta uniendo préstamos con alumnos, profesores y libros
-       $sql_alertas = "SELECT 
-                    l.Titulo AS Libro,
-                    p.fecha_devolucion_esperada AS FechaLimite,
-                    COALESCE(a.Nombre, prof.Nombre, 'Desconocido') AS Persona,
-                    DATEDIFF(p.fecha_devolucion_esperada, '$fecha_hoy') AS DiasRestantes
-                FROM prestamos p
-                JOIN libros l ON p.id_libro = l.id_libro
-                LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos
-                LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores
-                WHERE p.fecha_devolucion_real IS NULL 
-                ORDER BY p.fecha_devolucion_esperada ASC 
-                LIMIT 5";
+        // CORRECCIÓN DE COLUMNAS: id_Alumnos (con A mayúscula) e id_profesores (en plural)
+        $sql_alertas = "SELECT 
+                            l.Titulo AS Libro,
+                            p.Cantidad AS CantidadLibros,
+                            p.fecha_devolucion_esperada AS FechaLimite,
+                            COALESCE(a.Nombre, prof.Nombre, 'Desconocido') AS Persona,
+                            CASE WHEN a.Nombre IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS TipoUsuario,
+                            DATEDIFF(p.fecha_devolucion_esperada, '$fecha_hoy') AS DiasRestantes
+                        FROM prestamos p
+                        JOIN libros l ON p.id_libro = l.id_libro
+                        LEFT JOIN alumnos a ON p.id_Alumnos = a.id_Alumnos
+                        LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores
+                        WHERE p.fecha_devolucion_real IS NULL 
+                        ORDER BY p.fecha_devolucion_esperada ASC 
+                        LIMIT 5";
 
         $res_alertas = $conexion->query($sql_alertas);
 
@@ -73,7 +75,7 @@
             while($alerta = $res_alertas->fetch_assoc()) {
                 $dias = (int)$alerta['DiasRestantes'];
                 
-                // Semáforo inteligente basado en los días restantes
+                // Definir semáforo visual
                 if ($dias < 0) {
                     $clase_aviso = "entrega-vencida";
                     $texto_tiempo = "⚠️ VENCIDO POR " . abs($dias) . " DÍAS";
@@ -84,14 +86,21 @@
                     $clase_aviso = "entrega-proxima";
                     $texto_tiempo = "🟢 Quedan " . $dias . " días";
                 }
-            ?>
-                <!-- Tarjeta de Alerta Estilizada -->
+                ?>
+                <!-- Tarjeta de Alerta Limpia con solo su Contenido -->
                 <div class="tarjeta-aviso <?php echo $clase_aviso; ?>" style="padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; font-size: 13px; line-height: 1.4;">
                     <span style="display: block; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
                         <?php echo $texto_tiempo; ?>
                     </span>
-                    <strong style="display: block; color: #1E293B; font-size: 14px;"><?php echo htmlspecialchars($alerta['Persona']); ?></strong>
-                    <span style="display: block; color: #475569;">Libro: <i><?php echo htmlspecialchars($alerta['Libro']); ?></i></span>
+                    <strong style="display: block; color: #1E293B; font-size: 14px;">
+                        <?php echo $alerta['TipoUsuario'] . ": " . htmlspecialchars($alerta['Persona']); ?>
+                    </strong>
+                    <span style="display: block; color: #475569; margin-top: 2px;">
+                        Libro: <i><?php echo htmlspecialchars($alerta['Libro']); ?></i>
+                    </span>
+                    <span style="display: block; color: #475569; font-size: 12px;">
+                        Cantidad prestada: <b><?php echo (int)$alerta['CantidadLibros']; ?></b>
+                    </span>
                 </div>
                 <?php
             }
