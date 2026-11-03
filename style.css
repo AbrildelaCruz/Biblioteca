@@ -22,15 +22,15 @@ body, html {
 
 /* --- Estados Dinámicos de las imágenes (.jpg) --- */
 .fondo-cerrado {
-    background-image: url('../puertas-cerradas.jpg'); /* El ../ sale de css/ hacia la raíz */
+    background-image: url('../puertas-cerradas.JPG'); /* El ../ sale de css/ hacia la raíz */
 }
 
 .fondo-semiabierto {
-    background-image: url('../puertas-semiabiertas.jpg');
+    background-image: url('../puertas-semiabiertas.JPG'); /* Imagen donde se están abriendo */
 }
 
 .fondo-abierto {
-    background-image: url('../puertas-abiertas.jpg');
+    background-image: url('../puertas-abiertas.JPG');
 }
 
 /* --- Ocultar el botón al dar clic --- */
@@ -311,17 +311,17 @@ body, html {
     position: absolute;
     bottom : -120px;
     /* Colores basados en el azul cobalto y acero con alta transparencia */
-    background: rgba(15, 76, 129, 0.03); 
-    border : 1px solid rgba(15, 76, 129, 0.08);
+    background: rgba(7, 124, 226, 0.952); 
+    border : 1px solid rgba(8, 123, 223, 0.952);
     border-radius : 50%;
     /* Resplandor digital muy suave */
-    box-shadow : 0 0 12px rgba(232, 238, 245, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.6);
+    box-shadow : 0 0 12px rgba(5, 75, 155, 0.952), inset 0 0 8px rgba(3, 18, 155, 0.945);
     animation : flotar 16s linear infinite; /* Animación más lenta para transmitir calma */
     z-index: 1;
 }
 
 /* Configuración de las burbujas (Se mantiene tu estructura pero con mejores tiempos) */
-.burbuja:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-duration: 18s; animation-delay: 0s; }
+.burbuja:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-duration: 18s; animation-delay: 5s; }
 .burbuja:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 14s; animation-delay: 2s; }
 .burbuja:nth-child(3) { left: 40%; width: 120px; height: 120px; animation-duration: 22s; animation-delay: 4s; filter: blur(1px); } 
 .burbuja:nth-child(4) { left: 55%; width: 60px; height: 60px; animation-duration: 16s; animation-delay: 1s; }
@@ -329,6 +329,8 @@ body, html {
 .burbuja:nth-child(6) { left: 85%; width: 30px; height: 30px; animation-duration: 12s; animation-delay: 3s; }
 .burbuja:nth-child(7) { left: 50%; width: 50px; height: 50px; animation-duration: 17s; animation-delay: 7s; }
 .burbuja:nth-child(8) { left: 80%; width: 110px; height: 110px; animation-duration: 24s; animation-delay: 2s; filter: blur(1px); }
+.burbuja:nth-child(9) { left: 60%; width: 100px; height: 100px; animation-duration: 24s; animation-delay: 4s; filter: blur(1px); }
+.burbuja:nth-child(10) { left: 50%; width: 50px; height: 50px; animation-duration: 17s; animation-delay: 7s; }
 
 /* FORMULARIO DE REGISTRO PROFESORES / ALUMNOS */
 .contenedor-formulario {
@@ -880,15 +882,15 @@ body, html {
 
 /* --- Estados del Fondo --- */
 .fondo-cerrado {
-    background-image: url('puertas-cerradas.jpg'); /* Imagen donde están cerradas */
+    background-image: url('puertas-cerradas.JPG'); /* Imagen donde están cerradas */
 }
 
 .fondo-semiabierto {
-    background-image: url('puertas-semiabiertas.jpg'); /* Imagen donde se están abriendo */
+    background-image: url('puertas-semiabiertas.JPG'); /* Imagen donde se están abriendo */
 }
 
 .fondo-abierto {
-    background-image: url('puertas-abiertas.jpg'); /* Imagen abierta por completo */
+    background-image: url('puertas-abiertas.JPG'); /* Imagen abierta por completo */
 }
 
 /* Interfaz flotante */
@@ -954,4 +956,64 @@ body, html {
 }
 .boton-buscar-ajax:hover {
     background-color: #0B3459 !important; /* Tono más obscuro */
+}
+
+/* Catalogo interactivo*/
+/* ==========================================================================
+   📊 MÓDULO: ANALÍTICA Y TENDENCIAS DE LECTURA (EQUIPO 8)
+   ========================================================================== */
+.contenedor-tendencias {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 25px rgba(15, 76, 129, 0.08);
+    border: 1px solid rgba(232, 238, 245, 0.6);
+    z-index: 10;
+    box-sizing: border-box;
+}
+.seccion-bloques-tendencias {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+.bloque-tiempo {
+    flex: 1;
+    min-width: 280px;
+    background: #F8FAFC;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+}
+.bloque-tiempo h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #4a148c;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #E2E8F0;
+    padding-bottom: 5px;
+}
+.item-tendencia {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px dashed #E2E8F0;
+}
+.item-tendencia:last-child {
+    border-bottom: none;
+}
+.badge-conteo {
+    background-color: #2A9D8F;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 11px;
 }
