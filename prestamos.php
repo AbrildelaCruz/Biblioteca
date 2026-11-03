@@ -205,3 +205,79 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                             </span>
                         </td>
                         <td><?php echo date('d/m/Y', strtotime($fila['fecha_salida'])); ?></td>
+                        <!-- Continuación de las celdas de la fila de Préstamos -->
+                        <td><?php echo date('d/m/Y', strtotime($fila['fecha_salida'])); ?></td>
+                        <td style="font-weight: bold;"><?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_esperada'])); ?></td>
+                        <td>
+                            <?php if ($entregado): ?>
+                                <span style="color: green; font-weight: bold;">✔ <?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_real'])); ?></span>
+                            <?php else: ?>
+                                <span style="color: #475569; font-style: italic; font-weight: bold;">Pendiente</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if (!$entregado): ?>
+                                <!-- 1. Botón Recibir -->
+                                <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
+                                 
+                                <!-- 2. Botón Renovar (Llamada limpia a la Opción A) -->
+                                <button type="button" 
+                                        onclick="prepararRenovacion('<?php echo strtolower($fila['TipoPersona']); ?>', '<?php echo htmlspecialchars($fila['Persona'], ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars($fila['Libro'], ENT_QUOTES, 'UTF-8'); ?>')" 
+                                        style="padding: 4px 8px; background-color: #0F4C81; border: none; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px; cursor: pointer; font-family: 'Segoe UI', Arial, sans-serif;">
+                                    🔄 Renovar
+                                </button>
+
+                                <!-- 3. Botón Perdido -->
+                                <a href="prestamos.php?perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
+                            <?php else: ?>
+                                <span style="font-weight: bold; color: #475569;">Completado</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="9" style="text-align: center; font-weight: bold; padding: 20px;">No se ha registrado ningún préstamo o apartado en el sistema todavía.</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+    
+    <!-- Botón Regresar de la Bitácora -->
+    <div class="z1">
+        <a class="z2" href="registro.php">REGRESAR</a>
+    </div>
+
+<!-- ==========================================================
+     ZONA DE SCRIPTS JAVASCRIPT UNIFICADA AL FINAL
+========================================================== -->
+<script>
+// 1. MOTOR DE FILTRADO EN TIEMPO REAL PARA LA BITÁCORA (OPCIÓN A)
+document.getElementById('buscador-bitacora').addEventListener('input', function () {
+    var filtro = this.value.toLowerCase().trim();
+    var filas = document.querySelectorAll('.tabla-datos tbody tr');
+
+    filas.forEach(function(fila) {
+        if (fila.cells.length < 3) return;
+
+        var textoLibro = fila.cells[1].textContent.toLowerCase();
+        var textoPersona = fila.cells[2].textContent.toLowerCase();
+
+        if (textoLibro.includes(filtro) || textoPersona.includes(filtro)) {
+            fila.style.display = '';
+        } else {
+            fila.style.display = 'none';
+        }
+    });
+});
+
+// 2. SISTEMA DE LOGÍSTICA PARA LA MEMORIA DE RENOVACIÓN
+function prepararRenovacion(rol, nombrePersona, tituloLibro) {
+    sessionStorage.setItem('renovar_rol', rol);
+    sessionStorage.setItem('renovar_nombre', nombrePersona);
+    sessionStorage.setItem('renovar_libro', tituloLibro);
+    window.location.href = 'nuevo_prestamo.php';
+}
+</script>
+</body>
+</html>
