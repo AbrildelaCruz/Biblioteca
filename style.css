@@ -928,3 +928,30 @@ body, html {
 .precarga {
     display: none;
 }
+/* EN REGISTRA PRÉSTAMO*/
+.campo-buscar-inline {
+    display: flex !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+.campo-buscar-inline input {
+    flex: 1 !important;
+}
+.boton-buscar-ajax {
+    background-color: #0F4C81 !important; /* Azul Cobalto */
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0 15px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.2s ease !important;
+}
+.boton-buscar-ajax:hover {
+    background-color: #0B3459 !important; /* Tono más obscuro */
+}
