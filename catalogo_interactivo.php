@@ -43,6 +43,83 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
         </div>
     <?php endif; ?>
 
+        <!-- 📊 NUEVO PANEL DE ANALÍTICA Y TENDENCIAS DE LECTURA -->
+    <div class="contenedor-tendencias">
+        <h3 style="margin: 0; color: #0F4C81; text-align: center; font-size: 18px; text-transform: uppercase; letter-spacing: 0.5px;">
+            📈 Libros Más Leídos (Monitoreo de Tendencias)
+        </h3>
+        
+        <div class="seccion-bloques-tendencias">
+            
+            <!-- 🗓️ BLOQUE 1: LOS MÁS LEÍDOS DE LA SEMANA -->
+            <div class="bloque-tiempo">
+                <h4>🔥 Esta Semana</h4>
+                <?php
+                // Consulta para los últimos 7 días
+                $sql_semana = "SELECT l.Titulo, COUNT(p.id_prestamo) AS Total 
+                               FROM prestamos p 
+                               JOIN libros l ON p.id_libro = l.id_libro 
+                               WHERE p.fecha_salida >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                               GROUP BY p.id_libro 
+                               ORDER BY Total DESC LIMIT 3";
+                $res_semana = $conexion->query($sql_semana);
+                if ($res_semana && $res_semana->num_rows > 0) {
+                    while($row = $res_semana->fetch_assoc()) {
+                        echo "<div class='item-tendencia'><span>📚 ".htmlspecialchars($row['Titulo'])."</span><span class='badge-conteo'>".$row['Total']." prestamos</span></div>";
+                    }
+                } else {
+                    echo "<p style='font-style:italic; font-size:12px; color:#64748b;'>Sin movimientos esta semana.</p>";
+                }
+                ?>
+            </div>
+
+            <!-- 🗓️ BLOQUE 2: TENDENCIAS DE LAS ÚLTIMAS 2 SEMANAS -->
+            <div class="bloque-tiempo">
+                <h4>📊 Últimas 2 Semanas</h4>
+                <?php
+                // Consulta para los últimos 14 días
+                $sql_quincena = "SELECT l.Titulo, COUNT(p.id_prestamo) AS Total 
+                                 FROM prestamos p 
+                                 JOIN libros l ON p.id_libro = l.id_libro 
+                                 WHERE p.fecha_salida >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
+                                 GROUP BY p.id_libro 
+                                 ORDER BY Total DESC LIMIT 3";
+                $res_quincena = $conexion->query($sql_quincena);
+                if ($res_quincena && $res_quincena->num_rows > 0) {
+                    while($row = $res_quincena->fetch_assoc()) {
+                        echo "<div class='item-tendencia'><span>📖 ".htmlspecialchars($row['Titulo'])."</span><span class='badge-conteo' style='background-color:#0F4C81;'>".$row['Total']." prestamos</span></div>";
+                    }
+                } else {
+                    echo "<p style='font-style:italic; font-size:12px; color:#64748b;'>Sin lecturas registradas.</p>";
+                }
+                ?>
+            </div>
+
+            <!-- 🗓️ BLOQUE 3: LO MÁS SOLICITADO DEL MES -->
+            <div class="bloque-tiempo">
+                <h4>🏆 Histórico del Mes</h4>
+                <?php
+                // Consulta para los últimos 30 días
+                $sql_mes = "SELECT l.Titulo, COUNT(p.id_prestamo) AS Total 
+                            FROM prestamos p 
+                            JOIN libros l ON p.id_libro = l.id_libro 
+                            WHERE p.fecha_salida >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                            GROUP BY p.id_libro 
+                            ORDER BY Total DESC LIMIT 3";
+                $res_mes = $conexion->query($sql_mes);
+                if ($res_mes && $res_mes->num_rows > 0) {
+                    while($row = $res_mes->fetch_assoc()) {
+                        echo "<div class='item-tendencia'><span>👑 <b>".htmlspecialchars($row['Titulo'])."</b></span><span class='badge-conteo' style='background-color:#4a148c;'>".$row['Total']." prestamos</span></div>";
+                    }
+                } else {
+                    echo "<p style='font-style:italic; font-size:12px; color:#64748b;'>Sin registros este mes.</p>";
+                }
+                ?>
+            </div>
+
+        </div>
+    </div>
+
     <h2 style="color: #0F4C81; text-align: center; margin-top: 20px;">📚 Catálogo Digital Interactivo</h2>
     <p style="text-align: center; color: #475569; margin-bottom: 20px;">Busca un libro por su título y procésalo al
         instante.</p>
