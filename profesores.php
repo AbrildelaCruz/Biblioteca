@@ -151,10 +151,7 @@ if ($es_edicion && $id_editar) {
                 <input type="text" id="inputNombre" name="Nombre"
                     value="<?php echo htmlspecialchars($nombre_actual); ?>" maxlength="100" required>
 
-                <!-- BOTÓN INTERACTIVO DE BÚSQUEDA EN TIEMPO REAL -->
-                <button type="button" class="boton-buscar-inline" onclick="buscarDocente()">
-                    🔍 Buscar Docente
-                </button>
+                
             </div>
 
             <div class="contenedor-materias">
