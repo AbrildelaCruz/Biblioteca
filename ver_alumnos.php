@@ -35,7 +35,7 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
     </div>
   <?php endif; ?>
 
-  <h2 style="text-align: center; color: white; margin-top: 30px;">👥 Alumnos Guardados en el Sistema</h2>
+  <h2 style="text-align: center; color: white; margin-top: 30px;">👥 Alumnos Guardados</h2>
 
   <table class="tabla-datos" style="max-width: 95%; margin: 30px auto; font-size: 13px;">
     <thead>
