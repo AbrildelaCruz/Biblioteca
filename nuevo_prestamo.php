@@ -15,7 +15,7 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Salida de Libro - Biblioteca Sullivan</title>
+    <title>Realizar Préstamo - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 </head>
 

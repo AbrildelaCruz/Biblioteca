@@ -22,7 +22,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Interactivo - Biblioteca Sullivan</title>
+    <title>Catálogo - Biblioteca Sullivan</title>
     <!-- Tu archivo de estilos externo unificado -->
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 </head>
