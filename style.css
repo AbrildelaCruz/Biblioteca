@@ -7,38 +7,6 @@ body, html {
     overflow: hidden;
 }
 
-/* --- Contenedor del fondo --- */
-#pantalla-biblioteca {
-    width: 100vw;
-    height: 100vh;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-image 0.2s ease-in-out;
-}
-
-/* --- Estados Dinámicos de las imágenes (.jpg) --- */
-.fondo-cerrado {
-    background-image: url('../puertas-cerradas.JPG'); /* El ../ sale de css/ hacia la raíz */
-}
-
-.fondo-semiabierto {
-    background-image: url('../puertas-semiabiertas.JPG'); /* Imagen donde se están abriendo */
-}
-
-.fondo-abierto {
-    background-image: url('../puertas-abiertas.JPG');
-}
-
-/* --- Ocultar el botón al dar clic --- */
-.ocultar {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
 
 /* BOTÓN DE ENTRADA PRINCIPAL */
 .A_uno {
@@ -854,32 +822,44 @@ body, html {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* --- Contenedor del fondo corregido con dimensiones reales --- */
+ /*🎬 MÓDULO DE BIENVENIDA - Biblioteca Sullivan
+   ========================================================================== */
+
 #pantalla-biblioteca {
-    width: 100vw !important;
-    height: 100vh !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    transition: background-image 0.2s ease-in-out !important;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-image 0.2s ease-in-out;
 }
 
-/* --- Estados del Fondo --- */
+/* Estados dinámicos de las imágenes en alta resolución */
 .fondo-cerrado {
     background-image: url('puertas-cerradas.JPG') !important;
 }
 
 .fondo-semiabierto {
-    background-image: url('puertas-semiabiertas.JPG') !important; 
+    background-image: url('puertas-semiabiertas.JPG') !important;
 }
 
 .fondo-abierto {
-    background-image: url('puertas-abiertas.JPG') !important; 
+    background-image: url('puertas-abiertas.JPG') !important;
 }
 
+/* Control de opacidad suave para el botón */
+.interfaz-bienvenida {
+    text-align: center;
+    transition: opacity 0.4s ease;
+}
+
+.ocultar {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 /* Interfaz flotante */
 .interfaz-bienvenida {
     text-align: center;
