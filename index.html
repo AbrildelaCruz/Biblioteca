@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenida - Biblioteca Sullivan</title>
-    <!-- Vincula tu hoja de estilos unificada sin revolver código interno -->
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body>
 
-    <!-- Contenedor maestro con el ID de tu CSS. Inicia con el fondo de las puertas cerradas -->
+    <!-- Contenedor maestro -->
     <div id="pantalla-biblioteca" class="fondo-cerrado">
         
         <!-- Interfaz flotante de bienvenida -->
@@ -20,35 +19,32 @@
 
     </div>
 
-    <!-- Zona de precarga oculta para que el navegador descargue las imágenes antes 
-         y la animación corra fluida sin parpadeos blancos en la computadora del laboratorio -->
+    <!-- Zona de precarga corregida con .JPG en mayúsculas -->
     <div class="precarga">
         <img src="puertas-cerradas.JPG" alt="Preload 1">
         <img src="puertas-semiabiertas.JPG" alt="Preload 2">
         <img src="puertas-abiertas.JPG" alt="Preload 3">
     </div>
 
-    <!-- 🚀 JAVASCRIPT NATIVO: El motor de animación de las puertas -->
+    <!-- Motor de animación JavaScript -->
     <script>
     function iniciarAnimacionPuertas() {
         const pantalla = document.getElementById('pantalla-biblioteca');
         const bloqueEntrada = document.getElementById('bloque-entrada');
-        const boton = document.getElementById('btn-entrar');
 
-        // 1. Ocultar el botón e interfaz con la clase de tu CSS (.ocultar)
+        // Ocultar botón suavemente
         bloqueEntrada.classList.add('ocultar');
 
-        // 2. Primer paso de animación: Las puertas cambian a semiabiertas tras 300 milisegundos
+        // Transición de puertas
         setTimeout(() => {
             pantalla.className = 'fondo-semiabierto';
         }, 300);
 
-        // 3. Segundo paso de animación: Las puertas se abren por completo a los 800 milisegundos
         setTimeout(() => {
             pantalla.className = 'fondo-abierto';
         }, 800);
 
-        // 4. Redirección final: El sistema te adentra al panel de control real tras 1.5 segundos
+        // Redirección final al panel unificado
         setTimeout(() => {
             window.location.href = 'registro.php';
         }, 1500);
