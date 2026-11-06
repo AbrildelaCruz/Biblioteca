@@ -868,15 +868,15 @@ body, html {
 
 /* --- Estados del Fondo --- */
 .fondo-cerrado {
-    background-image: url('../puertas-cerradas.JPG')  !important; /* Imagen donde están cerradas */
+    background-image: url('puertas-cerradas.JPG')  !important; /* Imagen donde están cerradas */
 }
 
 .fondo-semiabierto {
-    background-image: url('../puertas-semiabiertas.JPG')  !important; /* Imagen donde se están abriendo */
+    background-image: url('puertas-semiabiertas.JPG')  !important; /* Imagen donde se están abriendo */
 }
 
 .fondo-abierto {
-    background-image: url('../puertas-abiertas.JPG')  !important; /* Imagen abierta por completo */
+    background-image: url('puertas-abiertas.JPG')  !important; /* Imagen abierta por completo */
 }
 
 /* Interfaz flotante */

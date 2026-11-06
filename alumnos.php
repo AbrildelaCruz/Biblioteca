@@ -77,17 +77,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
-        $stmt_borrar = $conexion->prepare('DELETE FROM alumnos WHERE id_Alumnos = ?');
-        if ($stmt_borrar) {
+        $conexion->begin_transaction(); // Iniciamos transacción por seguridad
+
+        try {
+            // 1. Eliminar el alumno seleccionado
+            $stmt_borrar = $conexion->prepare('DELETE FROM alumnos WHERE id_Alumnos = ?');
             $stmt_borrar->bind_param('i', $id_a_borrar);
-            if ($stmt_borrar->execute()) {
-                $_SESSION['mensaje'] = 'Registro de alumno eliminado correctamente.';
-                $_SESSION['tipoMensaje'] = 'exito';
-            } else {
-                $_SESSION['mensaje'] = 'No se pudo eliminar el registro.';
-                $_SESSION['tipoMensaje'] = 'error';
-            }
+            $stmt_borrar->execute();
             $stmt_borrar->close();
+
+            // 2. REORDENAR LOS IDS EXISTENTES (De 1 en adelante)
+            // Creamos una variable en MySQL para ir incrementando fila por fila
+            $conexion->query("SET @count = 0;");
+            $conexion->query("UPDATE alumnos SET id_Alumnos = (@count:=@count+1);");
+
+            // 3. REINICIAR EL CONTADOR AUTO_INCREMENT
+            // Así el siguiente alumno que registres tomará el número consecutivo real correcto
+            $resultado_max = $conexion->query("SELECT MAX(id_Alumnos) AS max_id FROM alumnos");
+            $fila_max = $resultado_max->fetch_assoc();
+            $siguiente_id = ($fila_max['max_id'] ?? 0) + 1;
+            
+            $conexion->query("ALTER TABLE alumnos AUTO_INCREMENT = $siguiente_id");
+
+            $conexion->commit(); // Confirmamos todos los cambios si no hubo errores
+            $_SESSION['mensaje'] = 'Registro eliminado y IDs reordenados correctamente en la BD.';
+            $_SESSION['tipoMensaje'] = 'exito';
+
+        } catch (Exception $e) {
+            $conexion->rollback(); // Si algo falla, revertimos para no corromper la BD
+            $_SESSION['mensaje'] = 'Error al procesar el reordenamiento: ' . $e->getMessage();
+            $_SESSION['tipoMensaje'] = 'error';
         }
     }
     header("Location: ver_alumnos.php");
