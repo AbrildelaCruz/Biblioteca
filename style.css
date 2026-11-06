@@ -1095,3 +1095,18 @@ body, html {
     z-index: 1;
     background: radial-gradient(circle, #2980b9, #2c3e50);
 }
+
+
+.puerta-izquierda {
+    left: 0;
+    transform-origin: left center;
+    background-image: url('../2.png'); /* Asegúrate de poner el nombre exacto de tu foto */
+    background-position: right center;
+}
+
+.puerta-derecha {
+    right: 0;
+    transform-origin: right center;
+    background-image: url('../3.png'); /* Asegúrate de poner el nombre exacto de tu foto */
+    background-position: left center;
+}
