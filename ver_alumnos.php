@@ -52,20 +52,32 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
     <tbody>
       <?php
       if ($resultado && $resultado->num_rows > 0) {
+        // Inicializamos el contador dinámico con el número total de registros
+        // para que coincida con el orden descendente (DESC) de tu consulta SQL
+        $contador_visual = $resultado->num_rows;
+
         while ($fila = $resultado->fetch_assoc()) {
           $id_actual = (int) $fila['id_Alumnos'];
           echo "<tr>";
-          echo "<td>" . $id_actual . "</td>";
+          
+          // Mostramos el contador en vez de la clave primaria directa
+          echo "<td>" . $contador_visual . "</td>";
+          
           echo "<td><b>" . htmlspecialchars($fila['Nombre']) . "</b></td>";
           echo "<td>" . htmlspecialchars($fila['Madre_encargada'] ?? '-') . "</td>";
           echo "<td>" . htmlspecialchars($fila['Familia'] ?? '-') . "</td>";
           echo "<td style='text-align: center;'>" . htmlspecialchars($fila['Piso'] ?? '-') . "</td>";
           echo "<td style='text-align: center;'>" . htmlspecialchars($fila['Grupo'] ?? '-') . "</td>";
           echo "<td>";
+          
+          // Los botones siguen usando $id_actual para mandar el identificador real a alumnos.php
           echo '<a href="alumnos.php?editar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #e2e3e5; border-radius: 3px; color: #383d41; font-size: 11px; margin-right: 5px;">Editar</a>';
           echo '<a href="alumnos.php?eliminar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px;" onclick="return confirm(\'¿Seguro que deseas eliminar este alumno?\');">Eliminar</a>';
           echo "</td>";
           echo "</tr>";
+
+          // Decrementamos en 1 para la siguiente fila (debido al orden descendente)
+          $contador_visual--;
         }
       } else {
         echo '<tr><td colspan="7" style="text-align: center;">No hay alumnos registrados actualmente.</td></tr>';
