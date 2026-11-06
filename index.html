@@ -4,49 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenida - Biblioteca Sullivan</title>
-    <!-- Enlace limpio a tu CSS unificado -->
+    <!-- Mantenemos la conexión limpia a tu hoja de estilos externa -->
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
-<body>
+<!-- Forzamos al body a ocupar toda la pantalla real del laboratorio -->
+<body style="margin: 0 !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; overflow: hidden !important; background-color: #1E293B !important;">
 
-    <!-- Contenedor maestro: inicia con la clase fondo-cerrado de tu CSS -->
-    <div id="pantalla-biblioteca" class="fondo-cerrado">
+    <!-- 🚪 CONTENEDOR MAESTRO: Forzamos dimensiones y la primera foto (.JPG) en línea -->
+    <div id="pantalla-biblioteca" class="fondo-cerrado" 
+         style="width: 100vw !important; height: 100vh !important; background-image: url('puertas-cerradas.JPG') !important; background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important; display: flex !important; justify-content: center !important; align-items: center !important; transition: background-image 0.2s ease-in-out !important;">
         
-        <!-- Interfaz del botón dorado -->
-        <div class="interfaz-bienvenida" id="bloque-entrada">
+        <!-- Interfaz flotante del botón dorado de tus capturas -->
+        <div class="interfaz-bienvenida" id="bloque-entrada" style="text-align: center !important;">
             <button id="btn-entrar" onclick="iniciarAnimacionPuertas()">Ingresar al Sistema</button>
         </div>
 
     </div>
 
-    <!-- Zona de precarga técnica oculta para evitar saltos en blanco -->
-    <div class="precarga" style="display: none;">
+    <!-- Zona técnica oculta de precarga para XAMPP -->
+    <div style="display: none !important;">
         <img src="puertas-cerradas.JPG">
         <img src="puertas-semiabiertas.JPG">
         <img src="puertas-abiertas.JPG">
     </div>
 
-    <!-- 🚀 JAVASCRIPT SINCRONIZADO CON LAS CLASES DE TU CSS -->
+    <!-- 🚀 MOTOR LOGICO JAVASCRIPT: Cambia los estilos en línea directamente -->
     <script>
     function iniciarAnimacionPuertas() {
         const pantalla = document.getElementById('pantalla-biblioteca');
         const bloqueEntrada = document.getElementById('bloque-entrada');
 
-        // 1. Desvanece el botón dorado con la clase .ocultar de tu CSS
-        bloqueEntrada.classList.add('ocultar');
+        // 1. Ocultamos el botón dorado
+        bloqueEntrada.style.display = 'none';
 
-        // 2. Transición 1: Cambia a puertas semiabiertas a los 300 milisegundos
+        // 2. Paso 1: Cambiamos la imagen a semiabiertas a los 300ms
         setTimeout(() => {
-            pantalla.className = 'fondo-semiabierto';
+            pantalla.style.backgroundImage = "url('puertas-semiabiertas.JPG')";
         }, 300);
 
-        // 3. Transición 2: Abre por completo a los 800 milisegundos
+        // 3. Paso 2: Cambiamos la imagen a abiertas a los 800ms
         setTimeout(() => {
-            pantalla.className = 'fondo-abierto';
+            pantalla.style.backgroundImage = "url('puertas-abiertas.JPG')";
         }, 800);
 
-        // 4. Redirección final: Te adentra al registro.php a los 1.5 segundos
+        // 4. Redirección final segura al Panel Principal
         setTimeout(() => {
             window.location.href = 'registro.php';
         }, 1500);
