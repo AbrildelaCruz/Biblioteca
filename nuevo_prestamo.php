@@ -17,6 +17,7 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realizar Préstamo - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 
 <body class="body2">
