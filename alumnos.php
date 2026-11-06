@@ -1,6 +1,5 @@
 <?php
 require_once 'conexion.php';
-
 // 1. RECUPERAR MENSAJES DE LA SESIÓN TRAS REDIRECCIÓN
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
