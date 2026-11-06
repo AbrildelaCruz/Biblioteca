@@ -27,11 +27,11 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
     
-    <!-- 🟢 INCLUSIÓN DE CHOICES.JS PARA CONVERTIR SELECTS EN BUSCADORES -->
+    <!-- 🟢 INCLUSIÓN DE LIBRERÍA CHOICES.JS -->
     <link rel="stylesheet" href="https://jsdelivr.net" />
     <script src="https://jsdelivr.net"></script>
     <style>
-        /* Ajuste estético para que Choices.js combine con tu diseño compacto */
+        /* Ajustes para el buscador autocompletado en tus tarjetas */
         .choices { margin-bottom: 0px; font-size: 13px; color: #1e293b; }
         .choices__inner { background-color: white; border-radius: 4px; border: 1px solid #CBD5E1; padding: 4px; min-height: 36px; }
         .choices__list--dropdown { z-index: 1000 !important; }
@@ -174,7 +174,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
                                     <option value="profesor">Profesor</option>
                                 </select>
 
-                                <!-- Selector de Alumnos (Encapsulado en un div contenedor para controlar Choices.js) -->
+                                <!-- Selector de Alumnos buscable -->
                                 <div id="wrapper_alumno_<?php echo $libro['id_libro']; ?>" style="display:none;">
                                     <select name="id_usuario" id="select_alumno_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado">
                                         <option value="">Escribe el nombre del Alumno...</option>
@@ -182,112 +182,144 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
                                         $alumnos_res->data_seek(0);
                                         while ($al = $alumnos_res->fetch_assoc()) {
                                             echo "<option value='{$al['id_Alumnos']}'>{$al['Nombre']}</option>";
-}
-?>
-<?php
-Escribe el nombre del Docente...
+                                        }
+                                        ?>
+                                        <!-- Selector de Profesores buscable -->
+<div id="wrapper_profesor_<?php echo $libro['id_libro']; ?>" style="display:none;">
+    <select name="id_usuario" id="select_profesor_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado" disabled>
+        <option value="">Escribe el nombre del Docente...</option>
+        <?php
+        $profesores_res->data_seek(0);
+        while ($prof = $profesores_res->fetch_assoc()) {
+            echo "<option value='{$prof['id_profesores']}'>{$prof['Nombre']}</option>";
+        }
+        ?>
+    </select>
+</div>
 
+                                <div style="display: flex; gap: 8px; margin-top: 5px;">
+                                    <button type="submit" name="accion" value="prestar"
+                                        style="flex: 1; background-color: #2A9D8F; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Prestar</button>
+                                    <button type="submit" name="accion" value="apartar"
+                                        style="flex: 1; background-color: #E2E8F0; color: #1E293B; border: 1px solid #CBD5E1; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Apartar</button>
+                                </div>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p style="text-align: center; grid-column: 1/-1;">No hay libros registrados en el inventario.</p>
+        <?php endif; ?>
+    </div>
+     <!-- 🟢 SCRIPTS INTERACTIVOS (Buscadores Autocompletados y Motor de Filtrado) -->
+    <script>
+        // 1. ALMACÉN GLOBAL PARA CHOICES.JS
+        // Guardará las instancias de búsqueda de cada tarjeta de libro
+        const instanciasChoices = {};
 
-Prestar
-Apartar
+        document.addEventListener('DOMContentLoaded', function () {
+            // Buscamos todos los selectores que tengan la clase "buscador-autocompletado"
+            const selectores = document.querySelectorAll('.buscador-autocompletado');
+            
+            // Los transformamos uno por uno en campos donde se puede escribir
+            selectores.forEach(select => {
+                instanciasChoices[select.id] = new Choices(select, {
+                    searchEnabled: true,
+                    noResultsText: 'No se encontraron coincidencias',
+                    noChoicesText: 'No hay registros cargados',
+                    itemSelectText: 'Clic para seleccionar',
+                    placeholder: true,
+                    searchPlaceholderValue: 'Escribe para buscar...'
+                });
+            });
+        });
 
+        // 2. MOTOR DE FILTRADO DE TARJETAS EN TIEMPO REAL (Tu buscador principal de libros)
+        document.getElementById('buscador').addEventListener('input', function () {
+            var filtro = this.value.toLowerCase().trim();
+            var tarjetas = document.getElementsByClassName('tarjeta-libro');
+            var mensajeVacio = document.getElementById('mensaje-vacio');
+            var encontrados = 0;
 
+            for (var i = 0; i < tarjetas.length; i++) {
+                var tituloElemento = tarjetas[i].querySelector('.titulo-libro');
+                if (tituloElemento) {
+                    var textoTitulo = tituloElemento.textContent.toLowerCase();
 
+                    if (textoTitulo.includes(filtro)) {
+                        tarjetas[i].style.display = 'flex';
+                        encontrados++;
+                    } else {
+                        tarjetas[i].style.display = 'none';
+                    }
+                }
+            }
 
+            if (encontrados === 0 && filtro !== "") {
+                mensajeVacio.style.display = 'block';
+            } else {
+                mensajeVacio.style.display = 'none';
+            }
+        });
 
+        // 3. LÓGICA DE SELECTORES DINÁMICOS ADAPTADA A CHOICES.JS
+        // Esta función controla qué buscador se muestra (Alumno o Profesor) según la elección
+        function alternarUsuarios(selector, idLibro) {
+            var wrapperAlumno = document.getElementById('wrapper_alumno_' + idLibro);
+            var wrapperProfesor = document.getElementById('wrapper_profesor_' + idLibro);
+            var selectAlumno = document.getElementById('select_alumno_' + idLibro);
+            var selectProfesor = document.getElementById('select_profesor_' + idLibro);
 
+            if (selector.value === 'alumno') {
+                // Muestra el buscador de Alumnos
+                wrapperAlumno.style.display = 'block';
+                selectAlumno.disabled = false;
+                selectAlumno.required = true;
+                if (instanciasChoices['select_alumno_' + idLibro]) instanciasChoices['select_alumno_' + idLibro].enable();
 
-No hay libros registrados en el inventario.
+                // Oculta y limpia el buscador de Profesores
+                wrapperProfesor.style.display = 'none';
+                selectProfesor.disabled = true;
+                selectProfesor.required = false;
+                if (instanciasChoices['select_profesor_' + idLibro]) {
+                    instanciasChoices['select_profesor_' + idLibro].setChoiceByValue('');
+                    instanciasChoices['select_profesor_' + idLibro].disable();
+                }
 
-REGRESAR
-// Almacén para guardar las instancias activas de Choices.js de cada tarjeta
-const instanciasChoices = {};
-document.addEventListener('DOMContentLoaded', function () {
-// Inicializar Choices.js en todas las listas desplegables de Alumnos y Profesores
-const selectores = document.querySelectorAll('.buscador-autocompletado');
-selectores.forEach(select => {
-instanciasChoices[select.id] = new Choices(select, {
-searchEnabled: true,
-noResultsText: 'No se encontraron coincidencias',
-noChoicesText: 'No hay registros cargados',
-itemSelectText: 'Clic para seleccionar',
-placeholder: true,
-searchPlaceholderValue: 'Escribe para buscar...'
-});
-});
-});
-// 1. MOTOR DE FILTRADO DE LIBROS EN TIEMPO REAL
-document.getElementById('buscador').addEventListener('input', function () {
-var filtro = this.value.toLowerCase().trim();
-var tarjetas = document.getElementsByClassName('tarjeta-libro');
-var mensajeVacio = document.getElementById('mensaje-vacio');
-var encontrados = 0;
-for (var i = 0; i < tarjetas.length; i++) {
-var tituloElemento = tarjetas[i].querySelector('.titulo-libro');
-if (tituloElemento) {
-var textoTitulo = tituloElemento.textContent.toLowerCase();
-if (textoTitulo.includes(filtro)) {
-tarjetas[i].style.display = 'flex';
-encontrados++;
-} else {
-tarjetas[i].style.display = 'none';
-}
-}
-}
-if (encontrados === 0 && filtro !== "") {
-mensajeVacio.style.display = 'block';
-} else {
-mensajeVacio.style.display = 'none';
-}
-});
-// 2. LÓGICA DE SELECTORES DINÁMICOS CORREGIDA PARA CHOICES.JS
-function alternarUsuarios(selector, idLibro) {
-var wrapperAlumno = document.getElementById('wrapper_alumno_' + idLibro);
-var wrapperProfesor = document.getElementById('wrapper_profesor_' + idLibro);
-var selectAlumno = document.getElementById('select_alumno_' + idLibro);
-var selectProfesor = document.getElementById('select_profesor_' + idLibro);
-if (selector.value === 'alumno') {
-// Mostrar Alumno
-wrapperAlumno.style.display = 'block';
-selectAlumno.disabled = false;
-selectAlumno.required = true;
-if (instanciasChoices['select_alumno_' + idLibro]) instanciasChoices['select_alumno_' + idLibro].enable();
-// Ocultar y resetear Profesor
-wrapperProfesor.style.display = 'none';
-selectProfesor.disabled = true;
-selectProfesor.required = false;
-if (instanciasChoices['select_profesor_' + idLibro]) {
-instanciasChoices['select_profesor_' + idLibro].setChoiceByValue('');
-instanciasChoices['select_profesor_' + idLibro].disable();
-}
-} else if (selector.value === 'profesor') {
-// Mostrar Profesor
-wrapperProfesor.style.display = 'block';
-selectProfesor.disabled = false;
-selectProfesor.required = true;
-if (instanciasChoices['select_profesor_' + idLibro]) instanciasChoices['select_profesor_' + idLibro].enable();
-// Ocultar y resetear Alumno
-wrapperAlumno.style.display = 'none';
-selectAlumno.disabled = true;
-selectAlumno.required = false;
-if (instanciasChoices['select_alumno_' + idLibro]) {
-instanciasChoices['select_alumno_' + idLibro].setChoiceByValue('');
-instanciasChoices['select_alumno_' + idLibro].disable();
-}
-} else {
-// Ocultar ambos si no se ha seleccionado tipo de usuario
-wrapperAlumno.style.display = 'none';
-selectAlumno.disabled = true;
-if (instanciasChoices['select_alumno_' + idLibro]) {
-instanciasChoices['select_alumno_' + idLibro].setChoiceByValue('');
-instanciasChoices['select_alumno_' + idLibro].disable();
-}
-wrapperProfesor.style.display = 'none';
-selectProfesor.disabled = true;
-if (instanciasChoices['select_profesor_' + idLibro]) {
-instanciasChoices['select_profesor_' + idLibro].setChoiceByValue('');
-instanciasChoices['select_profesor_' + idLibro].disable();
-}
-}
-}
-?>
+            } else if (selector.value === 'profesor') {
+                // Muestra el buscador de Profesores
+                wrapperProfesor.style.display = 'block';
+                selectProfesor.disabled = false;
+                selectProfesor.required = true;
+                if (instanciasChoices['select_profesor_' + idLibro]) instanciasChoices['select_profesor_' + idLibro].enable();
+
+                // Oculta y limpia el buscador de Alumnos
+                wrapperAlumno.style.display = 'none';
+                selectAlumno.disabled = true;
+                selectAlumno.required = false;
+                if (instanciasChoices['select_alumno_' + idLibro]) {
+                    instanciasChoices['select_alumno_' + idLibro].setChoiceByValue('');
+                    instanciasChoices['select_alumno_' + idLibro].disable();
+                }
+
+            } else {
+                // Si selecciona la opción por defecto "¿Quién solicita?", oculta y limpia ambos
+                wrapperAlumno.style.display = 'none';
+                selectAlumno.disabled = true;
+                if (instanciasChoices['select_alumno_' + idLibro]) {
+                    instanciasChoices['select_alumno_' + idLibro].setChoiceByValue('');
+                    instanciasChoices['select_alumno_' + idLibro].disable();
+                }
+
+                wrapperProfesor.style.display = 'none';
+                selectProfesor.disabled = true;
+                if (instanciasChoices['select_profesor_' + idLibro]) {
+                    instanciasChoices['select_profesor_' + idLibro].setChoiceByValue('');
+                    instanciasChoices['select_profesor_' + idLibro].disable();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
