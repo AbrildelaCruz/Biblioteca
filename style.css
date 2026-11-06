@@ -828,37 +828,39 @@ body, html {
 #pantalla-biblioteca {
     width: 100vw;
     height: 100vh;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    /* Degradado fluido en movimiento con los colores de la escuela */
+    background: linear-gradient(-45deg, #0F4C81, #1E293B, #2A9D8F, #0F4C81);
+    background-size: 400% 400%;
+    animation: cambiarFondoBienvenida 12s ease infinite;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-image 0.2s ease-in-out;
+    transition: all 0.8s ease-in-out;
 }
 
-/* Estados dinámicos de las imágenes en alta resolución */
-.fondo-cerrado {
-    background-image: url('puertas-cerradas.JPG') !important;
+/* Animación del movimiento del fondo */
+@keyframes cambiarFondoBienvenida {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-.fondo-semiabierto {
-    background-image: url('puertas-semiabiertas.JPG') !important;
-}
-
-.fondo-abierto {
-    background-image: url('puertas-abiertas.JPG') !important;
-}
-
-/* Control de opacidad suave para el botón */
 .interfaz-bienvenida {
     text-align: center;
-    transition: opacity 0.4s ease;
+    transition: all 0.5s ease;
 }
 
-.ocultar {
+/* Ocultado suave del botón dorado */
+.ocultar-boton {
     opacity: 0 !important;
     pointer-events: none !important;
+}
+
+/* Efecto visual de inmersión al dar clic */
+.efecto-abrir {
+    transform: scale(2) !important;
+    opacity: 0 !important;
+    filter: blur(10px) !important;
 }
 /* Interfaz flotante */
 .interfaz-bienvenida {
