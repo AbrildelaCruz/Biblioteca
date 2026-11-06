@@ -100,6 +100,23 @@ if (isset($_GET['perdido_id'])) {
 }
 
 // ==========================================
+// 🛠️ CONFIGURACIÓN GLOBAL DEL PAGINADOR
+// ==========================================
+$registros_por_pagina = 15; // Cantidad de movimientos por vista
+
+$pagina_actual = isset($_GET['pagina']) ? filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT) : 1;
+if (!$pagina_actual || $pagina_actual < 1) {
+    $pagina_actual = 1;
+}
+
+$inicio = ($pagina_actual - 1) * $registros_por_pagina;
+
+// 1. Contar total absoluto de préstamos
+$total_res = $conexion->query("SELECT COUNT(*) AS total FROM prestamos");
+$total_filas = $total_res->fetch_assoc()['total'];
+$total_paginas = ceil($total_filas / $registros_por_pagina);
+
+// ==========================================
 // 2. CONSULTAR EL HISTORIAL DE PRÉSTAMOS
 // ==========================================
 $sql_bitacora = "SELECT 
@@ -115,7 +132,8 @@ $sql_bitacora = "SELECT
                  JOIN libros l ON p.id_libro = l.id_libro
                  LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos
                  LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores
-                 ORDER BY p.id_prestamo DESC";
+                 ORDER BY p.id_prestamo DESC
+                 LIMIT $registros_por_pagina OFFSET $inicio";
 
 $resultado_bitacora = $conexion->query($sql_bitacora);
 ?>
@@ -128,6 +146,14 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
     <title>Bitácora General de Préstamos - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
+    <style>
+        /* Estilos limpios y estéticos para el paginador */
+        .paginacion { text-align: center; margin: 30px auto; }
+        .paginacion a { display: inline-block; padding: 8px 14px; margin: 0 4px; background-color: #f1f5f9; color: #1e293b; text-decoration: none; border-radius: 4px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 13px; }
+        .paginacion a.activa { background-color: #0F4C81; color: white; border-color: #0F4C81; }
+        .paginacion a:hover:not(.activa) { background-color: #e2e8f0; }
+        .paginacion span.desactivado { display: inline-block; padding: 8px 14px; margin: 0 4px; background-color: #f8fafc; color: #94a3b8; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 13px; cursor: not-allowed; }
+    </style>
 </head>
 
 <body class="body2">
@@ -175,10 +201,13 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                 date_default_timezone_set('America/Mexico_City');
                 $fecha_hoy_timestamp = strtotime(date('Y-m-d'));
                 
+                // 🟢 CONTADOR DINÁMICO DESCENDENTE:
+                // Calcula el número más alto correspondiente al primer registro de esta página
+                $contador_visual = $total_filas - $inicio;
+                
                 while ($fila = $resultado_bitacora->fetch_assoc()):
                     $entregado = ($fila['fecha_devolucion_real'] !== null);
                     $es_apartado = ($fila['tipo_movimiento'] === 'Apartado');
-                    
                     // Cálculo dinámico para la asignación de color a la fila
                     $clase_fila = ''; 
                     if (!$entregado) {
@@ -196,7 +225,8 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                     }
                     ?>
                     <tr class="<?php echo $clase_fila; ?>">
-                        <td style="font-weight: bold; text-align: center;"><?php echo $fila['id_prestamo']; ?></td>
+                        <!-- Imprime el conteo numérico de la fila de forma ordenada -->
+                        <td style="font-weight: bold; text-align: center;"><?php echo $contador_visual; ?></td>
                         <td><b><?php echo htmlspecialchars($fila['Libro']); ?></b></td>
                         <td><u><?php echo htmlspecialchars($fila['Persona']); ?></u></td>
                         <td><?php echo $fila['TipoPersona']; ?></td>
@@ -205,8 +235,6 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                                 <?php echo htmlspecialchars($fila['tipo_movimiento'] ?? 'Prestado'); ?>
                             </span>
                         </td>
-                        <td><?php echo date('d/m/Y', strtotime($fila['fecha_salida'])); ?></td>
-                        <!-- Continuación de las celdas de la fila de Préstamos -->
                         <td><?php echo date('d/m/Y', strtotime($fila['fecha_salida'])); ?></td>
                         <td style="font-weight: bold;"><?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_esperada'])); ?></td>
                         <td>
@@ -221,7 +249,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                                 <!-- 1. Botón Recibir -->
                                 <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
                                  
-                                <!-- 2. Botón Renovar (Llamada limpia a la Opción A) -->
+                                <!-- 2. Botón Renovar -->
                                 <button type="button" 
                                         onclick="prepararRenovacion('<?php echo strtolower($fila['TipoPersona']); ?>', '<?php echo htmlspecialchars($fila['Persona'], ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars($fila['Libro'], ENT_QUOTES, 'UTF-8'); ?>')" 
                                         style="padding: 4px 8px; background-color: #0F4C81; border: none; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px; cursor: pointer; font-family: 'Segoe UI', Arial, sans-serif;">
@@ -235,7 +263,9 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                             <?php endif; ?>
                         </td>
                     </tr>
-                <?php endwhile; ?>
+                <?php 
+                    $contador_visual--; // Restamos para la siguiente fila
+                endwhile; ?>
             <?php else: ?>
                 <tr>
                     <td colspan="9" style="text-align: center; font-weight: bold; padding: 20px;">No se ha registrado ningún préstamo o apartado en el sistema todavía.</td>
@@ -243,42 +273,73 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
             <?php endif; ?>
         </tbody>
     </table>
-    
+     <!-- ==========================================
+    🎮 CONTROLADORES VISUALES DE LA PAGINACIÓN
+    ========================================== -->
+    <?php if ($total_paginas > 1): ?>
+        <div class="paginacion">
+          
+          <!-- Botón de Página Anterior -->
+          <?php if ($pagina_actual > 1): ?>
+            <a href="prestamos.php?pagina=<?php echo $pagina_actual - 1; ?>">« Anterior</a>
+          <?php else: ?>
+            <span class="desactivado">« Anterior</span>
+          <?php endif; ?>
+
+          <!-- Números de Páginas Dinámicos (1, 2, 3...) -->
+          <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+            <a href="prestamos.php?pagina=<?php echo $i; ?>" class="<?php echo ($i === $pagina_actual) ? 'activa' : ''; ?>">
+              <?php echo $i; ?>
+            </a>
+          <?php endfor; ?>
+
+          <!-- Botón de Página Siguiente -->
+          <?php if ($pagina_actual < $total_paginas): ?>
+            <a href="prestamos.php?pagina=<?php echo $pagina_actual + 1; ?>">Siguiente »</a>
+          <?php else: ?>
+            <span class="desactivado">Siguiente »</span>
+          <?php endif; ?>
+
+        </div>
+    <?php endif; ?>
+
     <!-- Botón Regresar de la Bitácora -->
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 
-<!-- ==========================================================
-     ZONA DE SCRIPTS JAVASCRIPT UNIFICADA AL FINAL
-========================================================== -->
-<script>
-// 1. MOTOR DE FILTRADO EN TIEMPO REAL PARA LA BITÁCORA (OPCIÓN A)
-document.getElementById('buscador-bitacora').addEventListener('input', function () {
-    var filtro = this.value.toLowerCase().trim();
-    var filas = document.querySelectorAll('.tabla-datos tbody tr');
+    <!-- ==========================================================
+         ZONA DE SCRIPTS JAVASCRIPT UNIFICADA AL FINAL
+    ========================================================== -->
+    <script>
+    // 1. MOTOR DE FILTRADO EN TIEMPO REAL PARA LA BITÁCORA
+    document.getElementById('buscador-bitacora').addEventListener('input', function () {
+        var filtro = this.value.toLowerCase().trim();
+        var filas = document.querySelectorAll('.tabla-datos tbody tr');
 
-    filas.forEach(function(fila) {
-        if (fila.cells.length < 3) return;
+        filas.forEach(function(fila) {
+            // Si la fila muestra el mensaje de que "no hay registros", la saltamos
+            if (fila.cells.length < 3) return;
 
-        var textoLibro = fila.cells[1].textContent.toLowerCase();
-        var textoPersona = fila.cells[2].textContent.toLowerCase();
+            var textoLibro = fila.cells[1].textContent.toLowerCase();
+            var textoPersona = fila.cells[2].textContent.toLowerCase();
 
-        if (textoLibro.includes(filtro) || textoPersona.includes(filtro)) {
-            fila.style.display = '';
-        } else {
-            fila.style.display = 'none';
-        }
+            // Si coincide con el título del libro o con el nombre de la persona, la muestra
+            if (textoLibro.includes(filtro) || textoPersona.includes(filtro)) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
     });
-});
 
-// 2. SISTEMA DE LOGÍSTICA PARA LA MEMORIA DE RENOVACIÓN
-function prepararRenovacion(rol, nombrePersona, tituloLibro) {
-    sessionStorage.setItem('renovar_rol', rol);
-    sessionStorage.setItem('renovar_nombre', nombrePersona);
-    sessionStorage.setItem('renovar_libro', tituloLibro);
-    window.location.href = 'nuevo_prestamo.php';
-}
-</script>
+    // 2. SISTEMA DE LOGÍSTICA PARA LA MEMORIA DE RENOVACIÓN
+    function prepararRenovacion(rol, nombrePersona, tituloLibro) {
+        sessionStorage.setItem('renovar_rol', rol);
+        sessionStorage.setItem('renovar_nombre', nombrePersona);
+        sessionStorage.setItem('renovar_libro', tituloLibro);
+        window.location.href = 'nuevo_prestamo.php';
+    }
+    </script>
 </body>
 </html>

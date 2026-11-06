@@ -3,42 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenida - Biblioteca Sullivan</title>
-    <!-- Vinculación exclusiva a tu hoja de estilos externa -->
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="logobiblioteca.png">
+    <title>Entrada al Sistema</title>
+    <!-- Enlace a tus estilos CSS independientes -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- Contenedor maestro de la animación digital -->
-    <div id="pantalla-biblioteca">
+    <div class="escenario" id="contenedorPuertas">
         
-        <!-- Interfaz flotante con tu botón institucional -->
-        <div class="interfaz-bienvenida" id="bloque-entrada">
-            <button id="btn-entrar" onclick="iniciarTransicionSistema()">Ingresar al Sistema</button>
+        <!-- Botón de acción con el ID para el evento -->
+        <button class="boton-entrar" id="btnEntrar">ENTRAR AL SISTEMA</button>
+
+        <!-- Hojas de las puertas -->
+        <div class="puerta puerta-izquierda"></div>
+        <div class="puerta puerta-derecha"></div>
+
+        <!-- Pantalla de carga que se revela detrás -->
+        <div class="fondo-sistema">
+            <p>Cargando sistema...</p>
         </div>
 
     </div>
 
-    <!-- 🚀 MOTOR DE TRANSICIÓN JAVASCRIPT -->
-    <script>
-    function iniciarTransicionSistema() {
-        const pantalla = document.getElementById('pantalla-biblioteca');
-        const bloqueEntrada = document.getElementById('bloque-entrada');
-
-        // Ocultamos el bloque usando la clase pura de tu CSS
-        bloqueEntrada.classList.add('ocultar-boton');
-
-        // Activamos el efecto de apertura digital en el fondo a los 200ms
-        setTimeout(() => {
-            pantalla.classList.add('efecto-abrir');
-        }, 200);
-
-        // Redirección segura a tu panel unificado
-        setTimeout(() => {
-            window.location.href = 'registro.php';
-        }, 1000);
-    }
-    </script>
+    <!-- Enlace a tu lógica JavaScript independiente -->
+    <script src="script.js"></script>
 </body>
 </html>

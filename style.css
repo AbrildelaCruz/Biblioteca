@@ -824,81 +824,84 @@ body, html {
 
  /*🎬 MÓDULO DE BIENVENIDA - Biblioteca Sullivan
    ========================================================================== */
-
-#pantalla-biblioteca {
-    width: 100vw;
-    height: 100vh;
-    /* Degradado fluido en movimiento con los colores de la escuela */
-    background: linear-gradient(-45deg, #0F4C81, #1E293B, #2A9D8F, #0F4C81);
-    background-size: 400% 400%;
-    animation: cambiarFondoBienvenida 12s ease infinite;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.8s ease-in-out;
+#btn-entrar {
+    padding: 18px 45px !important;
+    font-size: 1.3rem !important;
+    color: #ffffff !important;
+    background-color: #b38f43 !important; /* Tu tono dorado/madera original acorde a la biblioteca */
+    border: 2px solid #ffffff !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4) !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
 }
 
-/* Animación del movimiento del fondo */
-@keyframes cambiarFondoBienvenida {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Efectos visuales al pasar el mouse por encima (Hover) */
+#btn-entrar:hover {
+    background-color: #947432 !important; /* Dorado más oscuro para simular profundidad */
+    transform: translateY(-3px) !important; /* Sutil efecto de elevación */
+    box-shadow: 0 12px 20px rgba(0,0,0,0.6) !important;
+}
+
+/* Efecto visual al hacer clic (Active) */
+#btn-entrar:active {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.4) !important;
+}
+
+#pantalla-biblioteca {
+    width: 100vw !important;
+    height: 100vh !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: background-image 0.3s ease-in-out !important;
+}
+
+/* Forzamos la lectura en formato PNG */
+.fondo-cerrado {
+    background-image: url('puertas-cerradas.png') !important;
+}
+
+.fondo-semiabierto {
+    background-image: url('puertas-semiabiertas.png') !important;
+}
+
+.fondo-abierto {
+    background-image: url('puertas-abiertas.png') !important;
 }
 
 .interfaz-bienvenida {
-    text-align: center;
-    transition: all 0.5s ease;
+    text-align: center !important;
+    transition: opacity 0.3s ease !important;
 }
 
-/* Ocultado suave del botón dorado */
-.ocultar-boton {
+.ocultar {
     opacity: 0 !important;
     pointer-events: none !important;
 }
 
-/* Efecto visual de inmersión al dar clic */
-.efecto-abrir {
-    transform: scale(2) !important;
-    opacity: 0 !important;
-    filter: blur(10px) !important;
+.precarga {
+    display: none !important;
 }
-/* Interfaz flotante */
+/* Control visual para desvanecer el botón dorado */
 .interfaz-bienvenida {
-    text-align: center;
-    transition: opacity 0.4s ease;
+    text-align: center !important;
+    transition: opacity 0.3s ease !important;
 }
 
 .ocultar {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
-/* Botón estilizado */
-#btn-entrar {
-    padding: 18px 45px;
-    font-size: 1.3rem;
-    color: #ffffff;
-    background-color: #b38f43; /* Un tono dorado/madera acorde a la biblioteca */
-    border: 2px solid #ffffff;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.5);
-    transition: all 0.3s ease;
-}
-
-#btn-entrar:hover {
-    background-color: #947432;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 20px rgba(0,0,0,0.7);
-}
-
-/* Ocultar la zona de precarga del HTML */
-.precarga {
-    display: none;
-}
 /* EN REGISTRA PRÉSTAMO*/
 .campo-buscar-inline {
     display: flex !important;
@@ -985,4 +988,110 @@ body, html {
     border-radius: 10px;
     font-weight: bold;
     font-size: 11px;
+}
+
+
+/*ANIMACIÓN DE LA ENTRADA*/
+
+/* Configuración de la pantalla de bienvenida */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+}
+
+/* Contenedor principal de las puertas */
+.escenario {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    perspective: 1200px; /* Crea el efecto de profundidad 3D */
+}
+
+/* Estilos compartidos para ambas puertas */
+.puerta {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    box-sizing: border-box;
+    transition: transform 1.5s ease-in-out; /* Duración de la animación */
+    z-index: 2;
+    background-size: cover;
+}
+
+/* Puerta Izquierda utilizando tu imagen PNG */
+.puerta-izquierda {
+    left: 0;
+    transform-origin: left center;
+    background-image: url('tu-puerta-izquierda.png');
+    background-position: right center;
+}
+
+/* Puerta Derecha utilizando tu imagen PNG */
+.puerta-derecha {
+    right: 0;
+    transform-origin: right center;
+    background-image: url('tu-puerta-derecha.png');
+    background-position: left center;
+}
+
+/* Botón de acceso centrado en medio de las dos puertas */
+.boton-entrar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #e74c3c;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+}
+
+.boton-entrar:hover {
+    background-color: #c0392b;
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* CLASES DE ANIMACIÓN (Se disparan mediante JavaScript) */
+
+/* Rotación 3D hacia afuera */
+.escenario.abierto .puerta-izquierda {
+    transform: rotateY(-90deg); 
+}
+
+.escenario.abierto .puerta-derecha {
+    transform: rotateY(90deg);
+}
+
+/* Desvanece el botón al hacer clic */
+.escenario.abierto .boton-entrar {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Fondo oculto que se revela detrás de las puertas */
+.fondo-sistema {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 2rem;
+    z-index: 1;
+    background: radial-gradient(circle, #2980b9, #2c3e50);
 }

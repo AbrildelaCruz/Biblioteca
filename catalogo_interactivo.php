@@ -28,8 +28,8 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <link rel="icon" type="image/png" href="logobiblioteca.png">
     
     <!-- 🟢 INCLUSIÓN DE LIBRERÍA CHOICES.JS -->
-    <link rel="stylesheet" href="https://jsdelivr.net" />
-    <script src="https://jsdelivr.net"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/choices.js/11.2.4/choices.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/11.2.4/choices.min.js"></script>
     <style>
         /* Ajustes para el buscador autocompletado en tus tarjetas */
         .choices { margin-bottom: 0px; font-size: 13px; color: #1e293b; }
@@ -173,20 +173,22 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
                                     <option value="alumno">Alumno</option>
                                     <option value="profesor">Profesor</option>
                                 </select>
+<!-- Selector de Alumnos -->
+<div id="wrapper_alumno_<?php echo $libro['id_libro']; ?>" style="display:none;">
+    <select name="id_alumno" id="select_alumno_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado">
+        <option value="">Escribe el nombre del Alumno...</option>
+        <?php
+        $alumnos_res->data_seek(0);
+        while ($al = $alumnos_res->fetch_assoc()) {
+            echo "<option value='{$al['id_Alumnos']}'>{$al['Nombre']}</option>";
+        }
+        ?>
+    </select>
+</div>
 
-                                <!-- Selector de Alumnos buscable -->
-                                <div id="wrapper_alumno_<?php echo $libro['id_libro']; ?>" style="display:none;">
-                                    <select name="id_usuario" id="select_alumno_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado">
-                                        <option value="">Escribe el nombre del Alumno...</option>
-                                        <?php
-                                        $alumnos_res->data_seek(0);
-                                        while ($al = $alumnos_res->fetch_assoc()) {
-                                            echo "<option value='{$al['id_Alumnos']}'>{$al['Nombre']}</option>";
-                                        }
-                                        ?>
-                                        <!-- Selector de Profesores buscable -->
+<!-- Selector de Profesores -->
 <div id="wrapper_profesor_<?php echo $libro['id_libro']; ?>" style="display:none;">
-    <select name="id_usuario" id="select_profesor_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado" disabled>
+    <select name="id_profesor" id="select_profesor_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado" disabled>
         <option value="">Escribe el nombre del Docente...</option>
         <?php
         $profesores_res->data_seek(0);
@@ -196,7 +198,6 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
         ?>
     </select>
 </div>
-
                                 <div style="display: flex; gap: 8px; margin-top: 5px;">
                                     <button type="submit" name="accion" value="prestar"
                                         style="flex: 1; background-color: #2A9D8F; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Prestar</button>
@@ -215,26 +216,32 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
      <!-- 🟢 SCRIPTS INTERACTIVOS (Buscadores Autocompletados y Motor de Filtrado) -->
     <script>
         // 1. ALMACÉN GLOBAL PARA CHOICES.JS
-        // Guardará las instancias de búsqueda de cada tarjeta de libro
-        const instanciasChoices = {};
+const instanciasChoices = {};
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Buscamos todos los selectores que tengan la clase "buscador-autocompletado"
-            const selectores = document.querySelectorAll('.buscador-autocompletado');
-            
-            // Los transformamos uno por uno en campos donde se puede escribir
-            selectores.forEach(select => {
-                instanciasChoices[select.id] = new Choices(select, {
-                    searchEnabled: true,
-                    noResultsText: 'No se encontraron coincidencias',
-                    noChoicesText: 'No hay registros cargados',
-                    itemSelectText: 'Clic para seleccionar',
-                    placeholder: true,
-                    searchPlaceholderValue: 'Escribe para buscar...'
-                });
+function inicializarBuscadores() {
+    const selectores = document.querySelectorAll('.buscador-autocompletado');
+    selectores.forEach(select => {
+        // Evitamos duplicar inicializaciones erróneas
+        if (!instanciasChoices[select.id]) {
+            instanciasChoices[select.id] = new Choices(select, {
+                searchEnabled: true,
+                noResultsText: 'No se encontraron coincidencias',
+                noChoicesText: 'No hay registros cargados',
+                itemSelectText: 'Clic para seleccionar',
+                placeholder: true,
+                searchPlaceholderValue: 'Escribe para buscar...',
+                shouldSort: false // Mantiene el orden alfabético original de tu SQL
             });
-        });
+        }
+    });
+}
 
+// Forzamos el arranque en cuanto el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarBuscadores);
+} else {
+    inicializarBuscadores();
+}
         // 2. MOTOR DE FILTRADO DE TARJETAS EN TIEMPO REAL (Tu buscador principal de libros)
         document.getElementById('buscador').addEventListener('input', function () {
             var filtro = this.value.toLowerCase().trim();
@@ -321,5 +328,8 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
             }
         }
     </script>
+     <div class="z1">
+        <a class="z2" href="registro.php">REGRESAR</a>
+    </div>
 </body>
 </html>

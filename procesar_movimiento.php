@@ -8,9 +8,16 @@ if (session_status() === PHP_SESSION_NONE) {
 // Asegurarnos de que los datos vengan por método POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo_usuario = trim($_POST['tipo_usuario'] ?? '');
-    $id_usuario   = filter_input(INPUT_POST, 'id_usuario', FILTER_VALIDATE_INT);
     $id_libro     = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
     $accion       = trim($_POST['accion'] ?? 'prestar');
+    
+    // 🟢 CORRECCIÓN CLAVE: Capturamos la variable según el rol seleccionado en Choices.js
+    $id_usuario = null;
+    if ($tipo_usuario === 'alumno') {
+        $id_usuario = filter_input(INPUT_POST, 'id_alumno', FILTER_VALIDATE_INT);
+    } elseif ($tipo_usuario === 'profesor') {
+        $id_usuario = filter_input(INPUT_POST, 'id_profesor', FILTER_VALIDATE_INT);
+    }
     
     // Configurar fechas automáticas (Hoy y la fecha límite)
     date_default_timezone_set('America/Mexico_City');
@@ -20,11 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dias_limite  = ($accion === 'apartar') ? 2 : 9;
     $fecha_esperada = date('Y-m-d', strtotime("+$dias_limite days"));
 
-    // Validaciones iniciales de seguridad
+    // Validaciones iniciales de seguridad actualizadas con el nuevo flujo
     if (empty($tipo_usuario) || !$id_usuario || !$id_libro) {
         $_SESSION['mensaje'] = '⚠️ Error: No se seleccionó correctamente al usuario o al libro.';
         $_SESSION['tipoMensaje'] = 'error';
-        header("Location: nuevo_prestamo.php");
+        header("Location: catalogo_interactivo.php"); // Te devuelve al catálogo interactivo
         exit();
     }
 
@@ -38,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$res_stock || $res_stock['Ejemplares_disponibles'] <= 0) {
         $_SESSION['mensaje'] = '❌ No se puede procesar: Este libro ya no cuenta con existencias disponibles en la estantería.';
         $_SESSION['tipoMensaje'] = 'error';
-        header("Location: nuevo_prestamo.php");
+        header("Location: catalogo_interactivo.php");
         exit();
     }
 
@@ -76,8 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['tipoMensaje'] = 'error';
     }
 
-    // Redirección limpia al formulario express
-    header("Location: nuevo_prestamo.php");
+    // Redirección limpia al catálogo con su panel interactivo renovado
+    header("Location: catalogo_interactivo.php");
     exit();
 }
 ?>
