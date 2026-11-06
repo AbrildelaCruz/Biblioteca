@@ -4,38 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenida - Biblioteca Sullivan</title>
+    <!-- Vinculación limpia a tu hoja de estilos externa -->
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body>
 
-    <!-- Contenedor maestro -->
+    <!-- Contenedor maestro de la animación -->
     <div id="pantalla-biblioteca" class="fondo-cerrado">
         
-        <!-- Interfaz flotante de bienvenida -->
+        <!-- Interfaz flotante con tu botón dorado institucional -->
         <div class="interfaz-bienvenida" id="bloque-entrada">
             <button id="btn-entrar" onclick="iniciarAnimacionPuertas()">Ingresar al Sistema</button>
         </div>
 
     </div>
 
-    <!-- Zona de precarga corregida con .JPG en mayúsculas -->
+    <!-- Zona de precarga técnica oculta para evitar parpadeos en el navegador -->
     <div class="precarga">
-        <img src="puertas-cerradas.JPG" alt="Preload 1">
-        <img src="puertas-semiabiertas.JPG" alt="Preload 2">
-        <img src="puertas-abiertas.JPG" alt="Preload 3">
+        <img src="puertas-cerradas.JPG" alt="Precarga 1">
+        <img src="puertas-semiabiertas.JPG" alt="Precarga 2">
+        <img src="puertas-abiertas.JPG" alt="Precarga 3">
     </div>
 
-    <!-- Motor de animación JavaScript -->
+    <!-- Motor lógico en JavaScript Nativo -->
     <script>
     function iniciarAnimacionPuertas() {
         const pantalla = document.getElementById('pantalla-biblioteca');
         const bloqueEntrada = document.getElementById('bloque-entrada');
 
-        // Ocultar botón suavemente
+        // Ocultar la interfaz flotante usando la clase del CSS
         bloqueEntrada.classList.add('ocultar');
 
-        // Transición de puertas
+        // Orquesta el cambio de clases del CSS en milisegundos reales
         setTimeout(() => {
             pantalla.className = 'fondo-semiabierto';
         }, 300);
@@ -44,7 +45,7 @@
             pantalla.className = 'fondo-abierto';
         }, 800);
 
-        // Redirección final al panel unificado
+        // Redirección segura a tu panel unificado
         setTimeout(() => {
             window.location.href = 'registro.php';
         }, 1500);

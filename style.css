@@ -854,16 +854,17 @@ body, html {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Contenedor que ocupará toda la pantalla */
+/* --- Contenedor del fondo corregido con dimensiones reales --- */
 #pantalla-biblioteca {
-    width: 100vw;
-    height: 100vh;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-image 0.2s ease-in-out; /* Suaviza el cambio entre imágenes */
+    width: 100vw !important;
+    height: 100vh !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: background-image 0.2s ease-in-out !important;
 }
 
 /* --- Estados del Fondo --- */
