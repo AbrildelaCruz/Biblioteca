@@ -25,6 +25,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <title>Catálogo - Biblioteca Sullivan</title>
     <!-- Tu archivo de estilos externo unificado -->
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 
 <body class="body2">
