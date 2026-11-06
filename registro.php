@@ -7,6 +7,7 @@
     <title>Panel de Control - Biblioteca Sullivan</title>
     <!-- Tu archivo unificado de diseño externo -->
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
 
