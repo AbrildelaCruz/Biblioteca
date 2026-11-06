@@ -4,48 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenida - Biblioteca Sullivan</title>
-    <!-- Vinculación limpia a tu hoja de estilos externa -->
+    <!-- Enlace limpio a tu CSS unificado -->
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body>
 
-    <!-- Contenedor maestro de la animación -->
+    <!-- Contenedor maestro: inicia con la clase fondo-cerrado de tu CSS -->
     <div id="pantalla-biblioteca" class="fondo-cerrado">
         
-        <!-- Interfaz flotante con tu botón dorado institucional -->
+        <!-- Interfaz del botón dorado -->
         <div class="interfaz-bienvenida" id="bloque-entrada">
             <button id="btn-entrar" onclick="iniciarAnimacionPuertas()">Ingresar al Sistema</button>
         </div>
 
     </div>
 
-    <!-- Zona de precarga técnica oculta para evitar parpadeos en el navegador -->
-    <div class="precarga">
-        <img src="puertas-cerradas.JPG" alt="Precarga 1">
-        <img src="puertas-semiabiertas.JPG" alt="Precarga 2">
-        <img src="puertas-abiertas.JPG" alt="Precarga 3">
+    <!-- Zona de precarga técnica oculta para evitar saltos en blanco -->
+    <div class="precarga" style="display: none;">
+        <img src="puertas-cerradas.JPG">
+        <img src="puertas-semiabiertas.JPG">
+        <img src="puertas-abiertas.JPG">
     </div>
 
-    <!-- Motor lógico en JavaScript Nativo -->
+    <!-- 🚀 JAVASCRIPT SINCRONIZADO CON LAS CLASES DE TU CSS -->
     <script>
     function iniciarAnimacionPuertas() {
         const pantalla = document.getElementById('pantalla-biblioteca');
         const bloqueEntrada = document.getElementById('bloque-entrada');
 
-        // Ocultar la interfaz flotante usando la clase del CSS
+        // 1. Desvanece el botón dorado con la clase .ocultar de tu CSS
         bloqueEntrada.classList.add('ocultar');
 
-        // Orquesta el cambio de clases del CSS en milisegundos reales
+        // 2. Transición 1: Cambia a puertas semiabiertas a los 300 milisegundos
         setTimeout(() => {
             pantalla.className = 'fondo-semiabierto';
         }, 300);
 
+        // 3. Transición 2: Abre por completo a los 800 milisegundos
         setTimeout(() => {
             pantalla.className = 'fondo-abierto';
         }, 800);
 
-        // Redirección segura a tu panel unificado
+        // 4. Redirección final: Te adentra al registro.php a los 1.5 segundos
         setTimeout(() => {
             window.location.href = 'registro.php';
         }, 1500);
