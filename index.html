@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
-<!-- Ajustamos el fondo de respaldo con tu paleta para que cargue a pantalla completa -->
+<!-- Ajustamos el fondo de respaldo con tu paleta a pantalla completa -->
 <body style="margin: 0 !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; overflow: hidden !important; background-color: #1E293B !important;">
 
-    <!-- 🚪 CONTENEDOR MAESTRO: Forzamos la salida de la ruta con ../ para que XAMPP encuentre la foto en la raíz -->
+    <!-- 🚪 CONTENEDOR MAESTRO: Forzamos la carga con la extensión real en minúscula (.jpg) -->
     <div id="pantalla-biblioteca" class="fondo-cerrado" 
-         style="width: 100vw !important; height: 100vh !important; background-image: url('puertas-cerradas.JPG') !important; background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important; display: flex !important; justify-content: center !important; align-items: center !important; transition: background-image 0.2s ease-in-out !important;">
+         style="width: 100vw !important; height: 100vh !important; background-image: url('puertas-cerradas.JPG.jpg') !important; background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important; display: flex !important; justify-content: center !important; align-items: center !important; transition: background-image 0.2s ease-in-out !important;">
         
         <!-- Interfaz flotante del botón dorado -->
         <div class="interfaz-bienvenida" id="bloque-entrada" style="text-align: center !important;">
@@ -22,33 +22,33 @@
 
     </div>
 
-    <!-- Zona técnica oculta de precarga indexada con la ruta directa -->
+    <!-- Zona técnica oculta de precarga indexada con la ruta directa corregida -->
     <div style="display: none !important;">
-        <img src="puertas-cerradas.JPG">
-        <img src="puertas-semiabiertas.JPG">
-        <img src="puertas-abiertas.JPG">
+        <img src="puertas-cerradas.JPG.jpg">
+        <img src="puertas-semiabiertas.JPG.jpg">
+        <img src="puertas-abiertas.JPG.jpg">
     </div>
 
-    <!-- 🚀 MOTOR LÓGICO JAVASCRIPT: Cambia los estados en línea en tiempo real -->
+    <!-- 🚀 MOTOR LÓGICO JAVASCRIPT: Intercambia los fondos reales al dar clic -->
     <script>
     function iniciarAnimacionPuertas() {
         const pantalla = document.getElementById('pantalla-biblioteca');
         const bloqueEntrada = document.getElementById('bloque-entrada');
 
-        // 1. Ocultamos el bloque del botón dorado
+        // 1. Ocultamos el bloque del botón dorado al instante
         bloqueEntrada.style.display = 'none';
 
-        // 2. Paso 1: Transición a puertas semiabiertas a los 300ms
+        // 2. Paso 1: Transición a puertas semiabiertas a los 300ms (.jpg real)
         setTimeout(() => {
-            pantalla.style.backgroundImage = "url('puertas-semiabiertas.JPG')";
+            pantalla.style.backgroundImage = "url('puertas-semiabiertas.JPG.jpg')";
         }, 300);
 
-        // 3. Paso 2: Transición a puertas abiertas por completo a los 800ms
+        // 3. Paso 2: Transición a puertas abiertas por completo a los 800ms (.jpg real)
         setTimeout(() => {
-            pantalla.style.backgroundImage = "url('puertas-abiertas.JPG')";
+            pantalla.style.backgroundImage = "url('puertas-abiertas.JPG.jpg')";
         }, 800);
 
-        // 4. Redirección final segura hacia el Panel de Control unificado
+        // 4. Redirección final automática hacia tu panel de control principal
         setTimeout(() => {
             window.location.href = 'registro.php';
         }, 1500);
