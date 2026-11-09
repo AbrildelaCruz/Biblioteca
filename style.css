@@ -721,12 +721,12 @@ body, html {
 }
 
 .tarjeta-libro {
+    display: block !important;
+    height: 100% !important; /* Hace que todas las fichas midan lo mismo */
+    min-height: 250px !important; /* Evita que se aplasten */
     background: #FFFFFF !important;
     padding: 20px !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 15px rgba(15, 76, 129, 0.08) !important;
     border: 1px solid #DDE6ED !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
 }
