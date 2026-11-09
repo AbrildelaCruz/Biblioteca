@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $alertas = [];
 
-// 🛠️ CONSULTA LIMPIA: Quitamos el filtro de 'estado' que no existe en tu tabla
+// 🛠️ CONSULTA CORREGIDA CON TUS LLAVES REALES: id_Alumnos
 $sql = "SELECT 
             p.id_prestamo,
             a.Nombre AS Alumno,
@@ -16,7 +16,7 @@ $sql = "SELECT
             p.fecha_salida,
             DATEDIFF(DATE_ADD(p.fecha_salida, INTERVAL 7 DAY), CURDATE()) AS dias_diferencia
         FROM prestamos p
-        JOIN alumnos a ON p.id_alumno = a.id_Alumnos
+        JOIN alumnos a ON p.id_Alumnos = a.id_Alumnos
         JOIN libros l ON p.id_libro = l.id_libro
         ORDER BY dias_diferencia ASC";
 
