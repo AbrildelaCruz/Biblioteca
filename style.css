@@ -856,14 +856,14 @@ body, html {
 #pantalla-biblioteca {
     width: 100vw;
     height: 100vh;
-    background-image: url('puertas-cerradas .JPG'); /* Imagen inicial fija */
+    background-image: url('1.png'); /* Tu primera imagen (puertas cerradas) */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-image 0.25s ease-in-out; /* Suaviza el cambio de fotos */
+    transition: background-image 0.2s ease-in-out; /* Suaviza el cambio entre las fotos 1, 2 y 3 */
 }
 
 .interfaz-bienvenida {
@@ -1110,4 +1110,48 @@ body, html {
     transform-origin: right center;
     background-image: url('../3.png'); /* Asegúrate de poner el nombre exacto de tu foto */
     background-position: left center;
+}
+
+/* Contenedor que evita que la imagen se salga al agrandarse */
+.pantalla-lectura {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Capa exclusiva para la imagen y su animación */
+.fondo-animado {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('tu-imagen-otoño.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: 1;
+    /* Aplica la animación llamada "respirar", dura 20 segundos e inicia en bucle infinito */
+    animation: respirar 20s ease-in-out infinite alternate;
+}
+
+/* Efecto de oscurecido encima de la imagen para que tu texto se lea perfecto */
+.pantalla-lectura::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.35); /* Capa oscura translúcida */
+    z-index: 2;
+}
+
+/* --- ANIMACIÓN CSS --- */
+@keyframes respirar {
+    0% {
+        transform: scale(1); /* Tamaño original */
+    }
+    100% {
+        transform: scale(1.08); /* Se agranda un 8% lentamente */
+    }
 }

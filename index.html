@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenida - Biblioteca Sullivan</title>
-    <!-- Vinculación a tu hoja de estilos externa -->
+    <!-- Vinculación limpia a tu hoja de estilos externa -->
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body>
-    <!-- Contenedor maestro de la fachada de la escuela -->
+    <!-- Contenedor maestro de la animación: inicia con el fondo fijo del CSS -->
     <div id="pantalla-biblioteca">
         
         <!-- Interfaz flotante con tu botón dorado institucional -->
@@ -18,39 +18,42 @@
         </div>
     </div>
 
-    <!-- Zona de precarga oculta: vital para que no parpadee en blanco al cambiar de foto -->
+    <!-- Zona de precarga oculta: vital para que el navegador cargue las fotos de antemano y no parpadee -->
     <div class="precarga" style="display: none;">
-        <img src="puertas-cerradas .JPG">
-        <img src="puertas-semiabiertas .JPG">
-        <img src="puertas-abiertas .JPG">
+        <img src="1.png">
+        <img src="2.png">
+        <img src="3.png">
     </div>
 
-    <!-- Motor de la animación directo y sin intermediarios -->
+    <!-- Motor lógico en JavaScript Nativo sincronizado con tus archivos reales -->
     <script>
     function iniciarAnimacionPuertas() {
         const pantalla = document.getElementById('pantalla-biblioteca');
         const bloqueEntrada = document.getElementById('bloque-entrada');
         
-        // 1. Desvanecer el botón dorado de inmediato
+        // 1. Ocultar el botón dorado suavemente con una transición directa
         bloqueEntrada.style.opacity = '0';
         bloqueEntrada.style.pointerEvents = 'none';
         bloqueEntrada.style.transition = 'opacity 0.4s ease';
         
-        // 2. Cambiar a puertas SEMIABIERTAS a los 400 milisegundos
+        // 2. Cambia a la imagen 2 (puertas semiabiertas) a los 300 milisegundos
         setTimeout(() => {
-            pantalla.style.backgroundImage = "url('puertas-semiabiertas .JPG')";
-        }, 400);
+            pantalla.style.backgroundImage = "url('2.png')";
+        }, 300);
         
-        // 3. Cambiar a puertas ABIERTAS por completo a los 900 milisegundos
+        // 3. Cambia a la imagen 3 (puertas abiertas por completo) a los 800 milisegundos
         setTimeout(() => {
-            pantalla.style.backgroundImage = "url('puertas-abiertas .JPG')";
-        }, 900);
+            pantalla.style.backgroundImage = "url('3.png')";
+        }, 800);
         
-        // 4. Redireccionar finalmente a tu archivo PHP de registro a los 1600 milisegundos
+        // 4. Redirección segura a tu panel principal unificado a los 1500 milisegundos
         setTimeout(() => {
             window.location.href = 'registro.php';
-        }, 1600);
+        }, 1500);
     }
     </script>
+    <div class="pantalla-lectura">
+    <div class="fondo-animado"></div>
+</div>
 </body>
 </html>
