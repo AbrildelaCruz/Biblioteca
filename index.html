@@ -12,13 +12,10 @@
     <!-- Contenedor Maestro -->
     <div id="pantalla-biblioteca">
         
-        <!-- El Portal Virtual de Acceso (Hojas Izquierda y Derecha) -->
-        <div class="portal-geometrico">
-            <div class="hoja puerta-izquierda"></div>
-            <div class="hoja puerta-derecha"></div>
-        </div>
+        <!-- Telón de fondo cinemático (Una sola capa, sin líneas divisorias) -->
+        <div class="telon-portada"></div>
 
-        <!-- Interfaz con el botón dorado institucional -->
+        <!-- Interfaz flotante con tu botón dorado institucional -->
         <div class="interfaz-bienvenida" id="bloque-entrada">
             <button id="btn-entrar" onclick="activarEfectoPortal()">Ingresar al Sistema</button>
         </div>
@@ -28,24 +25,20 @@
     <script>
     function activarEfectoPortal() {
         const bloqueEntrada = document.getElementById('bloque-entrada');
-        const pIzquierda = document.querySelector('.puerta-izquierda');
-        const pDerecha = document.querySelector('.puerta-derecha');
-        const contenedor = document.getElementById('pantalla-biblioteca');
+        const telon = document.querySelector('.telon-portada');
         
-        // 1. El botón se vuelve un destello y desaparece
+        // 1. El botón se desvanece con un leve destello
         bloqueEntrada.classList.add('efecto-destello');
         
-        // 2. Activamos el efecto de hiperespacio y apertura cinemática
+        // 2. Activamos el efecto cinemático de alejamiento y desvanecido en la portada
         setTimeout(() => {
-            pIzquierda.classList.add('portal-abrir-izq');
-            pDerecha.classList.add('portal-abrir-der');
-            contenedor.classList.add('hiperespacio');
+            telon.classList.add('telon-abrir');
         }, 150);
         
-        // 3. Redirección limpia hacia tu archivo de registro PHP
+        // 3. Redirección automática hacia tu archivo de registro PHP
         setTimeout(() => {
             window.location.href = 'registro.php';
-        }, 1400);
+        }, 1300);
     }
     </script>
 </body>
