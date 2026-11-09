@@ -23,13 +23,13 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo - Biblioteca Sullivan</title>
-    <!-- Tu archivo de estilos externo unificado -->
+    <!-- Vinculación limpia con timestamp para evitar el caché viejo -->
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
     
     <!-- 🟢 INCLUSIÓN DE LIBRERÍA CHOICES.JS -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/choices.js/11.2.4/choices.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/11.2.4/choices.min.js"></script>
+    <link rel="stylesheet" href="https://cloudflare.com" />
+    <script src="https://cloudflare.com"></script>
     <style>
         /* Ajustes para el buscador autocompletado en tus tarjetas */
         .choices { margin-bottom: 0px; font-size: 13px; color: #1e293b; }
@@ -132,14 +132,14 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <p style="text-align: center; color: #475569; margin-bottom: 20px;">Busca un libro por su título y procésalo al instante.</p>
 
     <div class="contenedor-busqueda">
-    <input type="text" id="buscar-libro" class="input-busqueda" placeholder="Buscar por título, autor o materia..." onkeyup="filtrarCatalogo()">
-    
-    <!-- El letrero de error ahora se mostrará aquí de manera elegante, no como una ficha abajo -->
-    <div id="mensaje-vacio" style="display: none; color: #991B1B; background-color: #FEE2E2; padding: 10px; margin-top: 10px; border-radius: 8px; font-weight: bold; font-size: 14px;">
-        ❌ No se encontraron libros que coincidan con la búsqueda.
+        <input type="text" id="buscar-libro" class="input-busqueda" placeholder="Buscar por título, autor o materia..." onkeyup="filtrarCatalogo()">
+        <div id="mensaje-vacio" style="display: none; color: #991B1B; background-color: #FEE2E2; padding: 10px; margin-top: 10px; border-radius: 8px; font-weight: bold; font-size: 14px;">
+            ❌ No se encontraron libros que coincidan con la búsqueda.
+        </div>
     </div>
-</div>
 
+    <!-- 🧱 REJILLA MAESTRA HORIZONTAL CORRECTAMENTE UBICADA -->
+    <div class="grid-catalogo">
         <?php if ($libros_res && $libros_res->num_rows > 0): ?>
             <?php while ($libro = $libros_res->fetch_assoc()):
                 $es_disponible = ($libro['Ejemplares_disponibles'] > 0);
@@ -162,46 +162,55 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
                     <!-- FORMULARIO DE ACCIÓN DIRECTA -->
                     <?php if ($es_disponible): ?>
                         <div class="formulario-prestamo">
-                            <form action="procesar_movimiento.php" method="POST"
-                                style="display: flex; flex-direction: column; gap: 8px;">
+                            <form action="procesar_movimiento.php" method="POST" style="display: flex; flex-direction: column; gap: 8px;">
                                 <input type="hidden" name="id_libro" value="<?php echo $libro['id_libro']; ?>">
 
-                                <select name="tipo_usuario" required
-                                    onchange="alternarUsuarios(this, <?php echo $libro['id_libro']; ?>)">
+                                <select name="tipo_usuario" required onchange="alternarUsuarios(this, <?php echo $libro['id_libro']; ?>)">
                                     <option value="">¿Quién solicita?</option>
                                     <option value="alumno">Alumno</option>
                                     <option value="profesor">Profesor</option>
                                 </select>
-<!-- Selector de Alumnos -->
-<div id="wrapper_alumno_<?php echo $libro['id_libro']; ?>" style="display:none;">
-    <select name="id_alumno" id="select_alumno_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado">
-        <option value="">Escribe el nombre del Alumno...</option>
-        <?php
-        $alumnos_res->data_seek(0);
-        while ($al = $alumnos_res->fetch_assoc()) {
-            echo "<option value='{$al['id_Alumnos']}'>{$al['Nombre']}</option>";
-        }
-        ?>
-    </select>
-</div>
 
-<!-- Selector de Profesores -->
-<div id="wrapper_profesor_<?php echo $libro['id_libro']; ?>" style="display:none;">
-    <select name="id_profesor" id="select_profesor_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado" disabled>
-        <option value="">Escribe el nombre del Docente...</option>
-        <?php
-        $profesores_res->data_seek(0);
-        while ($prof = $profesores_res->fetch_assoc()) {
-            echo "<option value='{$prof['id_profesores']}'>{$prof['Nombre']}</option>";
-        }
-        ?>
-    </select>
-</div>
+                                <!-- Selector de Alumnos -->
+                                <div id="wrapper_alumno_<?php echo $libro['id_libro']; ?>" style="display:none;">
+                                    <select name="id_alumno" id="select_alumno_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado">
+                                        <option value="">Escribe el nombre del Alumno...</option>
+                                        <?php
+                                        $alumnos_res->data_seek(0);
+                                        while ($al = $alumnos_res->fetch_assoc()) {
+                                            echo "<option value='{$al['id_Alumnos']}'>{$al['Nombre']}</option>";
+                                        }
+                                        ?>
+                                        <!-- Selector de Alumnos (Choices.js) -->
+                                <div id="wrapper_alumno_<?php echo $libro['id_libro']; ?>" style="display:none;">
+                                    <select name="id_alumno" id="select_alumno_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado">
+                                        <option value="">Escribe el nombre del Alumno...</option>
+                                        <?php
+                                        $alumnos_res->data_seek(0);
+                                        while ($al = $alumnos_res->fetch_assoc()) {
+                                            echo "<option value='{$al['id_Alumnos']}'>{$al['Nombre']}</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <!-- Selector de Profesores (Choices.js) -->
+                                <div id="wrapper_profesor_<?php echo $libro['id_libro']; ?>" style="display:none;">
+                                    <select name="id_profesor" id="select_profesor_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado" disabled>
+                                        <option value="">Escribe el nombre del Docente...</option>
+                                        <?php
+                                        $profesores_res->data_seek(0);
+                                        while ($prof = $profesores_res->fetch_assoc()) {
+                                            echo "<option value='{$prof['id_profesores']}'>{$prof['Nombre']}</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <!-- Botones de acción directa de tu formulario -->
                                 <div style="display: flex; gap: 8px; margin-top: 5px;">
-                                    <button type="submit" name="accion" value="prestar"
-                                        style="flex: 1; background-color: #2A9D8F; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Prestar</button>
-                                    <button type="submit" name="accion" value="apartar"
-                                        style="flex: 1; background-color: #E2E8F0; color: #1E293B; border: 1px solid #CBD5E1; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Apartar</button>
+                                    <button type="submit" name="accion" value="prestar" style="flex: 1; background-color: #2A9D8F; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Prestar</button>
+                                    <button type="submit" name="accion" value="apartar" style="flex: 1; background-color: #E2E8F0; color: #1E293B; border: 1px solid #CBD5E1; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Apartar</button>
                                 </div>
                             </form>
                         </div>
@@ -211,39 +220,37 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
         <?php else: ?>
             <p style="text-align: center; grid-column: 1/-1;">No hay libros registrados en el inventario.</p>
         <?php endif; ?>
-    </div>
-     <!-- 🟢 SCRIPTS INTERACTIVOS (Buscadores Autocompletados y Motor de Filtrado) -->
+    </div> <!-- Cierre del div .grid-catalogo maestro -->
     <script>
-        // 1. ALMACÉN GLOBAL PARA CHOICES.JS
-const instanciasChoices = {};
+        // 1. ALMACÉN GLOBAL PARA CHOICES.JS (Buscadores internos de las tarjetas)
+        const instanciasChoices = {};
 
-function inicializarBuscadores() {
-    const selectores = document.querySelectorAll('.buscador-autocompletado');
-    selectores.forEach(select => {
-        // Evitamos duplicar inicializaciones erróneas
-        if (!instanciasChoices[select.id]) {
-            instanciasChoices[select.id] = new Choices(select, {
-                searchEnabled: true,
-                noResultsText: 'No se encontraron coincidencias',
-                noChoicesText: 'No hay registros cargados',
-                itemSelectText: 'Clic para seleccionar',
-                placeholder: true,
-                searchPlaceholderValue: 'Escribe para buscar...',
-                shouldSort: false // Mantiene el orden alfabético original de tu SQL
+        function inicializarBuscadores() {
+            const selectores = document.querySelectorAll('.buscador-autocompletado');
+            selectores.forEach(select => {
+                if (!instanciasChoices[select.id]) {
+                    instanciasChoices[select.id] = new Choices(select, {
+                        searchEnabled: true,
+                        noResultsText: 'No se encontraron coincidencias',
+                        noChoicesText: 'No hay registros cargados',
+                        itemSelectText: 'Clic para seleccionar',
+                        placeholder: true,
+                        searchPlaceholderValue: 'Escribe para buscar...',
+                        shouldSort: false 
+                    });
+                }
             });
         }
-    });
-}
 
-// Forzamos el arranque en cuanto el DOM esté listo
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarBuscadores);
-} else {
-    inicializarBuscadores();
-}
-        // 2. MOTOR DE FILTRADO DE TARJETAS EN TIEMPO REAL (Tu buscador principal de libros)
-        document.getElementById('buscador').addEventListener('input', function () {
-            var filtro = this.value.toLowerCase().trim();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', inicializarBuscadores);
+        } else {
+            inicializarBuscadores();
+        }
+
+        // 2. MOTOR DE FILTRADO DINÁMICO HORIZONTAL (Tu buscador principal de libros)
+        function filtrarCatalogo() {
+            var filtro = document.getElementById('buscar-libro').value.toLowerCase().trim();
             var tarjetas = document.getElementsByClassName('tarjeta-libro');
             var mensajeVacio = document.getElementById('mensaje-vacio');
             var encontrados = 0;
@@ -254,23 +261,24 @@ if (document.readyState === 'loading') {
                     var textoTitulo = tituloElemento.textContent.toLowerCase();
 
                     if (textoTitulo.includes(filtro)) {
-                        tarjetas[i].style.display = 'flex';
+                        // Mantiene las fichas en su estructura de rejilla horizontal
+                        tarjetas[i].style.setProperty('display', 'block', 'important');
                         encontrados++;
                     } else {
-                        tarjetas[i].style.display = 'none';
+                        tarjetas[i].style.setProperty('display', 'none', 'important');
                     }
                 }
             }
 
+            // Muestra u oculta el letrero de error directamente abajo del buscador
             if (encontrados === 0 && filtro !== "") {
-                mensajeVacio.style.display = 'block';
+                mensajeVacio.style.setProperty('display', 'block', 'important');
             } else {
-                mensajeVacio.style.display = 'none';
+                mensajeVacio.style.setProperty('display', 'none', 'important');
             }
-        });
+        }
 
         // 3. LÓGICA DE SELECTORES DINÁMICOS ADAPTADA A CHOICES.JS
-        // Esta función controla qué buscador se muestra (Alumno o Profesor) según la elección
         function alternarUsuarios(selector, idLibro) {
             var wrapperAlumno = document.getElementById('wrapper_alumno_' + idLibro);
             var wrapperProfesor = document.getElementById('wrapper_profesor_' + idLibro);
@@ -278,13 +286,11 @@ if (document.readyState === 'loading') {
             var selectProfesor = document.getElementById('select_profesor_' + idLibro);
 
             if (selector.value === 'alumno') {
-                // Muestra el buscador de Alumnos
                 wrapperAlumno.style.display = 'block';
                 selectAlumno.disabled = false;
                 selectAlumno.required = true;
                 if (instanciasChoices['select_alumno_' + idLibro]) instanciasChoices['select_alumno_' + idLibro].enable();
 
-                // Oculta y limpia el buscador de Profesores
                 wrapperProfesor.style.display = 'none';
                 selectProfesor.disabled = true;
                 selectProfesor.required = false;
@@ -294,13 +300,11 @@ if (document.readyState === 'loading') {
                 }
 
             } else if (selector.value === 'profesor') {
-                // Muestra el buscador de Profesores
                 wrapperProfesor.style.display = 'block';
                 selectProfesor.disabled = false;
                 selectProfesor.required = true;
                 if (instanciasChoices['select_profesor_' + idLibro]) instanciasChoices['select_profesor_' + idLibro].enable();
 
-                // Oculta y limpia el buscador de Alumnos
                 wrapperAlumno.style.display = 'none';
                 selectAlumno.disabled = true;
                 selectAlumno.required = false;
@@ -310,7 +314,6 @@ if (document.readyState === 'loading') {
                 }
 
             } else {
-                // Si selecciona la opción por defecto "¿Quién solicita?", oculta y limpia ambos
                 wrapperAlumno.style.display = 'none';
                 selectAlumno.disabled = true;
                 if (instanciasChoices['select_alumno_' + idLibro]) {
@@ -327,56 +330,11 @@ if (document.readyState === 'loading') {
             }
         }
     </script>
-     <div class="z1">
+
+    <!-- INTERFAZ DE NAVEGACIÓN -->
+    <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
-<script>
-function filtrarCatalogo() {
-    const input = document.getElementById('buscar-libro');
-    const textoBuscado = input.value.toLowerCase().trim();
-    
-    const tarjetas = document.querySelectorAll('.tarjeta-libro');
-    const mensajeVacio = document.getElementById('mensaje-vacio');
-    let coincidencias = 0;
-
-    tarjetas.forEach(tarjeta => {
-        const infoLibro = tarjeta.querySelector('.info-libro');
-        const contenidoTarjeta = infoLibro ? infoLibro.textContent.toLowerCase() : '';
-
-        // Forzamos estilos seguros directamente en cada tarjeta para no romper el CSS general
-        tarjeta.style.setProperty('max-width', '340px', 'important');
-        tarjeta.style.setProperty('margin', '15px', 'important');
-        tarjeta.style.setProperty('vertical-align', 'top', 'important');
-
-        if (textoBuscado === "") {
-            // Si el buscador está vacío, las acomoda una al lado de la otra en horizontal
-            tarjeta.style.setProperty('display', 'inline-block', 'important');
-            coincidencias++;
-        } else if (contenidoTarjeta.includes(textoBuscado)) {
-            // Si hay coincidencia, se queda visible en horizontal
-            tarjeta.style.setProperty('display', 'inline-block', 'important');
-            coincidencias++;
-        } else {
-            // Si no coincide, se oculta por completo
-            tarjeta.style.setProperty('display', 'none', 'important');
-        }
-    });
-
-    // Control del mensaje de error abajo del buscador
-    if (mensajeVacio) {
-        if (coincidencias === 0 && textoBuscado !== '') {
-            mensajeVacio.style.setProperty('display', 'block', 'important');
-        } else {
-            mensajeVacio.style.setProperty('display', 'none', 'important');
-        }
-    }
-}
-
-// Ejecutamos la función una vez al cargar la página para acomodar los cuadros desde el inicio
-window.onload = function() {
-    filtrarCatalogo();
-};
-</script>
 
 </body>
 </html>
