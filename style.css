@@ -856,18 +856,28 @@ body, html {
 #pantalla-biblioteca {
     width: 100vw;
     height: 100vh;
-    background-image: url('1.png'); /* Tu primera imagen (puertas cerradas) */
+    background-image: url('1.png'); /* Tu primera imagen */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-image 0.2s ease-in-out; /* Suaviza el cambio entre las fotos 1, 2 y 3 */
+    transition: background-image 0.15s ease-in-out; /* Cambio ultra suave y rápido */
 }
 
 .interfaz-bienvenida {
     text-align: center;
+}
+
+/* 🔥 TRUCO MAESTRO: Forzar la precarga en la memoria de la computadora */
+body::after {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    z-index: -1000;
+    content: url('1.png') url('2.png') url('3.png'); /* Carga las 3 fotos al mismo tiempo de fondo */
 }
 
 /* Forzamos la lectura en formato PNG */
