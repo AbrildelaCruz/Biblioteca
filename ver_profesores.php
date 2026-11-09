@@ -103,7 +103,10 @@ $resultado = $stmt->get_result();
     <h2
         style="text-align: center; color: white; margin-top: 30px; font-family: 'Segoe UI', Arial, sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">
         👨‍🏫 Panel de Control - Profesores de la Institución</h2>
-
+        <!-- Barrita de búsqueda rápida para profesores -->
+<div class="contenedor-busqueda" style="margin: 20px auto; max-width: 600px; text-align: center;">
+    <input type="text" id="buscar-tabla-prof" class="input-busqueda" placeholder="Escribe el nombre o datos del docente para filtrar..." onkeyup="filtrarTablaProfesores()">
+</div>
     <table class="tabla-datos" style="max-width: 85%; margin: 30px auto; font-size: 13px;">
         <thead>
             <tr>
@@ -186,5 +189,21 @@ $resultado = $stmt->get_result();
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
+    <script>
+function filtrarTablaProfesores() {
+    const filtro = document.getElementById('buscar-tabla-prof').value.toLowerCase().trim();
+    const filas = document.querySelectorAll('.tabla-datos tr:not(:first-child)');
+
+    filas.forEach(fila => {
+        const textoFila = fila.textContent.toLowerCase();
+
+        if (textoFila.includes(filtro)) {
+            fila.style.display = '';
+        } else {
+            fila.style.display = 'none';
+        }
+    });
+}
+</script>
 </body>
 </html>
