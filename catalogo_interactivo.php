@@ -332,42 +332,41 @@ if (document.readyState === 'loading') {
     </div>
     <script>
 function filtrarCatalogo() {
-    // 1. Capturamos lo que el usuario está escribiendo y lo pasamos a minúsculas
-    const textoBuscado = document.getElementById('buscar-libro').value.toLowerCase().trim();
+    // 1. Capturamos el texto del input y lo limpiamos
+    const input = document.getElementById('buscar-libro');
+    const textoBuscado = input.value.toLowerCase().trim();
     
-    // 2. Traemos todas las tarjetas de libros que están en la pantalla
+    // 2. Apuntamos a todas las tarjetas de libros
     const tarjetas = document.querySelectorAll('.tarjeta-libro');
-    
-    // 3. Traemos el letrero de "No se encontraron resultados" (si lo tienes en tu código)
     const mensajeVacio = document.getElementById('mensaje-vacio');
     let coincidencias = 0;
 
-    // 4. Recorremos cada libro para revisar su información
+    // 3. Recorremos y filtramos de forma estricta
     tarjetas.forEach(tarjeta => {
-        // Buscamos el título, autor y materia dentro de la tarjeta
-        const titulo = tarjeta.querySelector('.info-libro h3') ? tarjeta.querySelector('.info-libro h3').textContent.toLowerCase() : '';
-        const parrafos = tarjeta.querySelectorAll('.info-libro p');
-        
-        let textoTarjeta = titulo;
-        parrafos.forEach(p => {
-            textoTarjeta += ' ' + p.textContent.toLowerCase();
-        });
+        // Extraemos todo el texto interior de la tarjeta para buscar coincidencias
+        const infoLibro = tarjeta.querySelector('.info-libro');
+        const contenidoTarjeta = infoLibro ? infoLibro.textContent.toLowerCase() : '';
 
-        // 5. Si el texto coincide con lo que escribiste, se muestra; si no, se oculta
-        if (textoTarjeta.includes(textoBuscado)) {
-            tarjeta.style.display = 'flex'; // Muestra la tarjetita limpia
+        if (textoBuscado === "") {
+            // Si el buscador está vacío, mostramos todo por defecto
+            tarjeta.style.setProperty('display', 'flex', 'important');
+            coincidencias++;
+        } else if (contenidoTarjeta.includes(textoBuscado)) {
+            // Si hay coincidencia exacta, se queda la tarjeta
+            tarjeta.style.setProperty('display', 'flex', 'important');
             coincidencias++;
         } else {
-            tarjeta.style.display = 'none'; // Oculta la tarjeta
+            // ¡Aquí está la magia! Forzamos el descarte completo de la tarjeta
+            tarjeta.style.setProperty('display', 'none', 'important');
         }
     });
 
-    // 6. Si no hay ningún libro que coincida, mostramos el mensaje de aviso
+    // 4. Control del mensaje de error directamente abajo de la barra de búsqueda
     if (mensajeVacio) {
         if (coincidencias === 0 && textoBuscado !== '') {
-            mensajeVacio.style.display = 'block';
+            mensajeVacio.style.setProperty('display', 'block', 'important');
         } else {
-            mensajeVacio.style.display = 'none';
+            mensajeVacio.style.setProperty('display', 'none', 'important');
         }
     }
 }
