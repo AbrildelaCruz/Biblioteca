@@ -720,21 +720,6 @@ body, html {
     transform: none !important;
 }
 
-.tarjeta-libro {
-    display: block !important;
-    height: 100% !important; /* Hace que todas las fichas midan lo mismo */
-    min-height: 250px !important; /* Evita que se aplasten */
-    background: #FFFFFF !important;
-    padding: 20px !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.08) !important;
-    border: 1px solid #DDE6ED !important;
-}
-
-/* ==========================================================================
-   🧱 COMPORTAMIENTO HORIZONTAL DEL CATÁLOGO (Fuerza de Rejilla)
-   ========================================================================== */
-
 /* 1. Forzar al contenedor maestro a distribuir las fichas hacia los lados */
 .grid-catalogo {
     display: grid !important;
@@ -755,5 +740,18 @@ body, html {
     box-shadow: 0 4px 15px rgba(15, 76, 129, 0.08) !important;
     border: 1px solid #DDE6ED !important;
     height: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Dejamos las fichas de los libros con un tamaño uniforme como cuadritos */
+.tarjeta-libro {
+    display: block !important;
+    width: 100% !important;
+    max-width: 340px !important; /* Limita el ancho para que no se estiren verticalmente */
+    background: #FFFFFF !important;
+    padding: 22px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.08) !important;
+    border: 1px solid #DDE6ED !important;
     box-sizing: border-box !important;
 }
