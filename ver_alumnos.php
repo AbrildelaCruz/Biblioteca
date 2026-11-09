@@ -14,7 +14,7 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lista de Alumnos - Panel</title>
+  <title>Alumnos Registrados- Biblioteca Sullivan</title>
   <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
   <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
