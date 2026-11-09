@@ -330,38 +330,33 @@ if (document.readyState === 'loading') {
      <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
-    <script>
+<script>
 function filtrarCatalogo() {
-    // 1. Capturamos el texto del input y lo limpiamos
     const input = document.getElementById('buscar-libro');
     const textoBuscado = input.value.toLowerCase().trim();
     
-    // 2. Apuntamos a todas las tarjetas de libros
     const tarjetas = document.querySelectorAll('.tarjeta-libro');
     const mensajeVacio = document.getElementById('mensaje-vacio');
     let coincidencias = 0;
 
-    // 3. Recorremos y filtramos de forma estricta
     tarjetas.forEach(tarjeta => {
-        // Extraemos todo el texto interior de la tarjeta para buscar coincidencias
         const infoLibro = tarjeta.querySelector('.info-libro');
         const contenidoTarjeta = infoLibro ? infoLibro.textContent.toLowerCase() : '';
 
         if (textoBuscado === "") {
-            // Si el buscador está vacío, mostramos todo por defecto
-            tarjeta.style.setProperty('display', 'flex', 'important');
+            // Si está vacío, muestra en horizontal respetando la rejilla
+            tarjeta.style.setProperty('display', 'block', 'important');
             coincidencias++;
         } else if (contenidoTarjeta.includes(textoBuscado)) {
-            // Si hay coincidencia exacta, se queda la tarjeta
-            tarjeta.style.setProperty('display', 'flex', 'important');
+            // Si coincide, se queda en modo block (horizontal)
+            tarjeta.style.setProperty('display', 'block', 'important');
             coincidencias++;
         } else {
-            // ¡Aquí está la magia! Forzamos el descarte completo de la tarjeta
+            // Se descarta por completo
             tarjeta.style.setProperty('display', 'none', 'important');
         }
     });
 
-    // 4. Control del mensaje de error directamente abajo de la barra de búsqueda
     if (mensajeVacio) {
         if (coincidencias === 0 && textoBuscado !== '') {
             mensajeVacio.style.setProperty('display', 'block', 'important');
@@ -371,5 +366,6 @@ function filtrarCatalogo() {
     }
 }
 </script>
+         
 </body>
 </html>
