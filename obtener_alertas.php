@@ -8,13 +8,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $alertas = [];
 
-// 🛠️ CONSULTA CORREGIDA CON TUS COLUMNAS REALES DE LA BASE DE DATOS
+// 🛠️ CONSULTA MATEMÁTICA UTILIZANDO TU COLUMNA REAL: fecha_salida
+// Calculamos la fecha límite sumándole 7 días a la fecha de salida
 $sql = "SELECT 
             p.id_prestamo,
             a.Nombre AS Alumno,
             l.Titulo AS Libro,
-            p.fecha_entrega,
-            DATEDIFF(p.fecha_entrega, CURDATE()) AS dias_diferencia
+            p.fecha_salida,
+            DATEDIFF(DATE_ADD(p.fecha_salida, INTERVAL 7 DAY), CURDATE()) AS dias_diferencia
         FROM prestamos p
         JOIN alumnos a ON p.id_alumno = a.id_Alumnos
         JOIN libros l ON p.id_libro = l.id_libro
@@ -30,15 +31,15 @@ if ($result && $result->num_rows > 0) {
         $texto = '';
 
         if ($dias < 0) {
-            // 🟥 Caso 1: Ya se pasó de la fecha (Retrasado)
+            // 🟥 Caso 1: Ya pasaron los 7 días de plazo (Retrasado)
             $clasecss = 'entrega-vencida';
             $texto = "⚠️ <b>" . htmlspecialchars($row['Alumno']) . "</b> tiene un retraso de " . abs($dias) . " días con el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
         } elseif ($dias === 0) {
-            // 🟨 Caso 2: Se entrega hoy
+            // 🟨 Caso 2: Hoy se cumple el séptimo día
             $clasecss = 'entrega-hoy';
             $texto = "⏳ <b>" . htmlspecialchars($row['Alumno']) . "</b> debe entregar HOY el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
         } elseif ($dias <= 3) {
-            // 🟩 Caso 3: Próximas entregas (A tiempo, menos de 3 días)
+            // 🟩 Caso 3: Faltan menos de 3 días para que se cumpla el plazo
             $clasecss = 'entrega-proxima';
             $texto = "📅 <b>" . htmlspecialchars($row['Alumno']) . "</b> entrega en " . $dias . " días el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
         }
@@ -52,7 +53,7 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Renderizamos las alertas de forma limpia para que tu registro.php las lea por AJAX
+// Renderizamos las alertas de forma limpia para tu contenedor de notificaciones
 if (!empty($alertas)) {
     echo "<div class='lista-alertas'>";
     foreach ($alertas as $alerta) {
@@ -62,7 +63,7 @@ if (!empty($alertas)) {
     }
     echo "</div>";
 } else {
-    // Si todo está al corriente, muestra tu letrero dashed institucional
+    // Si todo está en orden, muestra el diseño dashed limpio
     echo "<div class='aviso-vacio'>✨ Todo está al corriente. No hay préstamos vencidos ni alertas pendientes hoy.</div>";
 }
 ?>
