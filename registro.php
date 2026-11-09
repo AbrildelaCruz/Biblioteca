@@ -114,6 +114,25 @@
     <div class="z1">
       <a class="z2" href="index.html">REGRESAR</a>
   </div>
+    <!-- Motor AJAX para conectar la Campanita de Alertas Inteligentes -->
+<script>
+function cargarAlertasCampana() {
+    fetch('obtener_alertas.php')
+        .then(response => response.text())
+        .then(html => {
+            // Busca tu contenedor de notificaciones y le inyecta las tarjetas
+            const panel = document.querySelector('.panel-notificaciones-derecho');
+            if (panel) {
+                panel.innerHTML = html;
+            }
+        })
+        .catch(error => console.error('Error cargando alertas:', error));
+}
 
+// Forzar a que las alertas se carguen en cuanto el usuario entre a la pantalla
+window.onload = function() {
+    cargarAlertasCampana();
+};
+</script>
 </body>
 </html>
