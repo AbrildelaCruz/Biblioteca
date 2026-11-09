@@ -36,7 +36,10 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
   <?php endif; ?>
 
   <h2 style="text-align: center; color: white; margin-top: 30px;">👥 Alumnos Registrados</h2>
-
+    <!-- Barrita de búsqueda rápida para alumnos -->
+<div class="contenedor-busqueda" style="margin: 20px auto; max-width: 600px; text-align: center;">
+    <input type="text" id="buscar-tabla" class="input-busqueda" placeholder="Escribe el nombre o datos del alumno para filtrar..." onkeyup="filtrarTablaAlumnos()">
+</div>
   <table class="tabla-datos" style="max-width: 95%; margin: 30px auto; font-size: 13px;">
     <thead>
       <tr>
