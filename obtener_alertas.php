@@ -8,8 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $alertas = [];
 
-// 🛠️ CONSULTA MATEMÁTICA UTILIZANDO TU COLUMNA REAL: fecha_salida
-// Calculamos la fecha límite sumándole 7 días a la fecha de salida
+// 🛠️ CONSULTA LIMPIA: Quitamos el filtro de 'estado' que no existe en tu tabla
 $sql = "SELECT 
             p.id_prestamo,
             a.Nombre AS Alumno,
@@ -19,7 +18,6 @@ $sql = "SELECT
         FROM prestamos p
         JOIN alumnos a ON p.id_alumno = a.id_Alumnos
         JOIN libros l ON p.id_libro = l.id_libro
-        WHERE p.estado = 'activo' OR p.estado = 'prestado'
         ORDER BY dias_diferencia ASC";
 
 $result = $conexion->query($sql);
