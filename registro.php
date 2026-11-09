@@ -114,5 +114,14 @@
     <div class="z1">
       <a class="z2" href="index.html">REGRESAR</a>
   </div>
+<div class="pantalla-lectura">
+    <div class="fondo-animado"></div>
+    <div class="contenido-pagina">
+        <!-- Aquí pones el contenido de tu sistema (formulario, textos, etc.) -->
+        <h2>Bienvenido a la Biblioteca</h2>
+        <p>El espacio ideal para tu lectura...</p>
+    </div>
+</div>
+
 </body>
 </html>

@@ -1,31 +1,139 @@
-/* --- Reinicio básico --- */
+/* ==========================================================================
+   ⚙️ CONFIGURACIÓN GENERAL Y REINICIO
+   ========================================================================== */
 body, html {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-
-/* BOTÓN DE ENTRADA PRINCIPAL */
-.A_uno {
-    padding: 10px 20px;
-    color: white;             
-    text-decoration: none;     
-    border-radius: 6px;       
-    font-weight: bold;         
-    transition: background-color 0.2s;
-    background-color: #2A9D8F; /* Verde Agua (Acción) */
+* {
+    box-sizing: border-box;
 }
 
-/* Corrección de selectores para los estados del botón de entrada */
-.A_uno:hover { background-color: #218074; } /* Verde agua más oscuro */
-.A_uno:focus { outline: 2px solid #0F4C81; } /* Foco institucional */
+/* ==========================================================================
+   🌌 MÓDULO DE BIENVENIDA (Efecto Portal Cinemático Premium)
+   ========================================================================== */
+#pantalla-biblioteca {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0d1b2a; /* Fondo marino profundo al abrirse */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    perspective: 1000px; /* Habilita el efecto 3D */
+    transition: background-color 0.5s ease;
+}
 
-/* FONDO DEL SISTEMA (MÓDULOS Y FORMULARIOS) */
+/* Contenedor maestro del portal */
+.portal-geometrico {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    z-index: 1;
+}
+
+/* Diseño estilizado de las hojas del portal usando tus imágenes reales */
+.hoja {
+    width: 50%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* Transición fluida para el efecto de velocidad cinematográfica */
+    transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1), 
+                filter 0.8s ease, 
+                opacity 0.8s ease;
+}
+
+/* Puerta izquierda vinculada a tu imagen 1.png estirada al revés */
+.puerta-izquierda {
+    background-image: url('1.png');
+    background-position: left center;
+    border-right: 2px solid rgba(212, 175, 55, 0.3); /* Línea divisoria dorada */
+    transform-origin: left center;
+}
+
+/* Puerta derecha vinculada a tu imagen 1.png estirada al derecho */
+.puerta-derecha {
+    background-image: url('1.png');
+    background-position: right center;
+    border-left: 2px solid rgba(212, 175, 55, 0.3);
+    transform-origin: right center;
+}
+
+/* 🚀 Clases de Animación: Zoom 3D + Desplazamiento + Motion Blur */
+.portal-abrir-izq {
+    transform: translateX(-100%) scale(0.8) rotateY(25deg);
+    filter: blur(10px);
+    opacity: 0;
+}
+
+.portal-abrir-der {
+    transform: translateX(100%) scale(0.8) rotateY(-25deg);
+    filter: blur(10px);
+    opacity: 0;
+}
+
+/* Destello controlado al entrar */
+.hiperespacio {
+    background-color: #ffffff !important; 
+}
+
+/* Capa del botón interactivo flotante */
+.interfaz-bienvenida {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    transition: transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease;
+}
+
+/* Efecto de explosión del botón */
+.efecto-destello {
+    transform: scale(1.6);
+    filter: blur(6px);
+    opacity: 0;
+}
+
+/* Botón dorado institucional mejorado */
+#btn-entrar {
+    padding: 18px 45px !important;
+    font-size: 1.3rem !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #b38f43 0%, #947432 100%) !important;
+    border: 2px solid #ffffff !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4) !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+}
+
+#btn-entrar:hover {
+    background: linear-gradient(135deg, #947432 0%, #735a26 100%) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.6) !important;
+}
+
+#btn-entrar:active {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.4) !important;
+}
+
+/* ==========================================================================
+   🎨 HOJA DE ESTILOS DEL INTERIOR (MÓDULOS Y FORMULARIOS)
+   ========================================================================== */
 .body2 {
-    /* Suave degradado institucional en tonos acero y blanco */
     background: linear-gradient(-45deg, #FFFFFF, #E8EEF5, #DDE6ED, #E8EEF5);
     background-size: 400% 400%;
     height: 100vh;
@@ -44,8 +152,22 @@ body, html {
     box-sizing: border-box;
 }
 
+.A_uno {
+    padding: 10px 20px;
+    color: white;             
+    text-decoration: none;     
+    border-radius: 6px;       
+    font-weight: bold;         
+    transition: background-color 0.2s;
+    background-color: #2A9D8F;
+}
 
-/*CAMPANITA DE NOTIFICACIONES*/
+.A_uno:hover { background-color: #218074; }
+.A_uno:focus { outline: 2px solid #0F4C81; }
+
+/* ==========================================================================
+   🔔 PANEL DE ALERTAS Y NOTIFICACIONES
+   ========================================================================== */
 .dashboard-layout {
     display: flex !important;
     flex-direction: row !important;
@@ -59,14 +181,12 @@ body, html {
     z-index: 10 !important;
 }
 
-/* Columna Izquierda: Libera tu contenedor de módulos original */
 .columna-izquierda {
     flex: 1 !important;
     display: flex !important;
-    justify-content: flex-end !important; /* Alinea los módulos hacia el centro */
+    justify-content: flex-end !important;
 }
 
-/* Fuerza al contenedor original a no encimarse ni flotar de forma absoluta */
 .columna-izquierda .contenedorpadrere {
     position: relative !important;
     top: 0 !important;
@@ -77,7 +197,6 @@ body, html {
     max-width: 400px !important;
 }
 
-/* Columna Derecha: El nuevo panel fijo de notificaciones en su lugar exacto */
 .panel-notificaciones-derecho {
     width: 100% !important;
     max-width: 380px !important;
@@ -92,54 +211,6 @@ body, html {
     text-align: left !important;
 }
 
-/* Subsecciones internas del Menú */
-.dashboard-layout {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: flex-start !important;
-    width: 95% !important;
-    max-width: 1100px !important;
-    margin: 50px auto !important;
-    gap: 40px !important;
-    box-sizing: border-box !important;
-    z-index: 10 !important;
-}
-
-/* Columna Izquierda: Libera tu contenedor de módulos original */
-.columna-izquierda {
-    flex: 1 !important;
-    display: flex !important;
-    justify-content: flex-end !important; /* Alinea los módulos hacia el centro */
-}
-
-/* Fuerza al contenedor original a no encimarse ni flotar de forma absoluta */
-.columna-izquierda .contenedorpadrere {
-    position: relative !important;
-    top: 0 !important;
-    left: 0 !important;
-    transform: none !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 400px !important;
-}
-
-/* Columna Derecha: El nuevo panel fijo de notificaciones en su lugar exacto */
-.panel-notificaciones-derecho {
-    width: 100% !important;
-    max-width: 380px !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    padding: 25px !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08) !important;
-    border: 1px solid rgba(232, 238, 245, 0.6) !important;
-    box-sizing: border-box !important;
-    max-height: 80vh !important;
-    overflow-y: auto !important;
-    text-align: left !important;
-}
-
-/* Subsecciones internas del Menú */
 .seccion-menu {
     width: 100%;
     border-top: 2px dashed #DDE6ED;
@@ -157,76 +228,10 @@ body, html {
     letter-spacing: 0.5px;
 }
 
-.panel-notificaciones-derecho {
-    width: 100%;
-    max-width: 380px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08);
-    border: 1px solid rgba(232, 238, 245, 0.6);
-    max-height: 75vh;
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
 .lista-alertas {
     display: flex;
     flex-direction: column;
     gap: 12px;
-}
-
-/* 🟥 Estado 1: Libro retrasado (Rojo institucional) */
-.entrega-vencida {
-    border-left-color: #DC3545 !important;
-    background-color: #FFF5F5 !important;
-}
-.entrega-vencida span:first-child {
-    color: #DC3545 !important;
-}
-
-/* 🟨 Estado 2: Entrega hoy mismo (Amarillo preventivo) */
-.entrega-hoy {
-    border-left-color: #FFC107 !important;
-    background-color: #FFFDF0 !important;
-}
-.entrega-hoy span:first-child {
-    color: #B78103 !important;
-}
-
-/* 🟩 Estado 3: Próximas entregas a tiempo (Verde agua de tu paleta) */
-.entrega-proxima {
-    border-left-color: #2A9D8F !important;
-    background-color: #F4FBF9 !important;
-}
-.entrega-proxima span:first-child {
-    color: #2A9D8F !important;
-}
-
-.aviso-vacio {
-    text-align: center;
-    padding: 25px;
-    color: #475569;
-    font-style: italic;
-    font-size: 14px;
-    background: #F8FAFC;
-    border-radius: 8px;
-    border: 1px dashed #CBD5E1;
-}
-
-@keyframes agitarCampana {
-    0%, 100% { transform: rotate(0); }
-    10% { transform: rotate(15deg); }
-    20% { transform: rotate(-10deg); }
-    30% { transform: rotate(5deg); }
-    40% { transform: rotate(-5deg); }
-    50% { transform: rotate(0); }
-}
-
-.lista-alertas {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
 .tarjeta-aviso {
@@ -242,68 +247,54 @@ body, html {
 }
 
 .entrega-vencida {
-    border-left-color: #DC3545;
-    background-color: #FEF2F2;
-    color: #991B1B;
+    border-left-color: #DC3545 !important;
+    background-color: #FFF5F5 !important;
+    color: #991B1B !important;
 }
 
 .entrega-hoy {
-    border-left-color: #FFC107;
-    background-color: #FFFBEB;
-    color: #92400E;
+    border-left-color: #FFC107 !important;
+    background-color: #FFFDF0 !important;
+    color: #92400E !important;
 }
 
 .entrega-proxima {
-    border-left-color: #2A9D8F;
-    background-color: #F0FDF4;
-    color: #166534;
+    border-left-color: #2A9D8F !important;
+    background-color: #F4FBF9 !important;
+    color: #166534 !important;
 }
 
 .aviso-vacio {
     text-align: center;
-    padding: 15px;
+    padding: 25px;
     color: #475569;
     font-style: italic;
+    font-size: 14px;
+    background: #F8FAFC;
+    border-radius: 8px;
+    border: 1px dashed #CBD5E1;
 }
 
-@keyframes flotar {
-    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-    10% { opacity: 0.4; } 
-    90% { opacity: 0.4; }
-    100% { transform: translateY(-120vh) translateX(50px) scale(1.1); opacity: 0; }
-}
-
-/* BURBUJAS ADAPTADAS AL SISTEMA DIGITAL */
-.burbuja {
-    position: absolute;
-    bottom: -150px; /* Un poco más abajo para que inicien completamente fuera de pantalla */
-    background: rgba(7, 124, 226, 0.952); 
-    border: 1px solid rgba(8, 123, 223, 0.952);
-    border-radius: 50%;
-    box-shadow: 0 0 12px rgba(5, 75, 155, 0.952), inset 0 0 8px rgba(3, 18, 155, 0.945);
-    animation: flotar 16s linear infinite; 
-    z-index: 1;
-    pointer-events: none; /* Evita que interfieran si el usuario da clic cerca de ellas */
-}
-
-/* FORMULARIO DE REGISTRO PROFESORES / ALUMNOS */
+/* ==========================================================================
+   📝 FORMULARIOS DE REGISTRO
+   ========================================================================== */
 .contenedor-formulario {
-    background-color: rgba(255, 255, 255, 0.9); /* Blanco limpio semi-transparente */
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 30px;
-    border-radius: 12px; /* Esquinas suavizadas alineadas a software moderno */
-    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08); /* Sombra suave con tono azul institucional */
-    backdrop-filter: blur(6px); /* Efecto esmerilado un poco más definido */
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08);
+    backdrop-filter: blur(6px);
     width: 100%;
     max-width: 700px;
     margin: 40px auto 20px auto;                  
     z-index: 10;
     box-sizing: border-box;
-    border: 1px solid rgba(232, 238, 245, 0.6); /* Borde sutil para delimitar el contenedor */
+    border: 1px solid rgba(232, 238, 245, 0.6);
 }
 
 .contenedor-formulario h2 {
     text-align: center;
-    color: #0F4C81; /* Azul Cobalto Institucional */
+    color: #0F4C81;
     margin-top: 0;
     margin-bottom: 25px;
     text-transform: uppercase;
@@ -324,14 +315,15 @@ body, html {
 }
 
 .grupo-campo label {
-    font-weight: 600; /* Peso visual limpio */
+    font-weight: 600;
     font-size: 14px;
-    color: #1E293B; /* Texto Gris Oscuro (Alta legibilidad) */
+    color: #1E293B;
 }
 
-.grupo-campo input {
+.grupo-campo input, .contenedor-formulario select {
+    width: 100%;
     padding: 12px;
-    border: 1px solid #DDE6ED; /* Borde acero suave */
+    border: 1px solid #DDE6ED;
     border-radius: 8px;
     font-size: 16px;
     outline: none;
@@ -341,30 +333,29 @@ body, html {
     color: #1E293B;
 }
 
-/* Estado de selección o escritura */
-.grupo-campo input:focus {
-    border-color: #0F4C81; /* Cambia al Azul Cobalto al escribir */
-    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.15); /* Resplandor azul sutil y moderno */
+.grupo-campo input:focus, .contenedor-formulario select:focus {
+    border-color: #0F4C81;
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.15);
 }
 
-/* Botón Guardar del Formulario */
+.contenedor-formulario input[readonly] {
+    background-color: #F8FAFC;
+    color: #94A3B8;
+    border-color: #E2E8F0;
+    cursor: not-allowed;
+}
+
 .boton-guardar {
-    display: flex;
-    flex-direction: column;
-    gap:15;
-    margin-top: 25px;
-    border: border-box;
-    grid-column: 1 / -1;       /* Se mantiene en su propia fila completa */
-    justify-self: center;       /* ¡Clave! Centra el botón en medio del formulario */
-    width: 100;                /* Hace que el ancho no sea del 100% */
-    min-width: 200px;           /* Le da un tamaño mínimo para que no se vea minúsculo */
-    padding: 14px;         /* Ajusta el tamaño: 12px arriba/abajo y 30px a los lados */
-    background-color: #2A9D8F;  /* Verde Agua de nuestra paleta */
+    grid-column: 1 / -1;       
+    justify-self: center;       
+    min-width: 200px;           
+    padding: 14px;         
+    background-color: #2A9D8F;  
     color: white;
     font-size: 16px;
     font-weight: bold;
     border: none;
-    border-radius: 6px;         /* Bordes modernos alineados al sistema */
+    border-radius: 6px;         
     cursor: pointer;
     text-transform: uppercase;
     transition: background-color 0.2s ease, transform 0.1s ease;
@@ -372,23 +363,19 @@ body, html {
     box-shadow: 0 4px 6px rgba(42, 157, 143, 0.15);
 }
 
-/* Efectos al interactuar */
-.boton-guardar:hover {
-    background-color: #218074;  /* Verde más oscuro */
-}
+.boton-guardar:hover { background-color: #218074; }
+.boton-guardar:active { transform: scale(0.98); }
 
-.boton-guardar:active {
-    transform: scale(0.98);     /* Efecto visual de hundimiento al clickear */
-}
-
-    /* LAS TABLAS DE DATOS */
+/* ==========================================================================
+   📋 TABLAS DE REGISTROS Y BUSCADORES
+   ========================================================================== */
 .tabla-datos {
     width: 100%;
     max-width: 1000px;
     margin: 30px auto 80px auto;                 
     border-collapse: collapse;
-    background-color: rgba(255, 255, 255, 0.95); /* Fondo claro de alta nitidez */
-    box-shadow: 0 6px 20px rgba(15, 76, 129, 0.06); /* Sombra suave institucional */
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 6px 20px rgba(15, 76, 129, 0.06);
     border-radius: 12px;
     overflow: hidden;
     z-index: 10;
@@ -400,7 +387,7 @@ body, html {
 }
 
 .tabla-datos th {
-    background-color: #0F4C81;                   /* Azul Cobalto Institucional */
+    background-color: #0F4C81;
     color: white;
     font-weight: 600;
     text-transform: uppercase;
@@ -409,134 +396,22 @@ body, html {
 }
 
 .tabla-datos td {
-    border-bottom: 1px solid #E8EEF5;            /* Línea divisoria en azul acero claro */
-    color: #1E293B;                              /* Texto Gris Oscuro */
+    border-bottom: 1px solid #E8EEF5;
+    color: #1E293B;
     font-size: 15px;
 }
 
-/* Sutil efecto cebra usando la paleta acero */
-.tabla-datos tr:nth-child(even) {
-    background-color: rgba(232, 238, 245, 0.4); 
-}
-
-/* Resaltado de fila al pasar el mouse */
-.tabla-datos tr:hover {
-    background-color: rgba(15, 76, 129, 0.05);  /* Tono azul muy suave e intuitivo */
-}
-
-
-/* BOTONES REGRESAR (Flotante) */
-.z1 {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    z-index: 1000;
-}
-
-.z2 {
-    display: inline-block;
-    padding: 12px 24px;
-    color: #1E293B;                              /* Texto Gris Oscuro */
-    text-decoration: none;     
-    border-radius: 8px;                          /* Consistente con los módulos y formularios */
-    font-weight: bold;         
-    transition: all 0.2s ease;
-    background-color: #DDE6ED;                   /* Gris Acero Medio (Neutro y limpio) */
-    border: 1px solid #CBD5E1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-}
-
-.z2:hover {
-    background-color: #CBD5E1;                   /* Oscurece sutilmente al pasar el mouse */
-    transform: translateY(-2px);
-}
-
-.z2:active {
-    transform: translateY(0);
-}
-
-
-/* BUSQUEDA.PHP */
-.contenedor-formulario fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 15px;
-    width: 100%;
-}
-
-.campo-grupo {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-}
-
-.campo-grupo label {
-    color: #1E293B;                              /* Texto Gris Oscuro */
-    font-weight: 600;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-/* Estilo para los inputs que son de solo lectura (Bloqueados) */
-.contenedor-formulario input[readonly] {
-    background-color: #F8FAFC;                   /* Gris ultra claro de sistema */
-    color: #94A3B8;                              /* Texto gris atenuado */
-    border-color: #E2E8F0;
-    cursor: not-allowed;
-}
-
-/* Estilizado del selector desplegable integrado a la paleta clara */
-.contenedor-formulario select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #DDE6ED;                   /* Borde acero */
-    border-radius: 8px;
-    background-color: #FFFFFF;                   /* Fondo blanco para coincidir con inputs */
-    color: #1E293B;                              /* Texto oscuro para alta lectura */
-    font-size: 15px;
-    outline: none;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-.contenedor-formulario select:focus {
-    border-color: #0F4C81;                       /* Enfoque Azul Cobalto */
-    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.15);
-}
-
-/* Opciones nativas del menú desplegable */
-.contenedor-formulario select option {
-    background-color: #FFFFFF;                   /* Fondo blanco limpio */
-    color: #1E293B;                              /* Texto oscuro */
-}
- /* Estilos profesionales para los Checkboxes en cuadrícula */
-.contenedor-materias {
-    text-align: left;
-    margin-top: 15px;
-    margin-bottom: 20px;
-}
-
-.contenedor-materias .titulo-seccion {
-    font-weight: 600;
-    color: #0F4C81; /* Azul Cobalto Institucional */
-    margin-bottom: 8px;
-    display: inline-block;
-}
+.tabla-datos tr:nth-child(even) { background-color: rgba(232, 238, 245, 0.4); }
+.tabla-datos tr:hover { background-color: rgba(15, 76, 129, 0.05); }
 
 .grid-checkboxes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 10px;
-    background: #F8FAFC; /* Gris ultra claro de sistema */
+    background: #F8FAFC;
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid #DDE6ED; /* Borde acero suave */
+    border: 1px solid #DDE6ED;
 }
 
 .opcion-checkbox {
@@ -548,22 +423,12 @@ body, html {
     border-radius: 5px;
     transition: background-color 0.2s ease;
     font-size: 14px;
-    color: #1E293B; /* Texto Gris Oscuro */
+    color: #1E293B;
 }
 
-.opcion-checkbox:hover {
-    background-color: rgba(15, 76, 129, 0.05); /* Resaltado azul muy suave */
-}
+.opcion-checkbox:hover { background-color: rgba(15, 76, 129, 0.05); }
+.opcion-checkbox input[type="checkbox"] { accent-color: #0F4C81; width: 17px; height: 17px; }
 
-.opcion-checkbox input[type="checkbox"] {
-    accent-color: #0F4C81; /* Aplica el azul institucional al recuadro cuando se marca */
-    width: 17px;
-    height: 17px;
-    cursor: pointer;
-}
-
-
-/* Estilos profesionales para la botonera del paginador */
 .paginador {
     display: flex;
     justify-content: center;
@@ -573,40 +438,42 @@ body, html {
 }
 
 .paginador a {
-    color: #0F4C81; /* Azul Cobalto Institucional */
+    color: #0F4C81;
     background-color: #FFFFFF;
-    border: 1px solid #DDE6ED; /* Borde acero suave */
+    border: 1px solid #DDE6ED;
     padding: 8px 14px;
     text-decoration: none;
-    border-radius: 6px; /* Esquinas consistentes con el software */
+    border-radius: 6px;
     font-weight: bold;
     font-size: 13px;
     transition: all 0.2s ease;
 }
 
-.paginador a:hover {
-    background-color: #E8EEF5; /* Fondo azul acero claro */
-    border-color: #0F4C81;
-}
+.paginador a:hover { background-color: #E8EEF5; border-color: #0F4C81; }
+.paginador a.activa { background-color: #0F4C81; color: #FFFFFF; border-color: #0F4C81; }
+.paginador a.deshabilitado { color: #94A3B8; border-color: #E2E8F0; background-color: #F8FAFC; pointer-events: none; }
 
-/* Página activa en el paginador */
-.paginador a.activa {
-    background-color: #0F4C81;
-    color: #FFFFFF;
-    border-color: #0F4C81;
-    cursor: default;
+.z1 { position: fixed; bottom: 25px; right: 25px; z-index: 1000; }
+.z2 {
+    display: inline-block;
+    padding: 12px 24px;
+    color: #1E293B;
+    text-decoration: none;     
+    border-radius: 8px;
+    font-weight: bold;         
+    transition: all 0.2s ease;
+    background-color: #DDE6ED;
+    border: 1px solid #CBD5E1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
 }
+.z2:hover { background-color: #CBD5E1; transform: translateY(-2px); }
 
-/* Flechas o números deshabilitados */
-.paginador a.deshabilitado {
-    color : #94A3B8; /* Gris atenuado estándar */
-    border-color: #E2E8F0;
-    background-color: #F8FAFC;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-/* SECCIÓN DE MÓDULOS DEL SISTEMA */
+/* ==========================================================================
+   📂 CONTROL DE MÓDULOS DEL MENÚ PRINCIPAL
+   ========================================================================== */
 .contenedorpadrere {
     display: flex !important;
     flex-direction: column !important;
@@ -616,7 +483,7 @@ body, html {
     max-width: 400px;
     margin: 0 auto;
     padding: 25px; 
-    background-color: rgba(255, 255, 255, 0.9); /* Recuadro blanco de fondo para los botones */
+    background-color: rgba(255, 255, 255, 0.9);
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(15, 76, 129, 0.1); 
     position: absolute !important;
@@ -634,12 +501,11 @@ body, html {
     margin: 0 0 20px 0 !important;
     font-size: 2rem;
     font-weight: bold;
-    color: #0F4C81; /* Azul Cobalto Institucional */
+    color: #0F4C81;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-/* Selector unificado para asegurar que todos los botones hereden el diseño */
 .bton-1, .bton-2, .bton-3, .bton-4 {
     display: flex !important;         
     justify-content: center !important; 
@@ -655,276 +521,28 @@ body, html {
     text-align: center;
     margin: 8px 0 !important;          
     gap: 15px;
-    text-decoration: none !important; /* Elimina la línea morada de enlace */
-    
-    /* Colores base: Paleta Moderna */
-    background-color: #E8EEF5 !important; /* Fondo gris-azul acero */
-    color: #1E293B !important;            /* Texto gris oscuro */
+    text-decoration: none !important;
+    background-color: #E8EEF5 !important;
+    color: #1E293B !important;
     transition: all .2s ease;
 }
 
-/* Efecto al pasar el mouse por encima */
 .bton-1:hover, .bton-2:hover, .bton-3:hover, .bton-4:hover {
-    background-color: #0F4C81 !important; /* Cambia a Azul Cobalto */
-    color: #FFFFFF !important;            /* Texto cambia a blanco */
+    background-color: #0F4C81 !important;
+    color: #FFFFFF !important;
     border-color: #0F4C81 !important;
     transform: translateY(-1px);
 }
 
-/* Efecto al hacer clic */
-.bton-1:active, .bton-2:active, .bton-3:active, .bton-4:active {
-    background-color: #0B3459 !important; 
-    transform: translateY(0);
-}
-/* Fuerza a un campo a ocupar las dos columnas del formulario */
-.campo-ancho-completo {
-    grid-column: 1 / -1;
-}
-/* BOTÓN DE BUSQUEDA INLINE */
-  .boton-buscar-inline {
-            display: inline-block;
-            align-self: flex-start;
-            margin-top: 10px;
-            padding: 8px 16px;
-            background-color: #E8EEF5; 
-            color: #0F4C81;            
-            border: 1px solid #DDE6ED;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-            text-align: center;
-            cursor: pointer;
-        }
-        .boton-buscar-inline:hover {
-            background-color: #0F4C81;
-            color: #FFFFFF;
-            border-color: #0F4C81;
-        }
-        .boton-buscar-inline:active {
-            transform: scale(0.98);
-        }
-        /*catalogo_interactivo*/
-        .contenedor-busqueda {
-    width: 90%;
-    max-width: 500px;
-    margin: 0 auto 25px auto;
-    text-align: center;
-}
-
-.input-busqueda {
-    width: 100%;
-    padding: 14px 20px;
-    font-size: 16px;
-    border: 2px solid #DDE6ED;
-    border-radius: 30px;
-    outline: none;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 6px rgba(15, 76, 129, 0.03);
-}
-
-.input-busqueda:focus {
-    border-color: #0F4C81;
-    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.15);
-}
-
-/* Rejilla adaptativa para las tarjetas de los libros */
-.grid-catalogo {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    width: 90%;
-    max-width: 1200px;
-    margin: 20px auto;
-}
-
-/* Tarjeta individual de libro */
-.tarjeta-libro {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.08);
-    border: 1px solid #DDE6ED;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.tarjeta-libro:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(15, 76, 129, 0.12);
-}
-
-.info-libro h3 {
-    color: #0F4C81;
-    margin: 0 0 8px 0;
-    font-size: 18px;
-}
-
-.info-libro p {
-    margin: 4px 0;
-    font-size: 14px;
-    color: #475569;
-}
-
-/* Etiquetas del Semáforo de Disponibilidad */
-.semaforo {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 12px;
-    text-transform: uppercase;
-    margin-top: 10px;
-}
-
-.disponible { 
-    background-color: #D1FAE5; 
-    color: #065F46; 
-}
-
-.agotado { 
-    background-color: #FEE2E2; 
-    color: #991B1B; 
-}
-
-/* Zona del formulario dentro de la tarjeta */
-.formulario-prestamo {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px dashed #E2E8F0;
-}
-
-/* Letrero de aviso cuando no hay coincidencias */
-#mensaje-vacio {
-    text-align: center;
-    grid-column: 1 / -1;
-    font-size: 16px;
-    color: #475569;
-    font-weight: bold;
-    padding: 20px;
-    display: none;
-}
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body, html {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
- /*🎬 MÓDULO DE BIENVENIDA - Biblioteca Sullivan
-   ========================================================================== */
-#btn-entrar {
-    padding: 18px 45px !important;
-    font-size: 1.3rem !important;
-    color: #ffffff !important;
-    background-color: #b38f43 !important; /* Tu tono dorado/madera original acorde a la biblioteca */
-    border: 2px solid #ffffff !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    font-weight: bold !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.4) !important;
-    transition: all 0.3s ease !important;
-    display: inline-block !important;
-}
-
-/* Efectos visuales al pasar el mouse por encima (Hover) */
-#btn-entrar:hover {
-    background-color: #947432 !important; /* Dorado más oscuro para simular profundidad */
-    transform: translateY(-3px) !important; /* Sutil efecto de elevación */
-    box-shadow: 0 12px 20px rgba(0,0,0,0.6) !important;
-}
-
-/* Efecto visual al hacer clic (Active) */
-#btn-entrar:active {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 10px rgba(0,0,0,0.4) !important;
-}
-
-#pantalla-biblioteca {
-    width: 100vw;
-    height: 100vh;
-    background-image: url('1.png'); /* Tu primera imagen */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-image 0.15s ease-in-out; /* Cambio ultra suave y rápido */
-}
-
-.interfaz-bienvenida {
-    text-align: center;
-}
-
-/* 🔥 TRUCO MAESTRO: Forzar la precarga en la memoria de la computadora */
-body::after {
-    position: absolute;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    z-index: -1000;
-    content: url('1.png') url('2.png') url('3.png'); /* Carga las 3 fotos al mismo tiempo de fondo */
-}
-
-/* Forzamos la lectura en formato PNG */
-.fondo-cerrado {
-    background-image: url('puertas-cerradas.png') !important;
-}
-
-.fondo-semiabierto {
-    background-image: url('puertas-semiabiertas.png') !important;
-}
-
-.fondo-abierto {
-    background-image: url('puertas-abiertas.png') !important;
-}
-
-.interfaz-bienvenida {
-    text-align: center !important;
-    transition: opacity 0.3s ease !important;
-}
-
-.ocultar {
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-.precarga {
-    display: none !important;
-}
-
-
-.ocultar {
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* EN REGISTRA PRÉSTAMO*/
 .campo-buscar-inline {
     display: flex !important;
     gap: 8px !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
-.campo-buscar-inline input {
-    flex: 1 !important;
-}
+
 .boton-buscar-ajax {
-    background-color: #0F4C81 !important; /* Azul Cobalto */
+    background-color: #0F4C81 !important;
     color: white !important;
     border: none !important;
     border-radius: 8px !important;
@@ -937,13 +555,9 @@ body::after {
     justify-content: center !important;
     transition: background-color 0.2s ease !important;
 }
-.boton-buscar-ajax:hover {
-    background-color: #0B3459 !important; /* Tono más obscuro */
-}
 
-/* Catalogo interactivo*/
 /* ==========================================================================
-   📊 MÓDULO: ANALÍTICA Y TENDENCIAS DE LECTURA (EQUIPO 8)
+   📊 MÓDULO: ANALÍTICA Y TENDENCIAS DE LECTURA
    ========================================================================== */
 .contenedor-tendencias {
     width: 90%;
@@ -957,12 +571,14 @@ body::after {
     z-index: 10;
     box-sizing: border-box;
 }
+
 .seccion-bloques-tendencias {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
     margin-top: 15px;
 }
+
 .bloque-tiempo {
     flex: 1;
     min-width: 280px;
@@ -971,6 +587,7 @@ body::after {
     border-radius: 8px;
     border: 1px solid #E2E8F0;
 }
+
 .bloque-tiempo h4 {
     margin-top: 0;
     margin-bottom: 10px;
@@ -981,6 +598,7 @@ body::after {
     border-bottom: 2px solid #E2E8F0;
     padding-bottom: 5px;
 }
+
 .item-tendencia {
     display: flex;
     justify-content: space-between;
@@ -989,9 +607,7 @@ body::after {
     font-size: 13px;
     border-bottom: 1px dashed #E2E8F0;
 }
-.item-tendencia:last-child {
-    border-bottom: none;
-}
+
 .badge-conteo {
     background-color: #2A9D8F;
     color: white;
@@ -999,169 +615,4 @@ body::after {
     border-radius: 10px;
     font-weight: bold;
     font-size: 11px;
-}
-
-
-/*ANIMACIÓN DE LA ENTRADA*/
-
-/* Configuración de la pantalla de bienvenida */
-body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    background-color: #1a1a1a;
-}
-
-/* Contenedor principal de las puertas */
-.escenario {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    perspective: 1200px; /* Crea el efecto de profundidad 3D */
-}
-
-/* Estilos compartidos para ambas puertas */
-.puerta {
-    position: absolute;
-    top: 0;
-    width: 50%;
-    height: 100%;
-    box-sizing: border-box;
-    transition: transform 1.5s ease-in-out; /* Duración de la animación */
-    z-index: 2;
-    background-size: cover;
-}
-
-/* Puerta Izquierda utilizando tu imagen PNG */
-.puerta-izquierda {
-    left: 0;
-    transform-origin: left center;
-    background-image: url('tu-puerta-izquierda.png');
-    background-position: right center;
-}
-
-/* Puerta Derecha utilizando tu imagen PNG */
-.puerta-derecha {
-    right: 0;
-    transform-origin: right center;
-    background-image: url('tu-puerta-derecha.png');
-    background-position: left center;
-}
-
-/* Botón de acceso centrado en medio de las dos puertas */
-.boton-entrar {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 3;
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #fff;
-    background-color: #e74c3c;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    transition: all 0.3s ease;
-}
-
-.boton-entrar:hover {
-    background-color: #c0392b;
-    transform: translate(-50%, -50%) scale(1.05);
-}
-
-/* CLASES DE ANIMACIÓN (Se disparan mediante JavaScript) */
-
-/* Rotación 3D hacia afuera */
-.escenario.abierto .puerta-izquierda {
-    transform: rotateY(-90deg); 
-}
-
-.escenario.abierto .puerta-derecha {
-    transform: rotateY(90deg);
-}
-
-/* Desvanece el botón al hacer clic */
-.escenario.abierto .boton-entrar {
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* Fondo oculto que se revela detrás de las puertas */
-.fondo-sistema {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-    font-size: 2rem;
-    z-index: 1;
-    background: radial-gradient(circle, #2980b9, #2c3e50);
-}
-
-
-.puerta-izquierda {
-    left: 0;
-    transform-origin: left center;
-    background-image: url('../2.png'); /* Asegúrate de poner el nombre exacto de tu foto */
-    background-position: right center;
-}
-
-.puerta-derecha {
-    right: 0;
-    transform-origin: right center;
-    background-image: url('../3.png'); /* Asegúrate de poner el nombre exacto de tu foto */
-    background-position: left center;
-}
-
-/* Contenedor que evita que la imagen se salga al agrandarse */
-.pantalla-lectura {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-
-/* Capa exclusiva para la imagen y su animación */
-.fondo-animado {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('tu-imagen-otoño.jpg') no-repeat center center;
-    background-size: cover;
-    z-index: 1;
-    /* Aplica la animación llamada "respirar", dura 20 segundos e inicia en bucle infinito */
-    animation: respirar 20s ease-in-out infinite alternate;
-}
-
-/* Efecto de oscurecido encima de la imagen para que tu texto se lea perfecto */
-.pantalla-lectura::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.35); /* Capa oscura translúcida */
-    z-index: 2;
-}
-
-/* --- ANIMACIÓN CSS --- */
-@keyframes respirar {
-    0% {
-        transform: scale(1); /* Tamaño original */
-    }
-    100% {
-        transform: scale(1.08); /* Se agranda un 8% lentamente */
-    }
 }

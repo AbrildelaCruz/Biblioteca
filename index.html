@@ -4,56 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenida - Biblioteca Sullivan</title>
-    <!-- Vinculación limpia a tu hoja de estilos externa -->
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body>
-    <!-- Contenedor maestro de la animación: inicia con el fondo fijo del CSS -->
+
+    <!-- Contenedor Maestro -->
     <div id="pantalla-biblioteca">
         
-        <!-- Interfaz flotante con tu botón dorado institucional -->
-        <div class="interfaz-bienvenida" id="bloque-entrada">
-            <button id="btn-entrar" onclick="iniciarAnimacionPuertas()">Ingresar al Sistema</button>
+        <!-- El Portal Virtual de Acceso (Hojas Izquierda y Derecha) -->
+        <div class="portal-geometrico">
+            <div class="hoja puerta-izquierda"></div>
+            <div class="hoja puerta-derecha"></div>
         </div>
+
+        <!-- Interfaz con el botón dorado institucional -->
+        <div class="interfaz-bienvenida" id="bloque-entrada">
+            <button id="btn-entrar" onclick="activarEfectoPortal()">Ingresar al Sistema</button>
+        </div>
+
     </div>
 
-    <!-- Zona de precarga oculta: vital para que el navegador cargue las fotos de antemano y no parpadee -->
-    <div class="precarga" style="display: none;">
-        <img src="1.png">
-        <img src="2.png">
-        <img src="3.png">
-    </div>
-
-    <!-- Motor lógico en JavaScript Nativo sincronizado con tus archivos reales -->
     <script>
-    function iniciarAnimacionPuertas() {
-        const pantalla = document.getElementById('pantalla-biblioteca');
+    function activarEfectoPortal() {
         const bloqueEntrada = document.getElementById('bloque-entrada');
+        const pIzquierda = document.querySelector('.puerta-izquierda');
+        const pDerecha = document.querySelector('.puerta-derecha');
+        const contenedor = document.getElementById('pantalla-biblioteca');
         
-        // 1. Ocultar el botón dorado suavemente con una transición directa
-        bloqueEntrada.style.opacity = '0';
-        bloqueEntrada.style.pointerEvents = 'none';
-        bloqueEntrada.style.transition = 'opacity 0.4s ease';
+        // 1. El botón se vuelve un destello y desaparece
+        bloqueEntrada.classList.add('efecto-destello');
         
-        // 2. Cambia a la imagen 2 (puertas semiabiertas) a los 300 milisegundos
+        // 2. Activamos el efecto de hiperespacio y apertura cinemática
         setTimeout(() => {
-            pantalla.style.backgroundImage = "url('2.png')";
-        }, 300);
+            pIzquierda.classList.add('portal-abrir-izq');
+            pDerecha.classList.add('portal-abrir-der');
+            contenedor.classList.add('hiperespacio');
+        }, 150);
         
-        // 3. Cambia a la imagen 3 (puertas abiertas por completo) a los 800 milisegundos
-        setTimeout(() => {
-            pantalla.style.backgroundImage = "url('3.png')";
-        }, 800);
-        
-        // 4. Redirección segura a tu panel principal unificado a los 1500 milisegundos
+        // 3. Redirección limpia hacia tu archivo de registro PHP
         setTimeout(() => {
             window.location.href = 'registro.php';
-        }, 1500);
+        }, 1400);
     }
     </script>
-    <div class="pantalla-lectura">
-    <div class="fondo-animado"></div>
-</div>
 </body>
 </html>
