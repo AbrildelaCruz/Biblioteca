@@ -24,7 +24,27 @@
         <div class="columna-izquierda">
             <div class="contenedorpadrere" style="position: relative !important; top: 0 !important; left: 0 !important; transform: none !important; margin: 0; width: 100%; max-width: 450px;">
                 <span class="Modulos">Panel de Módulos</span>
-                
+                <!-- 📊 CONTADORES RÁPIDOS AUTOMÁTICOS (KPIs) -->
+<div class="contenedor-kpis" style="display: flex; gap: 15px; width: 100%; max-width: 400px; margin-bottom: 20px; box-sizing: border-box;">
+    <?php
+    // Consultas veloces a tu base de datos
+    $total_libros = $conexion->query("SELECT SUM(Ejemplares_disponibles + IFNULL(Ejemplares_prestados, 0)) AS total FROM libros")->fetch_assoc()['total'] ?? 0;
+    $total_usuarios = ($conexion->query("SELECT COUNT(*) AS total FROM alumnos")->fetch_assoc()['total'] ?? 0) + ($conexion->query("SELECT COUNT(*) AS total FROM profesores")->fetch_assoc()['total'] ?? 0);
+    $prestamos_activos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos")->fetch_assoc()['total'] ?? 0; // Cuenta todos los registros actuales de préstamo
+    ?>
+    <div class="tarjeta-kpi" style="flex: 1; background: #FFFFFF; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(15, 76, 129, 0.05); border: 1px solid #DDE6ED;">
+        <span style="font-size: 20px; font-weight: bold; color: #0F4C81; display: block;"><?php echo $total_libros; ?></span>
+        <span style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600;">Libros</span>
+    </div>
+    <div class="tarjeta-kpi" style="flex: 1; background: #FFFFFF; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(15, 76, 129, 0.05); border: 1px solid #DDE6ED;">
+        <span style="font-size: 20px; font-weight: bold; color: #2A9D8F; display: block;"><?php echo $total_usuarios; ?></span>
+        <span style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600;">Usuarios</span>
+    </div>
+    <div class="tarjeta-kpi" style="flex: 1; background: #FFFFFF; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(15, 76, 129, 0.05); border: 1px solid #DDE6ED;">
+        <span style="font-size: 20px; font-weight: bold; color: #4a148c; display: block;"><?php echo $prestamos_activos; ?></span>
+        <span style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600;">Activos</span>
+    </div>
+</div>
                 <!-- BLOQUE 1: GESTIÓN ESCOLAR E INVENTARIO -->
                 <div style="width: 100%; text-align: center;">
                     <span class="subtitulo-menu">📝 Altas y Registros</span>
