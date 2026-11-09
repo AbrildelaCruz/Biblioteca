@@ -98,5 +98,25 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
   <div class="z1">
     <a class="z2" href="registro.php">REGRESAR</a>
   </div>
+  <script>
+function filtrarTablaAlumnos() {
+    // 1. Capturamos el texto que escribe el usuario
+    const filtro = document.getElementById('buscar-tabla').value.toLowerCase().trim();
+    // 2. Apuntamos a todas las filas de la tabla (excepto los encabezados th)
+    const filas = document.querySelectorAll('.tabla-datos tr:not(:first-child)');
+
+    filas.forEach(fila => {
+        // Buscamos el texto dentro de las celdas de la fila
+        const textoFila = fila.textContent.toLowerCase();
+
+        // 3. Si coincide, dejamos la fila visible; si no, la ocultamos en chinga
+        if (textoFila.includes(filtro)) {
+            fila.style.display = '';
+        } else {
+            fila.style.display = 'none';
+        }
+    });
+}
+</script>
 </body>
 </html>
