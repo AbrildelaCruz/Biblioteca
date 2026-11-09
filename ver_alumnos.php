@@ -36,10 +36,11 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
   <?php endif; ?>
 
   <h2 style="text-align: center; color: white; margin-top: 30px;">👥 Alumnos Registrados</h2>
-    <!-- Barrita de búsqueda rápida para alumnos -->
-<div class="contenedor-busqueda" style="margin: 20px auto; max-width: 600px; text-align: center;">
-    <input type="text" id="buscar-tabla" class="input-busqueda" placeholder="Escribe el nombre o datos del alumno para filtrar..." onkeyup="filtrarTablaAlumnos()">
-</div>
+  
+  <div class="contenedor-busqueda" style="margin: 20px auto; max-width: 600px; text-align: center;">
+      <input type="text" id="buscar-tabla" class="input-busqueda" placeholder="Buscar alumno en toda la base de datos..." onkeyup="buscarGlobalAlumnos()">
+  </div>
+
   <table class="tabla-datos" style="max-width: 95%; margin: 30px auto; font-size: 13px;">
     <thead>
       <tr>
@@ -52,34 +53,27 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
         <th>Acciones</th>
       </tr>
     </thead>
-    <tbody>
+    <!-- 🔥 AQUÍ ESTÁ EL CAMBIO IMPORTANTE: Le pusimos el ID al cuerpo de la tabla -->
+    <tbody id="tabla-cuerpo-alumnos">
       <?php
       if ($resultado && $resultado->num_rows > 0) {
-        // Inicializamos el contador dinámico con el número total de registros
-        // para que coincida con el orden descendente (DESC) de tu consulta SQL
         $contador_visual = $resultado->num_rows;
 
         while ($fila = $resultado->fetch_assoc()) {
           $id_actual = (int) $fila['id_Alumnos'];
           echo "<tr>";
-          
-          // Mostramos el contador en vez de la clave primaria directa
           echo "<td>" . $contador_visual . "</td>";
-          
           echo "<td><b>" . htmlspecialchars($fila['Nombre']) . "</b></td>";
           echo "<td>" . htmlspecialchars($fila['Madre_encargada'] ?? '-') . "</td>";
           echo "<td>" . htmlspecialchars($fila['Familia'] ?? '-') . "</td>";
           echo "<td style='text-align: center;'>" . htmlspecialchars($fila['Piso'] ?? '-') . "</td>";
           echo "<td style='text-align: center;'>" . htmlspecialchars($fila['Grupo'] ?? '-') . "</td>";
           echo "<td>";
-          
-          // Los botones siguen usando $id_actual para mandar el identificador real a alumnos.php
           echo '<a href="alumnos.php?editar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #e2e3e5; border-radius: 3px; color: #383d41; font-size: 11px; margin-right: 5px;">Editar</a>';
           echo '<a href="alumnos.php?eliminar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px;" onclick="return confirm(\'¿Seguro que deseas eliminar este alumno?\');">Eliminar</a>';
           echo "</td>";
           echo "</tr>";
 
-          // Decrementamos en 1 para la siguiente fila (debido al orden descendente)
           $contador_visual--;
         }
       } else {
@@ -98,25 +92,21 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
   <div class="z1">
     <a class="z2" href="registro.php">REGRESAR</a>
   </div>
+
   <script>
-function filtrarTablaAlumnos() {
-    // 1. Capturamos el texto que escribe el usuario
-    const filtro = document.getElementById('buscar-tabla').value.toLowerCase().trim();
-    // 2. Apuntamos a todas las filas de la tabla (excepto los encabezados th)
-    const filas = document.querySelectorAll('.tabla-datos tr:not(:first-child)');
+  function buscarGlobalAlumnos() {
+      const query = document.getElementById('buscar-tabla').value;
+      const cuerpoTabla = document.getElementById('tabla-cuerpo-alumnos');
 
-    filas.forEach(fila => {
-        // Buscamos el texto dentro de las celdas de la fila
-        const textoFila = fila.textContent.toLowerCase();
-
-        // 3. Si coincide, dejamos la fila visible; si no, la ocultamos en chinga
-        if (textoFila.includes(filtro)) {
-            fila.style.display = '';
-        } else {
-            fila.style.display = 'none';
-        }
-    });
-}
-</script>
+      // Hacemos la consulta en tiempo real a toda la base de datos
+      fetch('buscar_alumnos_global.php?query=' + encodeURIComponent(query))
+          .then(response => response.text())
+          .then(htmlFilas => {
+              // Reemplazamos el cuerpo de la tabla con los resultados globales instantáneamente
+              cuerpoTabla.innerHTML = htmlFilas;
+          })
+          .catch(error => console.error('Error en la búsqueda global:', error));
+  }
+  </script>
 </body>
 </html>

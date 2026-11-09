@@ -184,7 +184,6 @@ $resultado = $stmt->get_result();
             style="display: inline-block; padding: 12px 24px; background-color: #2A9D8F; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background-color 0.2s;"
             onmouseover="this.style.backgroundColor='#218074'" onmouseout="this.style.backgroundColor='#2A9D8F'">➕
             Registrar Nuevo Profesor</a>
-    </div>
 
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
