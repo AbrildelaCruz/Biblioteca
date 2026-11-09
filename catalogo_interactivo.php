@@ -343,20 +343,26 @@ function filtrarCatalogo() {
         const infoLibro = tarjeta.querySelector('.info-libro');
         const contenidoTarjeta = infoLibro ? infoLibro.textContent.toLowerCase() : '';
 
+        // Forzamos estilos seguros directamente en cada tarjeta para no romper el CSS general
+        tarjeta.style.setProperty('max-width', '340px', 'important');
+        tarjeta.style.setProperty('margin', '15px', 'important');
+        tarjeta.style.setProperty('vertical-align', 'top', 'important');
+
         if (textoBuscado === "") {
-            // Si está vacío, muestra en horizontal respetando la rejilla
-            tarjeta.style.setProperty('display', 'block', 'important');
+            // Si el buscador está vacío, las acomoda una al lado de la otra en horizontal
+            tarjeta.style.setProperty('display', 'inline-block', 'important');
             coincidencias++;
         } else if (contenidoTarjeta.includes(textoBuscado)) {
-            // Si coincide, se queda en modo block (horizontal)
-            tarjeta.style.setProperty('display', 'block', 'important');
+            // Si hay coincidencia, se queda visible en horizontal
+            tarjeta.style.setProperty('display', 'inline-block', 'important');
             coincidencias++;
         } else {
-            // Se descarta por completo
+            // Si no coincide, se oculta por completo
             tarjeta.style.setProperty('display', 'none', 'important');
         }
     });
 
+    // Control del mensaje de error abajo del buscador
     if (mensajeVacio) {
         if (coincidencias === 0 && textoBuscado !== '') {
             mensajeVacio.style.setProperty('display', 'block', 'important');
@@ -365,7 +371,12 @@ function filtrarCatalogo() {
         }
     }
 }
+
+// Ejecutamos la función una vez al cargar la página para acomodar los cuadros desde el inicio
+window.onload = function() {
+    filtrarCatalogo();
+};
 </script>
-         
+
 </body>
 </html>
