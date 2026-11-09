@@ -17,17 +17,87 @@ body, html {
 /* ==========================================================================
    🌌 MÓDULO DE BIENVENIDA (Efecto Portal Cinemático Premium)
    ========================================================================== */
+/* ==========================================================================
+   🎬 MÓDULO DE BIENVENIDA - Biblioteca Sullivan (Efecto Cinemático Puro)
+   ========================================================================== */
 #pantalla-biblioteca {
     position: relative;
     width: 100vw;
     height: 100vh;
-    background-color: #0d1b2a; /* Fondo marino profundo al abrirse */
+    background-color: #0d1b2a; /* Fondo oscuro que se revela al fondo */
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    perspective: 1000px; /* Habilita el efecto 3D */
-    transition: background-color 0.5s ease;
+    perspective: 1000px;
+}
+
+/* Telón de una sola pieza (Imagen 1.png limpia, sin cortes) */
+.telon-portada {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('1.png'); /* Tu imagen de portada */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    /* Curva cinematográfica suave para el Zoom y desvanecido */
+    transition: transform 0.9s cubic-bezier(0.25, 1, 0.5, 1), 
+                filter 0.8s ease, 
+                opacity 0.8s ease;
+}
+
+/* 🚀 Animación de entrada: Efecto Zoom Out + Disolución + Motion Blur */
+.telon-abrir {
+    transform: scale(0.85) translateZ(-100px); /* Efecto de alejamiento en 3D */
+    filter: blur(12px); /* Difumina la foto suavemente mientras se va */
+    opacity: 0; /* Se desvanece por completo */
+}
+
+/* Capa del botón interactivo al frente */
+.interfaz-bienvenida {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    transition: transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease;
+}
+
+/* Efecto de explosión del botón */
+.efecto-destello {
+    transform: scale(1.4);
+    filter: blur(5px);
+    opacity: 0;
+}
+
+/* Tu botón dorado institucional */
+#btn-entrar {
+    padding: 18px 45px !important;
+    font-size: 1.3rem !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #b38f43 0%, #947432 100%) !important;
+    border: 2px solid #ffffff !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4) !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+}
+
+#btn-entrar:hover {
+    background: linear-gradient(135deg, #947432 0%, #735a26 100%) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.6) !important;
+}
+
+#btn-entrar:active {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.4) !important;
 }
 
 /* Contenedor maestro del portal */
