@@ -3,23 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrada al Sistema</title>
+    <title>Bienvenida - Biblioteca Sullivan</title>
+    <!-- Vinculación a tu hoja de estilos externa -->
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body>
-
-    <div class="escenario" id="contenedorPuertas">
+    <!-- Contenedor maestro de la fachada de la escuela -->
+    <div id="pantalla-biblioteca">
         
-        <!-- Botón de acción con el ID para el evento -->
-        <button class="boton-entrar" href="registro.php">ENTRAR AL SISTEMA</button>
-
-        <!-- Hojas de las puertas -->
-        <div class="puerta puerta-izquierda"></div>
-        <div class="puerta puerta-derecha"></div>
-
+        <!-- Interfaz flotante con tu botón dorado institucional -->
+        <div class="interfaz-bienvenida" id="bloque-entrada">
+            <button id="btn-entrar" onclick="iniciarAnimacionPuertas()">Ingresar al Sistema</button>
+        </div>
     </div>
 
-    <!-- Enlace correcto a tu script de la raíz -->
-    <script src="script.js"></script>
+    <!-- Zona de precarga oculta: vital para que no parpadee en blanco al cambiar de foto -->
+    <div class="precarga" style="display: none;">
+        <img src="puertas-cerradas .JPG">
+        <img src="puertas-semiabiertas .JPG">
+        <img src="puertas-abiertas .JPG">
+    </div>
+
+    <!-- Motor de la animación directo y sin intermediarios -->
+    <script>
+    function iniciarAnimacionPuertas() {
+        const pantalla = document.getElementById('pantalla-biblioteca');
+        const bloqueEntrada = document.getElementById('bloque-entrada');
+        
+        // 1. Desvanecer el botón dorado de inmediato
+        bloqueEntrada.style.opacity = '0';
+        bloqueEntrada.style.pointerEvents = 'none';
+        bloqueEntrada.style.transition = 'opacity 0.4s ease';
+        
+        // 2. Cambiar a puertas SEMIABIERTAS a los 400 milisegundos
+        setTimeout(() => {
+            pantalla.style.backgroundImage = "url('puertas-semiabiertas .JPG')";
+        }, 400);
+        
+        // 3. Cambiar a puertas ABIERTAS por completo a los 900 milisegundos
+        setTimeout(() => {
+            pantalla.style.backgroundImage = "url('puertas-abiertas .JPG')";
+        }, 900);
+        
+        // 4. Redireccionar finalmente a tu archivo PHP de registro a los 1600 milisegundos
+        setTimeout(() => {
+            window.location.href = 'registro.php';
+        }, 1600);
+    }
+    </script>
 </body>
 </html>

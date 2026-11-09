@@ -102,7 +102,7 @@ if (isset($_GET['perdido_id'])) {
 // ==========================================
 // 🛠️ CONFIGURACIÓN GLOBAL DEL PAGINADOR
 // ==========================================
-$registros_por_pagina = 15; // Cantidad de movimientos por vista
+$registros_por_pagina = 12; // Cantidad de movimientos por vista
 
 $pagina_actual = isset($_GET['pagina']) ? filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT) : 1;
 if (!$pagina_actual || $pagina_actual < 1) {
