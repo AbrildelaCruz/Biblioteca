@@ -57,7 +57,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <!-- 📊 NUEVO PANEL DE ANALÍTICA Y TENDENCIAS DE LECTURA -->
     <div class="contenedor-tendencias">
         <h3 style="margin: 0; color: #0F4C81; text-align: center; font-size: 18px; text-transform: uppercase; letter-spacing: 0.5px;">
-            📈 Libros Más Leídos (Monitoreo de Tendencias)
+            📈 Libros Más Leídos 
         </h3>
         
         <div class="seccion-bloques-tendencias">
