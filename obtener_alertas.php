@@ -1,5 +1,5 @@
 <?php
-// 1. Incluimos tu archivo de conexión real
+// Incluimos tu archivo de conexión real
 require_once 'conexion.php';
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -8,14 +8,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $alertas = [];
 
-// 2. Consulta SQL avanzada para monitorear las fechas de los préstamos
-// Trae el nombre del alumno, el título del libro y calcula los días de retraso
+// 🛠️ CONSULTA CORREGIDA CON TUS COLUMNAS REALES DE LA BASE DE DATOS
 $sql = "SELECT 
             p.id_prestamo,
             a.Nombre AS Alumno,
             l.Titulo AS Libro,
-            p.fecha_devolucion,
-            DATEDIFF(p.fecha_devolucion, CURDATE()) AS dias_diferencia
+            p.fecha_entrega,
+            DATEDIFF(p.fecha_entrega, CURDATE()) AS dias_diferencia
         FROM prestamos p
         JOIN alumnos a ON p.id_alumno = a.id_Alumnos
         JOIN libros l ON p.id_libro = l.id_libro
@@ -44,7 +43,6 @@ if ($result && $result->num_rows > 0) {
             $texto = "📅 <b>" . htmlspecialchars($row['Alumno']) . "</b> entrega en " . $dias . " días el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
         }
 
-        // Si entra en alguna categoría, lo guardamos para el panel
         if ($clasecss !== '') {
             $alertas[] = [
                 'clase' => $clasecss,
@@ -54,7 +52,7 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// 3. Renderizamos las alertas de forma limpia para que tu registro.php las lea por AJAX
+// Renderizamos las alertas de forma limpia para que tu registro.php las lea por AJAX
 if (!empty($alertas)) {
     echo "<div class='lista-alertas'>";
     foreach ($alertas as $alerta) {
@@ -64,7 +62,7 @@ if (!empty($alertas)) {
     }
     echo "</div>";
 } else {
-    // Si todo está al corriente, muestra tu letrerodashed institucional
+    // Si todo está al corriente, muestra tu letrero dashed institucional
     echo "<div class='aviso-vacio'>✨ Todo está al corriente. No hay préstamos vencidos ni alertas pendientes hoy.</div>";
 }
 ?>
