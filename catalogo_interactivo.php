@@ -131,16 +131,14 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
     <h2 style="color: #0F4C81; text-align: center; margin-top: 20px;">📚 Catálogo Digital Interactivo</h2>
     <p style="text-align: center; color: #475569; margin-bottom: 20px;">Busca un libro por su título y procésalo al instante.</p>
 
-    <!-- BARRA DE BÚSQUEDA DINÁMICA -->
     <div class="contenedor-busqueda">
-    <input type="text" id="buscar-libro" class="input-busqueda" placeholder="🔍 Buscar el título, autor o materia..." onkeyup="filtrarCatalogo()">
-</div>
-            
+    <input type="text" id="buscar-libro" class="input-busqueda" placeholder="Buscar por título, autor o materia..." onkeyup="filtrarCatalogo()">
     
-
-    <!-- CUADRÍCULA DE TARJETAS VISUALES -->
-    <div class="grid-catalogo" id="lista-libros">
-        <div id="mensaje-vacio">❌ No se encontraron libros que coincidan con la búsqueda.</div>
+    <!-- El letrero de error ahora se mostrará aquí de manera elegante, no como una ficha abajo -->
+    <div id="mensaje-vacio" style="display: none; color: #991B1B; background-color: #FEE2E2; padding: 10px; margin-top: 10px; border-radius: 8px; font-weight: bold; font-size: 14px;">
+        ❌ No se encontraron libros que coincidan con la búsqueda.
+    </div>
+</div>
 
         <?php if ($libros_res && $libros_res->num_rows > 0): ?>
             <?php while ($libro = $libros_res->fetch_assoc()):
