@@ -82,7 +82,6 @@ $resultado = $stmt->get_result();
     <title>Lista de Profesores</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
-
 </head>
 
 <body class="body2">
@@ -100,13 +99,14 @@ $resultado = $stmt->get_result();
         </div>
     <?php endif; ?>
 
-    <h2
-        style="text-align: center; color: white; margin-top: 30px; font-family: 'Segoe UI', Arial, sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+    <h2 style="text-align: center; color: white; margin-top: 30px; font-family: 'Segoe UI', Arial, sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">
         👨‍🏫 Panel de Control - Profesores de la Institución</h2>
-        <!-- Barrita de búsqueda rápida para profesores -->
-<div class="contenedor-busqueda" style="margin: 20px auto; max-width: 600px; text-align: center;">
-    <input type="text" id="buscar-tabla-prof" class="input-busqueda" placeholder="Escribe el nombre o datos del docente para filtrar..." onkeyup="filtrarTablaProfesores()">
-</div>
+        
+    <!-- Barrita de búsqueda rápida para profesores conectada al motor global -->
+    <div class="contenedor-busqueda" style="margin: 20px auto; max-width: 600px; text-align: center;">
+        <input type="text" id="buscar-tabla-prof" class="input-busqueda" placeholder="Escribe el nombre o datos del docente para filtrar..." onkeyup="buscarGlobalProfesores()">
+    </div>
+
     <table class="tabla-datos" style="max-width: 85%; margin: 30px auto; font-size: 13px;">
         <thead>
             <tr>
@@ -116,7 +116,8 @@ $resultado = $stmt->get_result();
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tbody>
+        <!-- 🟢 CAMBIO AQUÍ: Añadido el ID único para que JavaScript pueda inyectar las filas -->
+        <tbody id="tabla-cuerpo-profesores">
             <?php if ($resultado && $resultado->num_rows > 0):
                 $num = $desplazamiento + 1;
 
@@ -125,7 +126,6 @@ $resultado = $stmt->get_result();
                     $materias_docente = $fila['Materia'] ?? $fila['materia'] ?? '-';
                     $nombre_docente = $fila['Nombre'] ?? $fila['nombre'] ?? '';
 
-                    // Comprobamos si el nombre contiene la palabra buscada
                     $clase_resaltado = '';
                     if ($busqueda !== '' && mb_stripos($nombre_docente, $busqueda) !== false) {
                         $clase_resaltado = 'fila-resaltada';
@@ -134,9 +134,7 @@ $resultado = $stmt->get_result();
                     <tr class="<?php echo $clase_resaltado; ?>">
                         <td style="font-weight: bold; text-align: center;"><?php echo $num; ?></td>
                         <td><b><?php echo htmlspecialchars($nombre_docente); ?></b></td>
-                        <td><span
-                                style="color: #0F4C81; font-weight: 500;"><?php echo htmlspecialchars($materias_docente); ?></span>
-                        </td>
+                        <td><span style="color: #0F4C81; font-weight: 500;"><?php echo htmlspecialchars($materias_docente); ?></span></td>
                         <td>
                             <a href="profesores.php?editar_id=<?php echo $id_actual; ?>"
                                 style="text-decoration: none; padding: 4px 8px; background-color: #007bff; border-radius: 4px; color: white; font-size: 11px; margin-right: 5px; font-weight: bold;">Editar</a>
@@ -184,25 +182,34 @@ $resultado = $stmt->get_result();
             style="display: inline-block; padding: 12px 24px; background-color: #2A9D8F; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background-color 0.2s;"
             onmouseover="this.style.backgroundColor='#218074'" onmouseout="this.style.backgroundColor='#2A9D8F'">➕
             Registrar Nuevo Profesor</a>
+    </div>
 
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
+
+    <!-- 🟢 SCRIPT GLOBAL CORREGIDO (Oculta el paginador dinámicamente) -->
     <script>
-function filtrarTablaProfesores() {
-    const filtro = document.getElementById('buscar-tabla-prof').value.toLowerCase().trim();
-    const filas = document.querySelectorAll('.tabla-datos tr:not(:first-child)');
+    function buscarGlobalProfesores() {
+        const query = document.getElementById('buscar-tabla-prof').value;
+        const cuerpoTabla = document.getElementById('tabla-cuerpo-profesores');
+        const paginacionUI = document.querySelector('.paginador');
 
-    filas.forEach(fila => {
-        const textoFila = fila.textContent.toLowerCase();
-
-        if (textoFila.includes(filtro)) {
-            fila.style.display = '';
+        // Oculta los numeritos de abajo si estás buscando texto en toda la base de datos
+        if (query.trim() !== "") {
+            if (paginacionUI) paginacionUI.style.display = 'none';
         } else {
-            fila.style.display = 'none';
+            if (paginacionUI) paginacionUI.style.display = 'flex';
         }
-    });
-}
-</script>
+
+        // Conecta asíncronamente con tu archivo de búsqueda global de docentes
+        fetch('buscar_profesores_global.php?query=' + encodeURIComponent(query))
+            .then(response => response.text())
+            .then(htmlFilas => {
+                cuerpoTabla.innerHTML = htmlFilas;
+            })
+            .catch(error => console.error('Error en la búsqueda global de profesores:', error));
+    }
+    </script>
 </body>
 </html>
