@@ -154,5 +154,46 @@ window.onload = function() {
     cargarAlertasCampana();
 };
 </script>
+<script>
+function cargarAlertasCampana() {
+    fetch('obtener_alertas.php')
+        .then(response => response.text())
+        .then(html => {
+            const panel = document.querySelector('.panel-notificaciones-derecho');
+            if (panel) { panel.innerHTML = html; }
+        })
+        .catch(error => console.error('Error cargando alertas:', error));
+}
+
+// ⚡ TRUCO DE USABILIDAD: Autofoco y salto con Enter en cualquier formulario de la pantalla
+function activarAutofocoSmart() {
+    const inputs = Array.from(document.querySelectorAll('input:not([readonly]):not([type="hidden"]), select'));
+    if (inputs.length > 0) {
+        inputs[0].focus(); // Posiciona el cursor automáticamente en el primer cuadro
+        
+        inputs.forEach((input, index) => {
+            input.addEventListener('keydown', function(e) {
+                if (key === 'Enter') {
+                    e.preventDefault(); // Evita que se envíe el formulario antes de tiempo
+                    const siguienteInput = inputs[index + 1];
+                    if (siguienteInput) {
+                        siguienteInput.focus(); // Salta al siguiente cuadro de texto
+                    } else {
+                        // Si era el último, busca el botón guardar y simula el clic
+                        const botonGuardar = document.querySelector('.boton-guardar');
+                        if (botonGuardar) botonGuardar.click();
+                    }
+                }
+            });
+        });
+    }
+}
+
+// Ejecutamos todo en cuanto cargue el Menú Principal
+window.onload = function() {
+    cargarAlertasCampana();
+    activarAutofocoSmart();
+};
+</script>
 </body>
 </html>
