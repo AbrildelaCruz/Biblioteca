@@ -133,9 +133,10 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Editorial, Ejemp
 
     <!-- BARRA DE BÚSQUEDA DINÁMICA -->
     <div class="contenedor-busqueda">
-        <input type="text" id="buscador" class="input-busqueda"
-            placeholder="🔍 Escribe el título del libro para filtrar...">
-    </div>
+    <input type="text" id="buscar-libro" class="input-busqueda" placeholder="🔍 Buscar el título, autor o materia..." onkeyup="filtrarCatalogo()">
+</div>
+            
+    
 
     <!-- CUADRÍCULA DE TARJETAS VISUALES -->
     <div class="grid-catalogo" id="lista-libros">
@@ -331,5 +332,47 @@ if (document.readyState === 'loading') {
      <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
+    <script>
+function filtrarCatalogo() {
+    // 1. Capturamos lo que el usuario está escribiendo y lo pasamos a minúsculas
+    const textoBuscado = document.getElementById('buscar-libro').value.toLowerCase().trim();
+    
+    // 2. Traemos todas las tarjetas de libros que están en la pantalla
+    const tarjetas = document.querySelectorAll('.tarjeta-libro');
+    
+    // 3. Traemos el letrero de "No se encontraron resultados" (si lo tienes en tu código)
+    const mensajeVacio = document.getElementById('mensaje-vacio');
+    let coincidencias = 0;
+
+    // 4. Recorremos cada libro para revisar su información
+    tarjetas.forEach(tarjeta => {
+        // Buscamos el título, autor y materia dentro de la tarjeta
+        const titulo = tarjeta.querySelector('.info-libro h3') ? tarjeta.querySelector('.info-libro h3').textContent.toLowerCase() : '';
+        const parrafos = tarjeta.querySelectorAll('.info-libro p');
+        
+        let textoTarjeta = titulo;
+        parrafos.forEach(p => {
+            textoTarjeta += ' ' + p.textContent.toLowerCase();
+        });
+
+        // 5. Si el texto coincide con lo que escribiste, se muestra; si no, se oculta
+        if (textoTarjeta.includes(textoBuscado)) {
+            tarjeta.style.display = 'flex'; // Muestra la tarjetita limpia
+            coincidencias++;
+        } else {
+            tarjeta.style.display = 'none'; // Oculta la tarjeta
+        }
+    });
+
+    // 6. Si no hay ningún libro que coincida, mostramos el mensaje de aviso
+    if (mensajeVacio) {
+        if (coincidencias === 0 && textoBuscado !== '') {
+            mensajeVacio.style.display = 'block';
+        } else {
+            mensajeVacio.style.display = 'none';
+        }
+    }
+}
+</script>
 </body>
 </html>
