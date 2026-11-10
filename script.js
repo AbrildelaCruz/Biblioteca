@@ -22,41 +22,42 @@ document.getElementById('btn-entrar').addEventListener('click', function() {
         window.location.href = 'registro.php'; // Cambia por el nombre de tu archivo de módulos
     }, 1800);
 });
-// El sistema detecta solito si estás en localhost
-const servidorBase = window.location.origin;
-// Creamos la ruta dinámica exacta hacia tu audio
-const rutaPerfecta = servidorBase + '/Sistema_biblioteca/Biblioteca/audio/click.mp3';
+// RASTREADOR DE AUDIO - BIBLIOTECA SULLIVAN
+const urlAudio = window.location.origin + '/Sistema_biblioteca/Biblioteca/audio/click.mp3';
 
-console.log("Intentando conectar con el audio en: ", rutaPerfecta);
+console.log("%c[INFORMATICA] Intentando conectar con el audio en: " + urlAudio, "color: cyan; font-weight: bold; font-size: 14px;");
 
-const sonidoBoton = new Audio(rutaPerfecta);
-sonidoBoton.volume = 0.7;
+const audioPrueba = new Audio(urlAudio);
+audioPrueba.volume = 0.7;
 
-// Forzar la carga del archivo desde que abre la página
-sonidoBoton.load();
+// Evento que avisa si el archivo de sonido SÍ se encontró en XAMPP
+audioPrueba.addEventListener('canplaythrough', () => {
+    console.log("%c[EXITO] ¡El archivo click.mp3 se cargó correctamente en el servidor! 🎉", "color: lime; font-weight: bold; font-size: 14px;");
+}, { once: true });
 
-function reproducirClic() {
-    sonidoBoton.currentTime = 0;
-    sonidoBoton.play()
-        .then(() => console.log("¡Sonido reproducido con éxito! 🎵"))
-        .catch(error => {
-            console.error("Fallo al reproducir audio. El error es: ", error.message);
-        });
+// Evento que avisa si el archivo NO se encontró o la ruta está mal
+audioPrueba.addEventListener('error', (e) => {
+    console.error("%c[ERROR 404] No se encontró el archivo de audio. Revisa que esté en htdocs/Sistema_biblioteca/Biblioteca/audio/click.mp3 y que no tenga doble .mp3", "color: red; font-weight: bold; font-size: 14px;");
+});
+
+function ejecutarSonido() {
+    audioPrueba.currentTime = 0;
+    audioPrueba.play()
+        .then(() => console.log("Sonido reproducido en el botón."))
+        .catch(err => console.log("Navegador bloqueó el audio temporalmente hasta dar un clic general.", err.message));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Escucha clics en CUALQUIER botón o elemento interactivo del sistema
-    const selectores = 'button, .btn, input[type="submit"], input[type="button"], a, .btn-animado';
-    const elementos = document.querySelectorAll(selectores);
-    
-    elementos.forEach(elemento => {
-        elemento.addEventListener('click', reproducirClic);
+    // Aplica el sonido a absolutamente todos los botones y enlaces
+    const elementos = document.querySelectorAll('button, .btn, input[type="submit"], input[type="button"], a');
+    elementos.forEach(el => {
+        el.addEventListener('click', ejecutarSonido);
     });
-
-    // Desbloqueador por si el navegador está de terco
+    
+    // Desbloqueador automático para Chrome/Edge
     const desbloquear = () => {
-        sonidoBoton.play().then(() => {
-            sonidoBoton.pause();
+        audioPrueba.play().then(() => {
+            audioPrueba.pause();
             window.removeEventListener('click', desbloquear);
         }).catch(() => {});
     };
