@@ -9,6 +9,29 @@ body, html {
     overflow: hidden;
     font-family: 'Segoe UI', Arial, sans-serif;
 }
+
+* {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   🌌 MÓDULO DE BIENVENIDA (Efecto Portal Cinemático Premium)
+   ========================================================================== */
+/* ==========================================================================
+   🎬 MÓDULO DE BIENVENIDA - Biblioteca Sullivan (Efecto Cinemático Puro)
+   ========================================================================== */
+#pantalla-biblioteca {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0d1b2a; /* Fondo oscuro que se revela al fondo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    perspective: 1000px;
+}
+
 /* Telón de una sola pieza (Imagen 1.png limpia, sin cortes) */
 .telon-portada {
     position: absolute;
@@ -720,24 +743,4 @@ body, html {
     box-shadow: 0 4px 15px rgba(15, 76, 129, 0.08) !important;
     border: 1px solid #DDE6ED !important;
     box-sizing: border-box !important;
-}
-
-/* ==========================================================================
-   🍁 FONDO CON MOVIMIENTO PARA LA PÁGINA DE REGISTRO
-   ========================================================================== */
-.body2 {
-    /* Permitimos que esta página sí pueda scrollear si el formulario es largo */
-    overflow-y: auto !important; 
-    
-    /* Forzamos a que pinte tu imagen de otoño de fondo */
-    background: url('fondo.png') center center / 140% 140% no-repeat fixed !important;
-    
-    /* Activamos la animación de paneo lento */
-    animation: moverFondoOtono 25s infinite alternate ease-in-out !important;
-}
-
-@keyframes moverFondoOtono {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 50% 100%; }
-  100% { background-position: 100% 50%; }
 }
