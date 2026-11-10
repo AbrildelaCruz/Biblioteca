@@ -94,12 +94,12 @@ $resultado = $stmt->get_result();
 
     <?php if ($mensaje !== ''): ?>
         <div class="alerta"
-            style="padding: 12px; margin: 20px auto; max-width: 700px; text-align: center; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: <?php echo $tipoMensaje === 'exito' ? '#E8F5E9' : '#FFEBEE'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#2E7D32' : '#C62828'; ?>; border: 1px solid <?php echo $tipoMensaje === 'exito' ? '#C8E6C9' : '#FFCDD2'; ?>;">
+            style="padding: 12px; margin: 20px auto; max-width: 700px; text-align: center; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(13, 47, 218, 0.89); background-color: <?php echo $tipoMensaje === 'exito' ? '#E8F5E9' : '#FFEBEE'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#2E7D32' : '#C62828'; ?>; border: 1px solid <?php echo $tipoMensaje === 'exito' ? '#C8E6C9' : '#FFCDD2'; ?>;">
             <?php echo $mensaje; ?>
         </div>
     <?php endif; ?>
 
-    <h2 style="text-align: center; color: white; margin-top: 30px; font-family: 'Segoe UI', Arial, sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+    <h2 style="text-align: center; color: white; margin-top: 30px; font-family: 'Segoe UI', Arial, sans-serif; text-shadow: 0 2px 4px rgba(4, 25, 247, 0.92);">
         👨‍🏫 Panel de Control - Profesores de la Institución</h2>
         
     <!-- Barrita de búsqueda rápida para profesores conectada al motor global -->

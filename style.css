@@ -203,24 +203,6 @@ body, html {
 /* ==========================================================================
    🎨 HOJA DE ESTILOS DEL INTERIOR (MÓDULOS Y FORMULARIOS)
    ========================================================================== */
-.body2 {
-    background: linear-gradient(-45deg, #FFFFFF, #E8EEF5, #DDE6ED, #E8EEF5);
-    background-size: 400% 400%;
-    height: 100vh;
-    width: 100vw;
-    margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-repeat: no-repeat;
-    animation: cambiarFondo 15s ease infinite;
-    position: relative;          
-    overflow-y: auto; 
-    overflow-x: hidden;             
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-}
 
 .A_uno {
     padding: 10px 20px;
@@ -769,7 +751,7 @@ body, html {
   min-height: 100vh;
   
   /* 1. Cargamos la imagen saliendo de la carpeta css con '../' */
-  background-image: url('../imagen-otono.jpg');
+  background-image: url('imagen-otono.png');
   
   /* 2. Ajustes para que cubra la pantalla y no se repita */
   background-size: cover;
@@ -778,11 +760,11 @@ body, html {
   background-attachment: fixed;
 
   /* 3. ACTIVAR EL MOVIMIENTO: 20 segundos, infinito y va y viene suavemente */
-  animation: moverFondoOtoño 20s infinite alternate ease-in-out;
+  animation: moverFondoOtono 20s infinite alternate ease-in-out;
 }
 
 /* 4. DEFINIR EL MOVIMIENTO (Efecto de paneo/cámara lenta) */
-@keyframes moverFondoOtoño {
+@keyframes moverFondoOtono {
   0% {
     background-position: 0% 50%;
   }

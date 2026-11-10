@@ -35,7 +35,7 @@ $resultado = $conexion->query('SELECT id_Alumnos, Nombre, Madre_encargada, Famil
     </div>
   <?php endif; ?>
 
-  <h2 style="text-align: center; color: white; margin-top: 30px;">👥 Alumnos Registrados</h2>
+  <h2 style="text-align: center; color: blue; margin-top: 30px;">👥 Alumnos Registrados</h2>
   
   <div class="contenedor-busqueda" style="margin: 20px auto; max-width: 600px; text-align: center;">
       <input type="text" id="buscar-tabla" class="input-busqueda" placeholder="Buscar alumno en toda la base de datos..." onkeyup="buscarGlobalAlumnos()">
