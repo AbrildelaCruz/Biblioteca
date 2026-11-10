@@ -11,12 +11,6 @@
 </head>
 <body class="body2">
 
-    <div class="contenedor-burbujas">
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-    </div>
-
     <!-- MAQUETA DEL DASHBOARD (IZQUIERDA: MENÚ | DERECHA: ALERTAS) -->
     <div class="dashboard-layout">
         
