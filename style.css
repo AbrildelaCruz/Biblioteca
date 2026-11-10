@@ -10,7 +10,7 @@ body, html {
     font-family: 'Segoe UI', Arial, sans-serif;
     
     /* 1. AGREGAMOS EL FONDO CON MOVIMIENTO DIRECTO AL BODY */
-    background: url('fondo.jpg') center center / 140% 140% no-repeat fixed;
+    background: url('fondo.png') center center / 140% 140% no-repeat fixed;
     animation: moverFondoOtono 25s infinite alternate ease-in-out;
 }
 
