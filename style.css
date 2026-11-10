@@ -8,6 +8,10 @@ body, html {
     height: 100%;
     overflow: hidden;
     font-family: 'Segoe UI', Arial, sans-serif;
+    
+    /* 1. AGREGAMOS EL FONDO CON MOVIMIENTO DIRECTO AL BODY */
+    background: url('fondo.jpg') center center / 140% 140% no-repeat fixed;
+    animation: moverFondoOtono 25s infinite alternate ease-in-out;
 }
 
 * {
@@ -15,16 +19,16 @@ body, html {
 }
 
 /* ==========================================================================
-   🌌 MÓDULO DE BIENVENIDA (Efecto Portal Cinemático Premium)
-   ========================================================================== */
-/* ==========================================================================
    🎬 MÓDULO DE BIENVENIDA - Biblioteca Sullivan (Efecto Cinemático Puro)
    ========================================================================== */
 #pantalla-biblioteca {
     position: relative;
     width: 100vw;
     height: 100vh;
-    background-color: #0d1b2a; /* Fondo oscuro que se revela al fondo */
+    
+    /* 2. CAMBIAMOS ESTA LÍNEA A TRANSPARENTE PARA QUE DEJE VER EL FONDO */
+    background-color: transparent; 
+    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -32,6 +36,12 @@ body, html {
     perspective: 1000px;
 }
 
+/* 3. AÑADIMOS LAS KEYFRAMES DE LA ANIMACIÓN HASTA EL FINAL O AQUÍ MISMO */
+@keyframes moverFondoOtono {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 50% 100%; }
+  100% { background-position: 100% 50%; }
+}
 /* Telón de una sola pieza (Imagen 1.png limpia, sin cortes) */
 .telon-portada {
     position: absolute;
