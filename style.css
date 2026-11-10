@@ -762,3 +762,34 @@ body, html {
     border: 1px solid #DDE6ED !important;
     box-sizing: border-box !important;
 }
+
+.body2 {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* 1. Cargamos la imagen saliendo de la carpeta css con '../' */
+  background-image: url('../imagen-otono.jpg');
+  
+  /* 2. Ajustes para que cubra la pantalla y no se repita */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  /* 3. ACTIVAR EL MOVIMIENTO: 20 segundos, infinito y va y viene suavemente */
+  animation: moverFondoOtoño 20s infinite alternate ease-in-out;
+}
+
+/* 4. DEFINIR EL MOVIMIENTO (Efecto de paneo/cámara lenta) */
+@keyframes moverFondoOtoño {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
