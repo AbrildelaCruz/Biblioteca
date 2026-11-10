@@ -22,38 +22,37 @@ document.getElementById('btn-entrar').addEventListener('click', function() {
         window.location.href = 'registro.php'; // Cambia por el nombre de tu archivo de módulos
     }, 1800);
 });
-// 1. Ruta absoluta desde la raíz de XAMPP para que funcione en cualquier pantalla del sistema
-const rutaAudio = '/Sistema_biblioteca/Biblioteca/audio/click.mp3';
-const sonidoClic = new Audio(rutaAudio);
-sonidoClic.volume = 0.6; // Ajustamos el volumen a un nivel adecuado
+// 1. Ruta corregida respetando mayúsculas y minúsculas exactas de tu proyecto
+const rutaAudioGlobal = '/Sistema_biblioteca/Biblioteca/audio/click.mp3';
+const audioBoton = new Audio(rutaAudioGlobal);
+audioBoton.volume = 0.5; // Volumen adecuado
 
-// 2. Función segura para reproducir el efecto de sonido
+// 2. Función para reproducir el sonido de clic
 function reproducirClic() {
-    // Reiniciamos el tiempo a cero para permitir clics rápidos consecutivos
-    sonidoClic.currentTime = 0;
-    sonidoClic.play().catch(error => {
-        console.log("El navegador requiere un clic previo en la pantalla para activar el audio.", error);
+    audioBoton.currentTime = 0; // Reinicia el audio para clics rápidos
+    audioBoton.play().catch(error => {
+        console.log("El navegador bloqueó el audio temporalmente.", error);
     });
 }
 
-// 3. Inyección automática del evento a todos los botones cuando cargue el DOM
+// 3. Asignación automática del evento a todos los botones del sistema
 document.addEventListener("DOMContentLoaded", () => {
-    // Buscamos de golpe: botones, clases .btn, entradas de formulario (guardar/borrar) y enlaces del menú
+    // Buscamos todos los botones, clases de diseño, inputs de envío y enlaces del menú
     const elementosInteractivos = document.querySelectorAll('button, .btn, input[type="submit"], input[type="button"], a');
     
     elementosInteractivos.forEach(elemento => {
-        // Le asignamos el sonido al hacer clic a cada uno de ellos
+        // Inyectamos el evento click a cada uno de ellos de forma automatizada
         elemento.addEventListener('click', reproducirClic);
     });
 
-    // Truco informático: Desbloqueador automático para vencer el candado de seguridad del navegador
-    const desbloquearAudio = () => {
-        sonidoClic.play().then(() => {
-            sonidoClic.pause(); // Lo reproduce en silencio un milisegundo para activarlo en el navegador
-            window.removeEventListener('click', desbloquearAudio); // Quitamos el candado
+    // Desbloqueador automático para el candado de seguridad de Chrome/Edge
+    const activarAudioNavegador = () => {
+        audioBoton.play().then(() => {
+            audioBoton.pause(); // Reproduce un milisegundo en silencio para dar permiso
+            window.removeEventListener('click', activarAudioNavegador);
         }).catch(() => {});
     };
-    window.addEventListener('click', desbloquearAudio);
+    window.addEventListener('click', activarAudioNavegador);
 
-    console.log("Módulo UX de Audio Global inicializado con éxito en la Biblioteca Sullivan.");
+    console.log("Módulo UX de Audio Global inicializado correctamente.");
 });
