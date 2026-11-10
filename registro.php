@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
-<body class="body2">
+<body class="body2" rel="background" type="image/jpg" href="imagen-atono.jpg">
 
     <!-- MAQUETA DEL DASHBOARD (IZQUIERDA: MENÚ | DERECHA: ALERTAS) -->
     <div class="dashboard-layout">
