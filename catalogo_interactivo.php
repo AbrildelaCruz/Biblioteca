@@ -32,9 +32,10 @@ $categorias_disponibles = [
     <title>Catálogo Interactivo - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
-    
+
     <link rel="stylesheet" href="https://jsdelivr.net" />
     <script src="https://jsdelivr.net"></script>
+    
     <style>
         .choices { margin-bottom: 0px; font-size: 13px; color: #1e293b; }
         .choices__inner { background-color: white; border-radius: 4px; border: 1px solid #CBD5E1; padding: 4px; min-height: 36px; }
@@ -223,11 +224,13 @@ $categorias_disponibles = [
                                     <select name="id_profesor" id="select_profesor_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado" disabled>
                                         <option value="">Escribe el nombre del Docente...</option>
                                         <?php
-                                        $profesores_res->data_seek(0);
-                                        while ($prof = $profesores_res->fetch_assoc()) {
-                                            echo "<option value='{$prof['id_profesores']}'>{$prof['Nombre']}</option>";
-                                        }
-                                        ?>
+$profesores_res->data_seek(0);
+while ($prof = $profesores_res->fetch_assoc()) {
+    $mat_p = htmlspecialchars($prof['Matricula'] ?? '');
+    $nom_p = htmlspecialchars($prof['Nombre']);
+    echo "<option value='{$prof['id_profesores']}'>[{$mat_p}] {$nom_p}</option>";
+}
+?>
                                     </select>
                                 </div>
 
