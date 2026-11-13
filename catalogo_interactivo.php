@@ -10,7 +10,7 @@ $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
 $alumnos_res = $conexion->query("SELECT id_Alumnos, Matricula, Nombre FROM alumnos ORDER BY Nombre ASC");
-$profesores_res = $conexion->query("SELECT id_profesores, Nombre FROM profesores ORDER BY Nombre ASC");
+$profesores_res = $conexion->query("SELECT id_profesores, Matricula, Nombre FROM profesores ORDER BY Nombre ASC");
 $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Categoria, Editorial, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY Titulo ASC");
 
 $categorias_disponibles = [
