@@ -1,27 +1,37 @@
 <?php
 require_once 'conexion.php';
-header("Content-Type: application/json");
-$input = json_decode(file_get_contents('php://input'), true);
-$rol = trim($input['rol'] ?? '');
-$nombre = trim($input['nombre'] ?? '');
+header('Content-Type: application/json; charset=utf-8');
 
-if ($rol === '' || $nombre === '') {
-    echo json_encode(['success' => false, 'message' => 'Escribe matrícula o nombre.']);
-    exit;
-}
-$termino = "%" . $nombre . "%";
+$tipo = trim($_GET['tipo'] ?? '');
+$q = trim($_GET['q'] ?? '');
 
-if ($rol === 'alumno') {
-    $stmt = $conexion->prepare("SELECT id_Alumnos, Matricula, Nombre, Madre_encargada, Familia, Piso, Grupo FROM alumnos WHERE Matricula = ? OR Nombre LIKE ? LIMIT 1");
-    $stmt->bind_param("ss", $nombre, $termino);
-    $stmt->execute();
-    $alumno = $stmt->get_result()->fetch_assoc();
-    echo $alumno ? json_encode(['success' => true, 'data' => $alumno]) : json_encode(['success' => false, 'message' => 'Alumno no localizado.']);
-} elseif ($rol === 'profesor') {
-    $stmt = $conexion->prepare("SELECT id_profesores, Nombre, Materia FROM profesores WHERE Nombre LIKE ? LIMIT 1");
-    $stmt->bind_param("s", $termino);
-    $stmt->execute();
-    $profesor = $stmt->get_result()->fetch_assoc();
-    echo $profesor ? json_encode(['success' => true, 'data' => $profesor]) : json_encode(['success' => false, 'message' => 'Profesor no localizado.']);
+if ($tipo === '' || $q === '') {
+    echo json_encode([]);
+    exit();
 }
+
+$busqueda = "%" . $q . "%";
+$resultados = [];
+
+if ($tipo === 'alumno') {
+    $stmt = $conexion->prepare("SELECT id_Alumnos AS id, IFNULL(Matricula, 'Sin matrícula') AS matricula, Nombre AS nombre, CONCAT('Grupo: ', IFNULL(Grupo, '-'), ' | Piso: ', IFNULL(Piso, '-')) AS detalle FROM alumnos WHERE Matricula LIKE ? OR Nombre LIKE ? ORDER BY Nombre ASC LIMIT 10");
+    $stmt->bind_param("ss", $busqueda, $busqueda);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    while ($fila = $res->fetch_assoc()) {
+        $resultados[] = $fila;
+    }
+    $stmt->close();
+} elseif ($tipo === 'profesor') {
+    $stmt = $conexion->prepare("SELECT id_profesores AS id, Matricula AS matricula, Nombre AS nombre, IFNULL(Materia, 'Sin academia') AS detalle FROM profesores WHERE Matricula LIKE ? OR Nombre LIKE ? ORDER BY Nombre ASC LIMIT 10");
+    $stmt->bind_param("ss", $busqueda, $busqueda);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    while ($fila = $res->fetch_assoc()) {
+        $resultados[] = $fila;
+    }
+    $stmt->close();
+}
+
+echo json_encode($resultados);
 ?>
