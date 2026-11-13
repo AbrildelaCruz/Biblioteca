@@ -810,6 +810,71 @@ html:has(body.scroll-catalogo), body.scroll-catalogo {
         min-width: 650px;
     }
 }
+/* ==========================================================================
+   🖱️ BARRAS DE DESPLAZAMIENTO (SCROLL VERTICAL Y HORIZONTAL) EN TODOS LOS MÓDULOS
+   ========================================================================== */
+
+/* 1. Desbloquea el scroll vertical en todas las vistas internas (.body2) */
+html:has(body.body2), body.body2 {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    padding-bottom: 80px !important; /* Espacio libre abajo para que el botón REGRESAR no tape nada */
+}
+
+/* 2. Contenedor con desplazamiento vertical y horizontal para tablas largas */
+.tabla-responsiva {
+    width: 95% !important;
+    max-width: 1200px !important;
+    max-height: 65vh !important; /* Si la tabla crece más del 65% de la pantalla, aparece su propia barra */
+    margin: 20px auto !important;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(15, 76, 129, 0.08);
+    background: rgba(255, 255, 255, 0.96);
+}
+
+/* Mantiene los encabezados azules de la tabla fijos arriba mientras bajas por los registros */
+.tabla-responsiva .tabla-datos {
+    margin: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+}
+
+.tabla-responsiva .tabla-datos thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* 3. Diseño estético de la barra de desplazamiento (Chrome, Edge y Safari) */
+body.body2::-webkit-scrollbar,
+.tabla-responsiva::-webkit-scrollbar,
+#lista_coincidencias::-webkit-scrollbar,
+#lista_coincidencias_libro::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+body.body2::-webkit-scrollbar-track,
+.tabla-responsiva::-webkit-scrollbar-track {
+    background: #E8EEF5;
+    border-radius: 8px;
+}
+
+body.body2::-webkit-scrollbar-thumb,
+.tabla-responsiva::-webkit-scrollbar-thumb {
+    background: #0F4C81;
+    border-radius: 8px;
+}
+
+body.body2::-webkit-scrollbar-thumb:hover,
+.tabla-responsiva::-webkit-scrollbar-thumb:hover {
+    background: #2A9D8F;
+}
 
 /* ==========================================================================
    📱 DISEÑO RESPONSIVO MULTI-DISPOSITIVO (COMPUTADORA, TABLET Y MÓVIL)
