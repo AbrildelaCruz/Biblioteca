@@ -1,5 +1,4 @@
 <?php
-// Incluimos tu archivo de conexión real
 require_once 'conexion.php';
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -8,16 +7,20 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $alertas = [];
 
-// 🛠️ CONSULTA CORREGIDA CON TUS LLAVES REALES: id_Alumnos
+// Solo busca préstamos que AÚN NO tienen fecha de devolución real (fecha_devolucion_real IS NULL)
 $sql = "SELECT 
             p.id_prestamo,
-            a.Nombre AS Alumno,
+            COALESCE(a.Nombre, prof.Nombre, 'Usuario') AS Persona,
+            CASE WHEN a.Nombre IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS Rol,
             l.Titulo AS Libro,
             p.fecha_salida,
-            DATEDIFF(DATE_ADD(p.fecha_salida, INTERVAL 7 DAY), CURDATE()) AS dias_diferencia
+            p.fecha_devolucion_esperada,
+            DATEDIFF(p.fecha_devolucion_esperada, CURDATE()) AS dias_diferencia
         FROM prestamos p
-        JOIN alumnos a ON p.id_Alumnos = a.id_Alumnos
+        LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos
+        LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores
         JOIN libros l ON p.id_libro = l.id_libro
+        WHERE p.fecha_devolucion_real IS NULL
         ORDER BY dias_diferencia ASC";
 
 $result = $conexion->query($sql);
@@ -27,19 +30,17 @@ if ($result && $result->num_rows > 0) {
         $dias = (int)$row['dias_diferencia'];
         $clasecss = '';
         $texto = '';
+        $etiquetaRol = $row['Rol'];
 
         if ($dias < 0) {
-            // 🟥 Caso 1: Ya pasaron los 7 días de plazo (Retrasado)
             $clasecss = 'entrega-vencida';
-            $texto = "⚠️ <b>" . htmlspecialchars($row['Alumno']) . "</b> tiene un retraso de " . abs($dias) . " días con el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
+            $texto = "⚠️ <b>[" . $etiquetaRol . "] " . htmlspecialchars($row['Persona']) . "</b> tiene un retraso de " . abs($dias) . " días con el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
         } elseif ($dias === 0) {
-            // 🟨 Caso 2: Hoy se cumple el séptimo día
             $clasecss = 'entrega-hoy';
-            $texto = "⏳ <b>" . htmlspecialchars($row['Alumno']) . "</b> debe entregar HOY el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
+            $texto = "⏳ <b>[" . $etiquetaRol . "] " . htmlspecialchars($row['Persona']) . "</b> debe entregar HOY el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
         } elseif ($dias <= 3) {
-            // 🟩 Caso 3: Faltan menos de 3 días para que se cumpla el plazo
             $clasecss = 'entrega-proxima';
-            $texto = "📅 <b>" . htmlspecialchars($row['Alumno']) . "</b> entrega en " . $dias . " días el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
+            $texto = "📅 <b>[" . $etiquetaRol . "] " . htmlspecialchars($row['Persona']) . "</b> entrega en " . $dias . " días el libro: <i>" . htmlspecialchars($row['Libro']) . "</i>";
         }
 
         if ($clasecss !== '') {
@@ -51,17 +52,17 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Renderizamos las alertas de forma limpia para tu contenedor de notificaciones
+echo "<h3 style='margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;'>🔔 Alertas de Devolución</h3>";
+
 if (!empty($alertas)) {
     echo "<div class='lista-alertas'>";
     foreach ($alertas as $alerta) {
-        echo "<div class='tarjeta-aviso " . $alerta['clase'] . "'>";
+        echo "<div class='tarjeta-aviso " . $alerta['clase'] . "' style='padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; font-size: 13px; line-height: 1.4;'>";
         echo "<span>" . $alerta['texto'] . "</span>";
         echo "</div>";
     }
     echo "</div>";
 } else {
-    // Si todo está en orden, muestra el diseño dashed limpio
     echo "<div class='aviso-vacio'>✨ Todo está al corriente. No hay préstamos vencidos ni alertas pendientes hoy.</div>";
 }
 ?>

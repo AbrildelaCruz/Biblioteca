@@ -1,20 +1,23 @@
 <?php
 require_once 'conexion.php';
-// 1. RECUPERAR MENSAJES DE LA SESIÓN TRAS REDIRECCIÓN
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-// Variables en limpio para el formulario
 $modo_editar = false;
 $id_Alumnos = '';
+$matricula = '';
 $nombre = '';
 $madreEncargada = '';
 $familia = '';
 $piso = '';
 $grupo = '';
 
-// 2. DETECTAR MODO EDICIÓN (MÉTODO GET)
+// 1. DETECTAR MODO EDICIÓN
 if (isset($_GET['editar_id'])) {
     $id_editar = filter_input(INPUT_GET, 'editar_id', FILTER_VALIDATE_INT);
     if ($id_editar) {
@@ -25,6 +28,7 @@ if (isset($_GET['editar_id'])) {
         if ($alumno_data = $resultado_buscar->fetch_assoc()) {
             $modo_editar = true;
             $id_Alumnos = $alumno_data['id_Alumnos'];
+            $matricula = $alumno_data['Matricula'] ?? '';
             $nombre = $alumno_data['Nombre'];
             $madreEncargada = $alumno_data['Madre_encargada'];
             $familia = $alumno_data['Familia'];
@@ -35,7 +39,7 @@ if (isset($_GET['editar_id'])) {
     }
 }
 
-// 3. PROCESAR GUARDADO O ACTUALIZACIÓN (MÉTODO POST)
+// 2. PROCESAR FORMULARIO (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_alumno_post = filter_input(INPUT_POST, 'id_Alumnos', FILTER_VALIDATE_INT);
     $nombre = trim($_POST['Nombre'] ?? '');
@@ -49,15 +53,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['tipoMensaje'] = 'error';
     } else {
         if (!empty($id_alumno_post)) {
-            // ACTUALIZAR REGISTRO EXISTENTE (Tu columna exacta: id_Alumnos)
             $stmt = $conexion->prepare('UPDATE alumnos SET Nombre=?, Madre_encargada=?, Familia=?, Piso=?, Grupo=? WHERE id_Alumnos=?');
             $stmt->bind_param('sssssi', $nombre, $madreEncargada, $familia, $piso, $grupo, $id_alumno_post);
             $texto_exito = 'Datos del alumno actualizados correctamente.';
         } else {
-            // INSERTAR NUEVO REGISTRO
-            $stmt = $conexion->prepare('INSERT INTO alumnos (Nombre, Madre_encargada, Familia, Piso, Grupo) VALUES (?, ?, ?, ?, ?)');
-            $stmt->bind_param('sssss', $nombre, $madreEncargada, $familia, $piso, $grupo);
-            $texto_exito = 'Nuevo alumno registrado con éxito.';
+            // Generar matrícula única automática: SUL-26-XXX
+            $res_max = $conexion->query("SELECT IFNULL(MAX(id_Alumnos), 0) + 1 AS siguiente FROM alumnos");
+            $siguiente_id = (int)$res_max->fetch_assoc()['siguiente'];
+            $nueva_matricula = 'SUL-26-' . str_pad($siguiente_id, 3, '0', STR_PAD_LEFT);
+
+            $stmt = $conexion->prepare('INSERT INTO alumnos (Matricula, Nombre, Madre_encargada, Familia, Piso, Grupo) VALUES (?, ?, ?, ?, ?, ?)');
+            $stmt->bind_param('ssssss', $nueva_matricula, $nombre, $madreEncargada, $familia, $piso, $grupo);
+            $texto_exito = "Nuevo alumno registrado con éxito. Matrícula asignada: $nueva_matricula";
         }
 
         if ($stmt && $stmt->execute()) {
@@ -69,44 +76,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: ver_alumnos.php"); // Te saca de aquí para proteger contra el F5
+    header("Location: ver_alumnos.php");
     exit();
 }
 
-// 4. PROCESAR ACCIÓN ELIMINAR (MÉTODO GET)
+// 3. PROCESAR BORRADO
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
-        $conexion->begin_transaction(); // Iniciamos transacción por seguridad
-
-        try {
-            // 1. Eliminar el alumno seleccionado
-            $stmt_borrar = $conexion->prepare('DELETE FROM alumnos WHERE id_Alumnos = ?');
+        $stmt_borrar = $conexion->prepare('DELETE FROM alumnos WHERE id_Alumnos = ?');
+        if ($stmt_borrar) {
             $stmt_borrar->bind_param('i', $id_a_borrar);
-            $stmt_borrar->execute();
+            if ($stmt_borrar->execute()) {
+                $_SESSION['mensaje'] = 'Registro de alumno eliminado correctamente.';
+                $_SESSION['tipoMensaje'] = 'exito';
+            } else {
+                $_SESSION['mensaje'] = 'No se pudo eliminar el registro (verifica que no tenga préstamos activos).';
+                $_SESSION['tipoMensaje'] = 'error';
+            }
             $stmt_borrar->close();
-
-            // 2. REORDENAR LOS IDS EXISTENTES (De 1 en adelante)
-            // Creamos una variable en MySQL para ir incrementando fila por fila
-            $conexion->query("SET @count = 0;");
-            $conexion->query("UPDATE alumnos SET id_Alumnos = (@count:=@count+1);");
-
-            // 3. REINICIAR EL CONTADOR AUTO_INCREMENT
-            // Así el siguiente alumno que registres tomará el número consecutivo real correcto
-            $resultado_max = $conexion->query("SELECT MAX(id_Alumnos) AS max_id FROM alumnos");
-            $fila_max = $resultado_max->fetch_assoc();
-            $siguiente_id = ($fila_max['max_id'] ?? 0) + 1;
-            
-            $conexion->query("ALTER TABLE alumnos AUTO_INCREMENT = $siguiente_id");
-
-            $conexion->commit(); // Confirmamos todos los cambios si no hubo errores
-            $_SESSION['mensaje'] = 'Registro eliminado y IDs reordenados correctamente en la BD.';
-            $_SESSION['tipoMensaje'] = 'exito';
-
-        } catch (Exception $e) {
-            $conexion->rollback(); // Si algo falla, revertimos para no corromper la BD
-            $_SESSION['mensaje'] = 'Error al procesar el reordenamiento: ' . $e->getMessage();
-            $_SESSION['tipoMensaje'] = 'error';
         }
     }
     header("Location: ver_alumnos.php");
@@ -115,7 +103,6 @@ if (isset($_GET['eliminar_id'])) {
 ?>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -123,9 +110,7 @@ if (isset($_GET['eliminar_id'])) {
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
-
 <body class="body2">
-
     <div class="contenedor-burbujas">
         <div class="burbuja"></div>
         <div class="burbuja"></div>
@@ -134,29 +119,34 @@ if (isset($_GET['eliminar_id'])) {
         <div class="burbuja"></div>
     </div>
 
-      <?php if ($mensaje !== ''): ?>
+    <?php if ($mensaje !== ''): ?>
         <div class="alerta <?php echo $tipoMensaje; ?>"
             style="padding: 10px; margin: 15px auto; max-width: 700px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
-              <?php echo $mensaje; ?>
+            <?php echo $mensaje; ?>
         </div>
-      <?php endif; ?>
+    <?php endif; ?>
 
     <div class="contenedor-formulario" style="max-width: 700px;">
-        <h2><?php echo $modo_editar ? '📝 Modificar Alumno' : 'Registro de Alumnos'; ?></h2>
+        <h2><?php echo $modo_editar ? '📝 Modificar Alumno' : '👥 Registro de Alumnos'; ?></h2>
 
         <form method="post" action="alumnos.php">
             <input type="hidden" name="id_Alumnos" value="<?php echo $id_Alumnos; ?>">
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="grid-dos-columnas" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <?php if ($modo_editar && $matricula !== ''): ?>
+                    <div class="grupo-campo" style="grid-column: 1 / -1;">
+                        <label>Matrícula Única</label>
+                        <input type="text" value="<?php echo htmlspecialchars($matricula); ?>" readonly>
+                    </div>
+                <?php endif; ?>
+
                 <div class="grupo-campo" style="grid-column: 1 / -1;">
-                    <label>Nombre del Alumno</label>
-                    <input type="text" name="Nombre" value="<?php echo htmlspecialchars($nombre); ?>" maxlength="100"
-                        required>
+                    <label>Nombre del Alumno *</label>
+                    <input type="text" name="Nombre" value="<?php echo htmlspecialchars($nombre); ?>" maxlength="100" required>
                 </div>
                 <div class="grupo-campo">
                     <label>Madre Encargada</label>
-                    <input type="text" name="Madre_encargada" value="<?php echo htmlspecialchars($madreEncargada); ?>"
-                        maxlength="100">
+                    <input type="text" name="Madre_encargada" value="<?php echo htmlspecialchars($madreEncargada); ?>" maxlength="100">
                 </div>
                 <div class="grupo-campo">
                     <label>Familia</label>
@@ -173,20 +163,15 @@ if (isset($_GET['eliminar_id'])) {
             </div>
 
             <button type="submit" class="boton-guardar" style="margin-top: 20px; width: 100%;">
-                    <?php echo $modo_editar ? 'Actualizar Datos del Alumno' : 'Guardar alumno'; ?>
+                <?php echo $modo_editar ? 'Actualizar Datos del Alumno' : 'Guardar Alumno'; ?>
             </button>
 
             <?php if ($modo_editar): ?>
-                <a href="alumnos.php"
-                    style="display: block; text-align: center; margin-top: 10px; color: #721c24; text-decoration: none; font-weight: bold;">❌
-                    Cancelar Edición</a>
-                <?php endif; ?>
+                <a href="alumnos.php" style="display: block; text-align: center; margin-top: 10px; color: #721c24; text-decoration: none; font-weight: bold;">❌ Cancelar Edición</a>
+            <?php endif; ?>
         </form>
 
-        <!-- Enlace directo agregado para ir a la nueva página de la tabla -->
-        <a href="ver_alumnos.php"
-            style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍
-            Ver Todos los Alumnos Registrados</a>
+        <a href="ver_alumnos.php" style="display: block; text-align: center; margin-top: 20px; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 10px; border-radius: 5px;">🔍 Ver Todos los Alumnos Registrados</a>
     </div>
 
     <div class="z1">

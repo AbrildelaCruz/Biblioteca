@@ -744,3 +744,160 @@ body, html {
     border: 1px solid #DDE6ED !important;
     box-sizing: border-box !important;
 }
+
+/* ==========================================================================
+   🔓 SCROLL EXCLUSIVO PARA CATÁLOGO INTERACTIVO
+   ========================================================================== */
+html:has(body.scroll-catalogo), body.scroll-catalogo {
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100vh !important;
+}
+
+.tabla-responsiva {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media screen and (max-width: 992px) {
+    .dashboard-layout {
+        flex-direction: column !important;
+        align-items: center !important;
+        padding: 15px !important;
+        gap: 20px !important;
+    }
+    .columna-izquierda,
+    .panel-notificaciones-derecho {
+        width: 100% !important;
+        max-width: 650px !important;
+    }
+    .seccion-bloques-tendencias {
+        flex-direction: column !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    body.body2 { padding: 10px !important; }
+    h2 { font-size: 1.35rem !important; }
+    .contenedor-formulario {
+        width: 95% !important;
+        padding: 18px !important;
+        margin: 15px auto !important;
+        box-sizing: border-box !important;
+    }
+    .grid-dos-columnas,
+    .contenedor-formulario form > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+    .contenedor-formulario form [style*="grid-column: span 2"] {
+        grid-column: span 1 !important;
+    }
+    .campo-buscar-inline {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    .campo-buscar-inline input,
+    .campo-buscar-inline button {
+        width: 100% !important;
+    }
+    .grid-catalogo {
+        grid-template-columns: 1fr !important;
+        padding: 10px !important;
+    }
+    .tabla-datos {
+        font-size: 12px !important;
+        min-width: 650px;
+    }
+}
+
+/* ==========================================================================
+   📱 DISEÑO RESPONSIVO MULTI-DISPOSITIVO (COMPUTADORA, TABLET Y MÓVIL)
+   ========================================================================== */
+
+/* Contenedor para que las tablas grandes se puedan deslizar en celulares sin romper la pantalla */
+.tabla-responsiva {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+/* Tablets y pantallas medianas (hasta 992px) */
+@media (max-width: 992px) {
+    .dashboard-layout {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 20px !important;
+        margin: 20px auto !important;
+    }
+
+    .columna-izquierda,
+    .panel-notificaciones-derecho {
+        width: 100% !important;
+        max-width: 550px !important;
+        justify-content: center !important;
+    }
+
+    .grid-catalogo {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+    }
+}
+
+/* Celulares (hasta 600px) */
+@media (max-width: 600px) {
+    .body2 {
+        padding: 12px !important;
+    }
+
+    .contenedor-formulario {
+        padding: 20px 15px !important;
+        margin: 20px auto !important;
+    }
+
+    .contenedor-formulario h2 {
+        font-size: 18px !important;
+    }
+
+    /* Convierte los formularios de 2 columnas en 1 sola columna cómoda en celular */
+    .grid-dos-columnas,
+    .contenedor-formulario form {
+        grid-template-columns: 1fr !important;
+    }
+
+    .contenedor-kpis {
+        gap: 8px !important;
+    }
+
+    .tarjeta-kpi {
+        padding: 8px !important;
+    }
+
+    .bton-1, .bton-2, .bton-3, .bton-4 {
+        font-size: 15px !important;
+        padding: 12px 16px !important;
+    }
+
+    .tabla-datos th,
+    .tabla-datos td {
+        padding: 10px 8px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    #btn-entrar {
+        padding: 14px 28px !important;
+        font-size: 1rem !important;
+    }
+
+    .z1 {
+        bottom: 12px !important;
+        right: 12px !important;
+    }
+
+    .z2 {
+        padding: 8px 14px !important;
+        font-size: 11px !important;
+    }
+}

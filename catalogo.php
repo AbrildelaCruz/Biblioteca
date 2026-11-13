@@ -1,28 +1,40 @@
 <?php
 require_once 'conexion.php';
 
-// 1. RECUPERAR MENSAJES DE LA SESIÓN
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-// Variables para el modo edición con tus nuevos campos bibliográficos
+$categorias_disponibles = [
+    'Novela y Narrativa',
+    'Cuento y Relato',
+    'Poesía',
+    'Teatro y Dramaturgia',
+    'Historia y Biografía',
+    'Filosofía y Ciencia',
+    'Aventuras y Juvenil'
+];
+
 $modo_editar = false;
 $id_libro = '';
 $titulo = '';
 $autor = '';
+$categoria = 'Novela y Narrativa';
 $encabezamiento_de_materia = '';
 $editorial = '';
 $isbn = '';
 $ano = '';
 $clasificacion = '';
 $pais = '';
-$idioma = '';
+$idioma = 'Español';
 $descripcion = '';
-$estado_conservacion = 'Excelente';
 $ejemplares_totales = 1;
 
-// 2. DETECTAR SI SE SOLICITA EDITAR UN REGISTRO (MÉTODO GET)
+// 1. DETECTAR MODO EDICIÓN
 if (isset($_GET['editar_id'])) {
     $id_editar = filter_input(INPUT_GET, 'editar_id', FILTER_VALIDATE_INT);
     if ($id_editar) {
@@ -35,60 +47,110 @@ if (isset($_GET['editar_id'])) {
             $id_libro = $libro_data['id_libro'];
             $titulo = $libro_data['Titulo'];
             $autor = $libro_data['Autor'];
-            $encabezamiento_de_materia = $libro_data['Encabezamiento_de_Materia'] ?? '';
+            $categoria = $libro_data['Categoria'] ?? 'Novela y Narrativa';
+            $encabezamiento_de_materia = $libro_data['Encabezamiento de Materia'] ?? '';
             $editorial = $libro_data['Editorial'];
             $isbn = $libro_data['ISBN'];
             $ano = $libro_data['ano'] ?? '';
-            $clasificacion = $libro_data['clasificacion'] ?? '';
-
-            // 🔄 SOLUCCIÓN: Forzamos la comprobación exacta de 'Pais' cuidando mayúsculas y minúsculas
-            $pais = $libro_data['Pais'] ?? $libro_data['pais'] ?? '';
-
-            $idioma = $libro_data['Idioma'];
-            $descripcion = $libro_data['descripcion'] ?? '';
-            $estado_conservacion = $libro_data['Estado_conservación'] ?? $libro_data['Estado_conservacion'] ?? 'Excelente';
-            $ejemplares_totales = $libro_data['Ejemplares_totales'];
+            $clasificacion = $libro_data['Clasificación'] ?? $libro_data['clasificacion'] ?? '';
+            $pais = $libro_data['País'] ?? $libro_data['Pais'] ?? '';
+            $idioma = $libro_data['Idioma'] ?? 'Español';
+            $descripcion = $libro_data['Descripción'] ?? $libro_data['descripcion'] ?? '';
+            $ejemplares_totales = $libro_data['Ejemplares_totales'] ?? 1;
         }
         $stmt_buscar->close();
     }
 }
 
-// 3. PROCESAR EL FORMULARIO (REGISTRO O ACTUALIZACIÓN - MÉTODO POST)
+// 2. PROCESAR REGISTRO O ACTUALIZACIÓN (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titulo    = trim($_POST['Titulo'] ?? '');
-    $autor     = trim($_POST['Autor'] ?? '');
-    $categoria = trim($_POST['Categoria'] ?? '');
+    $id_libro_post = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
+    $titulo = trim($_POST['Titulo'] ?? '');
+    $autor = trim($_POST['Autor'] ?? '');
+    $categoria = trim($_POST['Categoria'] ?? 'Novela y Narrativa');
+    $encabezamiento = trim($_POST['Encabezamiento_de_Materia'] ?? '');
     $editorial = trim($_POST['Editorial'] ?? '');
-    $edicion   = trim($_POST['Edicion'] ?? '');
-    $isbn      = trim($_POST['ISBN'] ?? ''); // O 'ISBM' según tu columna real de la BD
-    $pais      = trim($_POST['Pais'] ?? '');
-    $idioma    = trim($_POST['Idioma'] ?? '');
-    $conservacion = trim($_POST['Estado_conservacion'] ?? 'Excelente');
-    $ejemplares = intval($_POST['Ejemplares_totales'] ?? 1); // Cantidad de libros físicos que entran
+    $isbn = trim($_POST['ISBN'] ?? '');
+    $ano = intval($_POST['ano'] ?? 0);
+    $clasificacion = trim($_POST['clasificacion'] ?? '');
+    $pais = trim($_POST['Pais'] ?? '');
+    $idioma = trim($_POST['Idioma'] ?? 'Español');
+    $descripcion = trim($_POST['descripcion'] ?? '');
+    $nuevos_totales = intval($_POST['Ejemplares_totales'] ?? 1);
 
-    if ($titulo === '' || $autor === '' || $ejemplares < 1) {
-        $_SESSION['mensaje'] = 'Título, Autor y Ejemplares Totales son campos obligatorios.';
+    if ($titulo === '' || $autor === '' || $nuevos_totales < 1) {
+        $_SESSION['mensaje'] = '⚠️ Título, Autor y Ejemplares Totales (mínimo 1) son obligatorios.';
         $_SESSION['tipoMensaje'] = 'error';
     } else {
-        // 🚀 LA MAGIA DE LA INGENIERÍA:
-        // Mandamos a guardar los $ejemplares en Totales y en Disponibles, y ponemos 0 en Prestados.
-        $stmt = $conexion->prepare("INSERT INTO libros (Titulo, Autor, Categoria, Editorial, Edicion, ISBN, Pais, Idioma, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados, Estado_conservacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)");
-        $stmt->bind_param("ssssssssiis", $titulo, $autor, $categoria, $editorial, $edicion, $isbn, $pais, $idioma, $ejemplares, $ejemplares, $conservacion);
+        if ($id_libro_post) {
+            // MODO ACTUALIZAR: Consultamos cuántos están prestados actualmente para no perder la cuenta
+            $stmt_act = $conexion->prepare("SELECT Ejemplares_prestados FROM libros WHERE id_libro = ?");
+            $stmt_act->bind_param("i", $id_libro_post);
+            $stmt_act->execute();
+            $datos_act = $stmt_act->get_result()->fetch_assoc();
+            $stmt_act->close();
 
-        if ($stmt && $stmt->execute()) {
-            $_SESSION['mensaje'] = "¡Libro registrado exitosamente en el catálogo e inventario!";
-            $_SESSION['tipoMensaje'] = 'exito';
-            $stmt->close();
+            $prestados_actuales = intval($datos_act['Ejemplares_prestados'] ?? 0);
+
+            if ($nuevos_totales < $prestados_actuales) {
+                $_SESSION['mensaje'] = "❌ Error: No puedes poner $nuevos_totales ejemplares totales porque actualmente hay $prestados_actuales prestados.";
+                $_SESSION['tipoMensaje'] = 'error';
+            } else {
+                $nuevos_disponibles = $nuevos_totales - $prestados_actuales;
+
+                $sql_upd = "UPDATE libros SET 
+                            Titulo = ?, Autor = ?, Categoria = ?, Editorial = ?, ISBN = ?, 
+                            ano = ?, `País` = ?, Idioma = ?, `Descripción` = ?, 
+                            `Encabezamiento de Materia` = ?, `Clasificación` = ?, 
+                            Ejemplares_totales = ?, Ejemplares_disponibles = ? 
+                            WHERE id_libro = ?";
+                $stmt = $conexion->prepare($sql_upd);
+                $stmt->bind_param(
+                    "sssssisssssiii",
+                    $titulo, $autor, $categoria, $editorial, $isbn,
+                    $ano, $pais, $idioma, $descripcion,
+                    $encabezamiento, $clasificacion,
+                    $nuevos_totales, $nuevos_disponibles, $id_libro_post
+                );
+
+                if ($stmt && $stmt->execute()) {
+                    $_SESSION['mensaje'] = "✅ Libro e inventario actualizados correctamente ($nuevos_totales totales / $nuevos_disponibles disponibles).";
+                    $_SESSION['tipoMensaje'] = 'exito';
+                    $stmt->close();
+                } else {
+                    $_SESSION['mensaje'] = 'Error al actualizar: ' . $conexion->error;
+                    $_SESSION['tipoMensaje'] = 'error';
+                }
+            }
         } else {
-            $_SESSION['mensaje'] = 'Error al registrar en la base de datos: ' . $conexion->error;
-            $_SESSION['tipoMensaje'] = 'error';
+            // MODO INSERTAR NUEVO LIBRO
+            $sql_ins = "INSERT INTO libros 
+                        (Titulo, Autor, Categoria, Editorial, ISBN, ano, `País`, Idioma, `Descripción`, `Encabezamiento de Materia`, `Clasificación`, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
+            $stmt = $conexion->prepare($sql_ins);
+            $stmt->bind_param(
+                "sssssisssssii",
+                $titulo, $autor, $categoria, $editorial, $isbn,
+                $ano, $pais, $idioma, $descripcion,
+                $encabezamiento, $clasificacion,
+                $nuevos_totales, $nuevos_totales
+            );
+
+            if ($stmt && $stmt->execute()) {
+                $_SESSION['mensaje'] = "🎉 ¡Libro registrado exitosamente en la categoría '$categoria'!";
+                $_SESSION['tipoMensaje'] = 'exito';
+                $stmt->close();
+            } else {
+                $_SESSION['mensaje'] = 'Error al registrar en la base de datos: ' . $conexion->error;
+                $_SESSION['tipoMensaje'] = 'error';
+            }
         }
     }
-    // Redirección PRG para que el F5 no te duplique el libro
-    header("Location: ver_catalogo.php"); 
+    header("Location: ver_catalogo.php");
     exit();
 }
-// 4. PROCESAR EL BORRADO EN EL CATÁLOGO (MÉTODO GET)
+
+// 3. PROCESAR BORRADO
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
     if ($id_a_borrar) {
@@ -99,18 +161,26 @@ if (isset($_GET['eliminar_id'])) {
                 $_SESSION['mensaje'] = 'Libro eliminado del catálogo correctamente.';
                 $_SESSION['tipoMensaje'] = 'exito';
             } else {
-                $_SESSION['mensaje'] = 'Error al eliminar del catálogo.';
+                $_SESSION['mensaje'] = 'Error al eliminar del catálogo (verifica que no tenga préstamos activos).';
                 $_SESSION['tipoMensaje'] = 'error';
             }
             $stmt_borrar->close();
-        } else {
-            $_SESSION['mensaje'] = 'Error al preparar la consulta.';
-            $_SESSION['tipoMensaje'] = 'error';
         }
     }
     header("Location: ver_catalogo.php");
     exit();
 }
+
+// Campos dinámicos para evitar repeticiones
+$campos_grid = [
+    ['id' => 'input_Materia', 'name' => 'Encabezamiento_de_Materia', 'label' => 'Encabezamiento de Materia', 'type' => 'text', 'val' => $encabezamiento_de_materia, 'max' => 255],
+    ['id' => 'input_Editorial', 'name' => 'Editorial', 'label' => 'Editorial', 'type' => 'text', 'val' => $editorial, 'max' => 100],
+    ['id' => 'input_ISBN', 'name' => 'ISBN', 'label' => 'ISBN / Código', 'type' => 'text', 'val' => $isbn, 'max' => 50],
+    ['id' => 'input_ano', 'name' => 'ano', 'label' => 'Año', 'type' => 'number', 'val' => $ano, 'max' => 9999],
+    ['id' => 'input_clasificacion', 'name' => 'clasificacion', 'label' => 'Clasificación', 'type' => 'text', 'val' => $clasificacion, 'max' => 100],
+    ['id' => 'input_Pais', 'name' => 'Pais', 'label' => 'País', 'type' => 'text', 'val' => $pais, 'max' => 50],
+    ['id' => 'input_Idioma', 'name' => 'Idioma', 'label' => 'Idioma', 'type' => 'text', 'val' => $idioma, 'max' => 50],
+];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -118,7 +188,7 @@ if (isset($_GET['eliminar_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Registro de Libros - Biblioteca Sullivan</title>
+    <title>Registro de Libros - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
@@ -146,98 +216,66 @@ if (isset($_GET['eliminar_id'])) {
         <form method="post" action="catalogo.php" id="formLibro">
             <input type="hidden" name="id_libro" value="<?php echo $id_libro; ?>">
 
-            <!-- Bloque de campos superiores en CSS Grid -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="grid-dos-columnas" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
 
-                <!-- Título de Libro incluye el botón Buscar al lado derecho -->
                 <div class="grupo-campo">
-                    <label>Título del Libro</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="input_Titulo" name="Titulo"
-                            value="<?php echo htmlspecialchars($titulo); ?>" maxlength="255" style="flex: 1;">
-                       
+                    <label>Título del Libro *</label>
+                    <input type="text" id="input_Titulo" name="Titulo" value="<?php echo htmlspecialchars($titulo); ?>" maxlength="255" required>
+                </div>
+
+                <div class="grupo-campo">
+                    <label>Autor *</label>
+                    <input type="text" id="input_Autor" name="Autor" value="<?php echo htmlspecialchars($autor); ?>" maxlength="255" required>
+                </div>
+
+                <div class="grupo-campo">
+                    <label>Categoría *</label>
+                    <select name="Categoria" id="input_Categoria" required>
+                        <?php foreach ($categorias_disponibles as $cat): ?>
+                            <option value="<?php echo $cat; ?>" <?php echo ($categoria === $cat) ? 'selected' : ''; ?>>
+                                <?php echo $cat; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <?php foreach ($campos_grid as $campo): ?>
+                    <div class="grupo-campo">
+                        <label><?php echo $campo['label']; ?></label>
+                        <input type="<?php echo $campo['type']; ?>" 
+                               id="<?php echo $campo['id']; ?>" 
+                               name="<?php echo $campo['name']; ?>" 
+                               value="<?php echo htmlspecialchars($campo['val']); ?>" 
+                               <?php echo ($campo['type'] === 'number') ? 'max="' . $campo['max'] . '"' : 'maxlength="' . $campo['max'] . '"'; ?>>
                     </div>
+                <?php endforeach; ?>
+
+                <div class="grupo-campo" style="grid-column: span 2;">
+                    <label>Descripción / Notas</label>
+                    <input type="text" id="input_descripcion" name="descripcion" value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255">
                 </div>
 
-                <div class="grupo-campo">
-                    <label>Autor</label>
-                    <input type="text" id="input_Autor" name="Autor" value="<?php echo htmlspecialchars($autor); ?>"
-                        maxlength="255">
+                <div class="grupo-campo" style="grid-column: span 2;">
+                    <label>Ejemplares Totales *</label>
+                    <input type="number" id="input_Ejemplares" name="Ejemplares_totales" value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1" required>
                 </div>
 
-                <div class="grupo-campo">
-                    <label>Encabezamiento de Materia</label>
-                    <input type="text" id="input_Materia" name="Encabezamiento_de_Materia"
-                        value="<?php echo htmlspecialchars($encabezamiento_de_materia); ?>" maxlength="255">
-                </div>
-
-                <div class="grupo-campo">
-                    <label>Editorial</label>
-                    <input type="text" id="input_Editorial" name="Editorial"
-                        value="<?php echo htmlspecialchars($editorial); ?>" maxlength="100">
-                </div>
-
-                <div class="grupo-campo">
-                    <label>ISBN / Código</label>
-                    <input type="text" id="input_ISBN" name="ISBN" value="<?php echo htmlspecialchars($isbn); ?>"
-                        maxlength="50" style="width: 100%; box-sizing: border-box;">
-                </div>
-
-                <div class="grupo-campo">
-                    <label>Año</label>
-                    <input type="number" id="input_ano" name="ano" value="<?php echo htmlspecialchars($ano); ?>"
-                        max="9999">
-                </div>
-
-                <div class="grupo-campo">
-                    <label>Clasificación</label>
-                    <input type="text" id="input_clasificacion" name="clasificacion"
-                        value="<?php echo htmlspecialchars($clasificacion); ?>" maxlength="100">
-                </div>
-
-                <div class="grupo-campo">
-                    <label>País</label>
-                    <input type="text" id="input_Pais" name="Pais" value="<?php echo htmlspecialchars($pais); ?>"
-                        maxlength="50">
-                </div>
-
-                <!-- 🛠️ CORRECCIÓN CSS: Forzamos a que ocupen las 2 columnas del Grid para que no se oculten -->
-
-                <!-- IDIOMA -->
-                <div class="grupo-campo" style="grid-column: span 2; width: 100%;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: bold;">Idioma</label>
-                    <input type="text" id="input_Idioma" name="Idioma" value="<?php echo htmlspecialchars($idioma); ?>"
-                        maxlength="50" style="width: 100%; box-sizing: border-box;">
-                </div>
-
-                <!-- DESCRIPCIÓN -->
-                <div class="grupo-campo" style="grid-column: span 2; width: 100%;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: bold;">Descripción / Notas</label>
-                    <input type="text" id="input_descripcion" name="descripcion"
-                        value="<?php echo htmlspecialchars($descripcion); ?>" maxlength="255"
-                        style="width: 100%; box-sizing: border-box;">
-                </div>
-
-                <!-- EJEMPLARES TOTALES -->
-                <div class="grupo-campo" style="grid-column: span 2; margin-bottom: 10px; width: 100%;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: bold;">Ejemplares Totales</label>
-                    <input type="number" id="input_Ejemplares" name="Ejemplares_totales"
-                        value="<?php echo htmlspecialchars($ejemplares_totales); ?>" min="1"
-                        style="width: 100%; box-sizing: border-box;">
-                </div>
-
-                <!-- BOTÓN GUARDAR -->
-                <div class="grupo-campo" style="grid-column: span 2; width: 100%;">
-                    <button type="submit" class="boton-guardar"
-                        style="width: 100%; padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer; box-sizing: border-box;">
+                <div class="grupo-campo" style="grid-column: span 2;">
+                    <button type="submit" class="boton-guardar" style="width: 100%; padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer;">
                         <?php echo $modo_editar ? 'Actualizar Libro e Inventario' : 'REGISTRAR LIBRO'; ?>
                     </button>
                 </div>
 
-                <div style="grid-column: span 2; margin-top: 5px; width: 100%;">
-                    <a href="ver_catalogo.php"
-                        style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px; box-sizing: border-box;">🔍
-                        Ver Todos los Libros Registrados</a>
+                <?php if ($modo_editar): ?>
+                    <div style="grid-column: span 2; text-align: center;">
+                        <a href="ver_catalogo.php" style="color: #991B1B; font-weight: bold; text-decoration: none;">❌ Cancelar Edición</a>
+                    </div>
+                <?php endif; ?>
+
+                <div style="grid-column: span 2; margin-top: 5px;">
+                    <a href="ver_catalogo.php" style="display: block; text-align: center; font-weight: bold; color: white; text-decoration: none; background-color: #28a745; padding: 12px; border-radius: 5px;">
+                        🔍 Ver Todos los Libros Registrados
+                    </a>
                 </div>
 
             </div>
@@ -247,66 +285,5 @@ if (isset($_GET['eliminar_id'])) {
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
-
-    <script src="main.js"></script>
-
-    <!-- 🚀 LÓGICA DE BÚSQUEDA AUTOMÁTICA COMPLETA -->
-    <script>
-        document.getElementById('btnBuscarLibro').addEventListener('click', function () {
-            const datosBusqueda = {
-                Titulo: document.getElementById('input_Titulo').value,
-                Autor: document.getElementById('input_Autor').value,
-                Encabezamiento_de_Materia: document.getElementById('input_Materia').value,
-                Editorial: document.getElementById('input_Editorial').value,
-                ISBN: document.getElementById('input_ISBN').value,
-                ano: document.getElementById('input_ano').value,
-                clasificacion: document.getElementById('input_clasificacion').value,
-                descripcion: document.getElementById('input_descripcion').value,
-                Pais: document.getElementById('input_Pais').value,
-                Idioma: document.getElementById('input_Idioma').value
-            };
-
-            const tieneCriterio = Object.values(datosBusqueda).some(valor => valor.trim() !== "");
-
-            if (!tieneCriterio) {
-                alert("Por favor, rellena al menos un campo para realizar la búsqueda.");
-                return;
-            }
-
-            fetch('buscar_libro.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(datosBusqueda)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.libro) {
-                        // Rellenar dinámicamente mapeando las columnas de la BD
-                        document.getElementById('input_Titulo').value = data.libro.Titulo || '';
-                        document.getElementById('input_Autor').value = data.libro.Autor || '';
-                        document.getElementById('input_Materia').value = data.libro.Encabezamiento_de_Materia || '';
-                        document.getElementById('input_Editorial').value = data.libro.Editorial || '';
-                        document.getElementById('input_ISBN').value = data.libro.ISBN || '';
-                        document.getElementById('input_ano').value = data.libro.ano || '';
-                        document.getElementById('input_clasificacion').value = data.libro.clasificacion || '';
-
-                        // 🔄 ASIGNACIÓN MÁGICA: Mapea 'Pais' (con P mayúscula de tu tabla) al input
-                        document.getElementById('input_Pais').value = data.libro.Pais || data.libro.pais || '';
-
-                        document.getElementById('input_Idioma').value = data.libro.Idioma || '';
-                        document.getElementById('input_descripcion').value = data.libro.descripcion || '';
-                        document.getElementById('input_Ejemplares').value = data.libro.Ejemplares_totales || '1';
-                    } else {
-                        alert('No se encontró ningún libro que coincida con los datos ingresados.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error en la búsqueda:', error);
-                    alert('Ocurrió un error al procesar la búsqueda en el servidor.');
-                });
-        });
-    </script>
 </body>
 </html>
