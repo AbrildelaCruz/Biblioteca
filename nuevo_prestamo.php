@@ -7,15 +7,13 @@ if (session_status() === PHP_SESSION_NONE) {
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
-
-$libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_disponibles FROM libros WHERE Ejemplares_disponibles > 0 ORDER BY Titulo ASC");
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Préstamo por Matrícula - Biblioteca Sullivan</title>
+    <title>Registrar Préstamo - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
@@ -32,10 +30,10 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
         </div>
     <?php endif; ?>
 
-    <div class="contenedor-formulario" style="max-width: 680px;">
+    <div class="contenedor-formulario" style="max-width: 700px;">
         <h2>📋 Registrar Préstamo / Apartado</h2>
         
-        <form action="procesar_movimiento.php" method="POST" id="formPrestamo" onsubmit="return validarSeleccionUsuario()" style="display: flex; flex-direction: column; gap: 15px;">
+        <form action="procesar_movimiento.php" method="POST" id="formPrestamo" onsubmit="return validarFormularioCompleto()" style="display: flex; flex-direction: column; gap: 15px;">
             
             <!-- 1. Tipo de Usuario -->
             <div class="grupo-campo">
@@ -47,81 +45,55 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
                 </select>
             </div>
 
-            <!-- 2. Buscador por Matrícula o Nombre -->
+            <!-- 2. Buscador de Usuario por Matrícula o Nombre -->
             <div class="grupo-campo" id="bloque_busqueda" style="display: none;">
                 <label id="etiqueta_busqueda">2. Buscar por Matrícula *</label>
                 <div style="display: flex; gap: 8px;">
-                    <input type="text" id="input_matricula" autocomplete="off" placeholder="Escribe la matrícula (ej. DOC-26-001) o nombre..." onkeyup="buscarPorMatricula()">
+                    <input type="text" id="input_matricula" autocomplete="off" placeholder="Escribe matrícula o nombre..." onkeyup="buscarPorMatricula()">
                     <button type="button" id="btn_cambiar_usuario" onclick="limpiarSeleccionUsuario()" style="display: none; background: #DC3545; color: white; border: none; border-radius: 8px; padding: 0 14px; font-weight: bold; cursor: pointer;">Cambiar</button>
                 </div>
-                
-                <!-- Lista de coincidencias -->
                 <div id="lista_coincidencias" style="display: none; border: 1px solid #CBD5E1; border-radius: 8px; background: #FFFFFF; max-height: 180px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-top: 5px;"></div>
 
-                <!-- Campos ocultos que viajan al servidor -->
                 <input type="hidden" name="id_alumno" id="hidden_id_alumno" disabled>
                 <input type="hidden" name="id_profesor" id="hidden_id_profesor" disabled>
             </div>
 
-            <!-- CAMPOS AUTOCOMPLETADOS DE ALUMNO -->
+            <!-- Datos Autocompletados de Alumno -->
             <div id="datos_auto_alumno" class="grid-dos-columnas" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px; background: #F8FAFC; padding: 15px; border-radius: 8px; border: 1px solid #DDE6ED;">
-                <div class="grupo-campo">
-                    <label>Matrícula</label>
-                    <input type="text" id="auto_al_matricula" readonly>
-                </div>
-                <div class="grupo-campo">
-                    <label>Nombre Completo</label>
-                    <input type="text" id="auto_al_nombre" readonly>
-                </div>
-                <div class="grupo-campo">
-                    <label>Madre Encargada</label>
-                    <input type="text" id="auto_al_madre" readonly>
-                </div>
-                <div class="grupo-campo">
-                    <label>Familia</label>
-                    <input type="text" id="auto_al_familia" readonly>
-                </div>
-                <div class="grupo-campo">
-                    <label>Piso</label>
-                    <input type="text" id="auto_al_piso" readonly>
-                </div>
-                <div class="grupo-campo">
-                    <label>Grupo</label>
-                    <input type="text" id="auto_al_grupo" readonly>
-                </div>
+                <div class="grupo-campo"><label>Matrícula</label><input type="text" id="auto_al_matricula" readonly></div>
+                <div class="grupo-campo"><label>Nombre Completo</label><input type="text" id="auto_al_nombre" readonly></div>
+                <div class="grupo-campo"><label>Madre Encargada</label><input type="text" id="auto_al_madre" readonly></div>
+                <div class="grupo-campo"><label>Familia</label><input type="text" id="auto_al_familia" readonly></div>
+                <div class="grupo-campo"><label>Piso</label><input type="text" id="auto_al_piso" readonly></div>
+                <div class="grupo-campo"><label>Grupo</label><input type="text" id="auto_al_grupo" readonly></div>
             </div>
 
-            <!-- CAMPOS AUTOCOMPLETADOS DE PROFESOR -->
+            <!-- Datos Autocompletados de Profesor -->
             <div id="datos_auto_profesor" class="grid-dos-columnas" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px; background: #F8FAFC; padding: 15px; border-radius: 8px; border: 1px solid #DDE6ED;">
-                <div class="grupo-campo">
-                    <label>Matrícula Docente</label>
-                    <input type="text" id="auto_prof_matricula" readonly>
-                </div>
-                <div class="grupo-campo">
-                    <label>Nombre del Profesor</label>
-                    <input type="text" id="auto_prof_nombre" readonly>
-                </div>
-                <div class="grupo-campo" style="grid-column: 1 / -1;">
-                    <label>Academia / Materia(s)</label>
-                    <input type="text" id="auto_prof_materia" readonly>
-                </div>
+                <div class="grupo-campo"><label>Matrícula Docente</label><input type="text" id="auto_prof_matricula" readonly></div>
+                <div class="grupo-campo"><label>Nombre del Profesor</label><input type="text" id="auto_prof_nombre" readonly></div>
+                <div class="grupo-campo" style="grid-column: 1 / -1;"><label>Academia / Materia(s)</label><input type="text" id="auto_prof_materia" readonly></div>
             </div>
 
-            <!-- 3. Selección del Libro -->
+            <!-- 3. Buscador de Libro por Título, Autor o ISBN -->
             <div class="grupo-campo">
-                <label>3. Libro a llevarse *</label>
-                <select name="id_libro" required>
-                    <option value="">-- Selecciona el Título del Libro --</option>
-                    <?php if ($libros_res && $libros_res->num_rows > 0): ?>
-                        <?php while($lib = $libros_res->fetch_assoc()): ?>
-                            <option value="<?php echo $lib['id_libro']; ?>">
-                                <?php echo htmlspecialchars($lib['Titulo']); ?> — <?php echo htmlspecialchars($lib['Autor']); ?> (<?php echo $lib['Ejemplares_disponibles']; ?> disp.)
-                            </option>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <option value="" disabled>❌ No hay libros disponibles en estanterías</option>
-                    <?php endif; ?>
-                </select>
+                <label>3. Buscar Libro (por Título, Autor o ISBN) *</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="input_buscar_libro" autocomplete="off" placeholder="Escribe el título, autor o ISBN del libro..." onkeyup="buscarLibroAuto()">
+                    <button type="button" id="btn_cambiar_libro" onclick="limpiarSeleccionLibro()" style="display: none; background: #DC3545; color: white; border: none; border-radius: 8px; padding: 0 14px; font-weight: bold; cursor: pointer;">Cambiar</button>
+                </div>
+                <div id="lista_coincidencias_libro" style="display: none; border: 1px solid #CBD5E1; border-radius: 8px; background: #FFFFFF; max-height: 180px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-top: 5px;"></div>
+
+                <input type="hidden" name="id_libro" id="hidden_id_libro" disabled>
+            </div>
+
+            <!-- Datos Autocompletados del Libro -->
+            <div id="datos_auto_libro" class="grid-dos-columnas" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px; background: #F8FAFC; padding: 15px; border-radius: 8px; border: 1px solid #DDE6ED;">
+                <div class="grupo-campo" style="grid-column: 1 / -1;"><label>Título del Libro</label><input type="text" id="auto_lib_titulo" readonly></div>
+                <div class="grupo-campo"><label>Autor</label><input type="text" id="auto_lib_autor" readonly></div>
+                <div class="grupo-campo"><label>Categoría</label><input type="text" id="auto_lib_categoria" readonly></div>
+                <div class="grupo-campo"><label>Editorial</label><input type="text" id="auto_lib_editorial" readonly></div>
+                <div class="grupo-campo"><label>ISBN / Disponibles</label><input type="text" id="auto_lib_isbn_disp" readonly></div>
             </div>
 
             <!-- 4. Tipo de Movimiento -->
@@ -142,8 +114,8 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
-
-    <script>
+     <script>
+    // --- LÓGICA DE USUARIO ---
     function reiniciarBuscadorUsuario() {
         const tipo = document.getElementById('tipo_usuario').value;
         const bloque = document.getElementById('bloque_busqueda');
@@ -154,13 +126,13 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
 
         if (tipo === 'alumno') {
             bloque.style.display = 'block';
-            etiqueta.textContent = '2. Buscar Alumno por Matrícula (o Nombre) *';
-            input.placeholder = 'Escribe la matrícula o el nombre del alumno...';
+            etiqueta.textContent = '2. Buscar Alumno por Matrícula o Nombre *';
+            input.placeholder = 'Escribe matrícula o nombre del alumno...';
             input.focus();
         } else if (tipo === 'profesor') {
             bloque.style.display = 'block';
             etiqueta.textContent = '2. Buscar Profesor por Matrícula (ej. DOC-26-001) *';
-            input.placeholder = 'Escribe DOC-26-001 o el nombre del docente...';
+            input.placeholder = 'Escribe DOC-26-001 o nombre del docente...';
             input.focus();
         } else {
             bloque.style.display = 'none';
@@ -185,38 +157,30 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
                 if (datos.length > 0) {
                     datos.forEach(item => {
                         const opcion = document.createElement('div');
-                        opcion.style.padding = '10px 12px';
-                        opcion.style.borderBottom = '1px solid #E2E8F0';
-                        opcion.style.cursor = 'pointer';
-                        opcion.style.fontSize = '13px';
+                        opcion.style.cssText = 'padding: 10px 12px; border-bottom: 1px solid #E2E8F0; cursor: pointer; font-size: 13px;';
                         const sub = (tipo === 'alumno') ? `Grupo: ${item.grupo} | Familia: ${item.familia}` : item.materia;
                         opcion.innerHTML = `<strong style="color:#0F4C81;">[${item.matricula}]</strong> <b>${item.nombre}</b> <br><small style="color:#64748B;">${sub}</small>`;
-                        
                         opcion.onmouseover = () => opcion.style.backgroundColor = '#F1F5F9';
                         opcion.onmouseout = () => opcion.style.backgroundColor = '#FFFFFF';
-                         opcion.onclick = () => seleccionarUsuario(tipo, item);
-                        
+                        opcion.onclick = () => seleccionarUsuario(tipo, item);
                         lista.appendChild(opcion);
                     });
                 } else {
-                    lista.innerHTML = `<div style="padding: 10px; color: #991B1B; font-size: 13px; text-align: center;">❌ No se encontró ningún ${tipo} con esa matrícula.</div>`;
+                    lista.innerHTML = `<div style="padding: 10px; color: #991B1B; font-size: 13px; text-align: center;">❌ No se encontró ningún ${tipo}.</div>`;
                 }
                 lista.style.display = 'block';
-            })
-            .catch(err => console.error('Error al buscar usuario:', err));
+            });
     }
 
     function seleccionarUsuario(tipo, item) {
         const input = document.getElementById('input_matricula');
-        const btnCambiar = document.getElementById('btn_cambiar_usuario');
-        const lista = document.getElementById('lista_coincidencias');
-        const hiddenAl = document.getElementById('hidden_id_alumno');
-        const hiddenProf = document.getElementById('hidden_id_profesor');
-
         input.value = `[${item.matricula}] ${item.nombre}`;
         input.readOnly = true;
-        btnCambiar.style.display = 'inline-block';
-        lista.style.display = 'none';
+        document.getElementById('btn_cambiar_usuario').style.display = 'inline-block';
+        document.getElementById('lista_coincidencias').style.display = 'none';
+
+        const hiddenAl = document.getElementById('hidden_id_alumno');
+        const hiddenProf = document.getElementById('hidden_id_profesor');
 
         if (tipo === 'alumno') {
             hiddenAl.value = item.id;
@@ -250,31 +214,90 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
 
     function limpiarSeleccionUsuario() {
         const input = document.getElementById('input_matricula');
-        const btnCambiar = document.getElementById('btn_cambiar_usuario');
-        const lista = document.getElementById('lista_coincidencias');
-        const hiddenAl = document.getElementById('hidden_id_alumno');
-        const hiddenProf = document.getElementById('hidden_id_profesor');
-
         input.value = '';
         input.readOnly = false;
-        btnCambiar.style.display = 'none';
-        lista.style.display = 'none';
-        lista.innerHTML = '';
-        hiddenAl.value = '';
-        hiddenAl.disabled = true;
-        hiddenProf.value = '';
-        hiddenProf.disabled = true;
-
+        document.getElementById('btn_cambiar_usuario').style.display = 'none';
+        document.getElementById('lista_coincidencias').style.display = 'none';
+        document.getElementById('hidden_id_alumno').disabled = true;
+        document.getElementById('hidden_id_profesor').disabled = true;
         document.getElementById('datos_auto_alumno').style.display = 'none';
         document.getElementById('datos_auto_profesor').style.display = 'none';
     }
 
-    function validarSeleccionUsuario() {
+    // --- LÓGICA DE LIBRO ---
+    function buscarLibroAuto() {
+        const q = document.getElementById('input_buscar_libro').value.trim();
+        const lista = document.getElementById('lista_coincidencias_libro');
+
+        if (q === '') {
+            lista.style.display = 'none';
+            lista.innerHTML = '';
+            return;
+        }
+
+        fetch('buscar_libro.php?q=' + encodeURIComponent(q))
+            .then(res => res.json())
+            .then(libros => {
+                lista.innerHTML = '';
+                if (libros.length > 0) {
+                    libros.forEach(lib => {
+                        const opcion = document.createElement('div');
+                        opcion.style.cssText = 'padding: 10px 12px; border-bottom: 1px solid #E2E8F0; cursor: pointer; font-size: 13px;';
+                        opcion.innerHTML = `<strong style="color:#0F4C81;">${lib.titulo}</strong> — ${lib.autor} <br><small style="color:#166534; font-weight:bold;">[${lib.categoria}] • ${lib.disponibles} disponibles</small>`;
+                        opcion.onmouseover = () => opcion.style.backgroundColor = '#F1F5F9';
+                        opcion.onmouseout = () => opcion.style.backgroundColor = '#FFFFFF';
+                        opcion.onclick = () => seleccionarLibro(lib);
+                        lista.appendChild(opcion);
+                    });
+                } else {
+                    lista.innerHTML = `<div style="padding: 10px; color: #991B1B; font-size: 13px; text-align: center;">❌ No se encontraron libros disponibles con esa búsqueda.</div>`;
+                }
+                lista.style.display = 'block';
+            });
+    }
+
+    function seleccionarLibro(lib) {
+        const input = document.getElementById('input_buscar_libro');
+        input.value = lib.titulo;
+        input.readOnly = true;
+        document.getElementById('btn_cambiar_libro').style.display = 'inline-block';
+        document.getElementById('lista_coincidencias_libro').style.display = 'none';
+
+        const hiddenLib = document.getElementById('hidden_id_libro');
+        hiddenLib.value = lib.id;
+        hiddenLib.disabled = false;
+
+        document.getElementById('auto_lib_titulo').value = lib.titulo;
+        document.getElementById('auto_lib_autor').value = lib.autor;
+        document.getElementById('auto_lib_categoria').value = lib.categoria;
+        document.getElementById('auto_lib_editorial').value = lib.editorial;
+        document.getElementById('auto_lib_isbn_disp').value = `ISBN: ${lib.isbn} (${lib.disponibles} disp.)`;
+
+        document.getElementById('datos_auto_libro').style.display = 'grid';
+    }
+
+    function limpiarSeleccionLibro() {
+        const input = document.getElementById('input_buscar_libro');
+        input.value = '';
+        input.readOnly = false;
+        document.getElementById('btn_cambiar_libro').style.display = 'none';
+        document.getElementById('lista_coincidencias_libro').style.display = 'none';
+        document.getElementById('hidden_id_libro').disabled = true;
+        document.getElementById('datos_auto_libro').style.display = 'none';
+    }
+
+    // --- VALIDACIÓN FINAL ANTES DE ENVIAR ---
+    function validarFormularioCompleto() {
         const hiddenAl = document.getElementById('hidden_id_alumno');
         const hiddenProf = document.getElementById('hidden_id_profesor');
+        const hiddenLib = document.getElementById('hidden_id_libro');
 
         if (hiddenAl.disabled && hiddenProf.disabled) {
-            alert('⚠️ Por favor busca y selecciona un usuario de la lista antes de registrar el movimiento.');
+            alert('⚠️ Por favor busca y selecciona un Alumno o Profesor de la lista.');
+            return false;
+        }
+        if (hiddenLib.disabled) {
+            alert('⚠️ Por favor busca y selecciona un Libro disponible de la lista.');
             return false;
         }
         return true;
