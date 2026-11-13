@@ -32,7 +32,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
         </div>
     <?php endif; ?>
 
-    <div class="contenedor-formulario" style="max-width: 620px;">
+    <div class="contenedor-formulario" style="max-width: 680px;">
         <h2>📋 Registrar Préstamo / Apartado</h2>
         
         <form action="procesar_movimiento.php" method="POST" id="formPrestamo" onsubmit="return validarSeleccionUsuario()" style="display: flex; flex-direction: column; gap: 15px;">
@@ -47,25 +47,64 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
                 </select>
             </div>
 
-            <!-- 2. Buscador por Matrícula (o Nombre) -->
+            <!-- 2. Buscador por Matrícula o Nombre -->
             <div class="grupo-campo" id="bloque_busqueda" style="display: none;">
                 <label id="etiqueta_busqueda">2. Buscar por Matrícula *</label>
-                <input type="text" id="input_matricula" autocomplete="off" placeholder="Escribe la matrícula (ej. DOC-26-001) o nombre..." onkeyup="buscarPorMatricula()">
-                
-                <!-- Lista de coincidencias en tiempo real -->
-                <div id="lista_coincidencias" style="display: none; border: 1px solid #CBD5E1; border-radius: 8px; background: #FFFFFF; max-height: 180px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08);"></div>
-
-                <!-- Tarjeta de confirmación del usuario seleccionado -->
-                <div id="usuario_seleccionado" style="display: none; margin-top: 8px; padding: 10px 14px; background: #E8F5E9; border: 1px solid #A5D6A7; border-radius: 8px; color: #1B5E20; font-size: 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span id="texto_seleccionado"></span>
-                        <button type="button" onclick="limpiarSeleccionUsuario()" style="background: #DC3545; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: bold;">Cambiar</button>
-                    </div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="input_matricula" autocomplete="off" placeholder="Escribe la matrícula (ej. DOC-26-001) o nombre..." onkeyup="buscarPorMatricula()">
+                    <button type="button" id="btn_cambiar_usuario" onclick="limpiarSeleccionUsuario()" style="display: none; background: #DC3545; color: white; border: none; border-radius: 8px; padding: 0 14px; font-weight: bold; cursor: pointer;">Cambiar</button>
                 </div>
+                
+                <!-- Lista de coincidencias -->
+                <div id="lista_coincidencias" style="display: none; border: 1px solid #CBD5E1; border-radius: 8px; background: #FFFFFF; max-height: 180px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-top: 5px;"></div>
 
                 <!-- Campos ocultos que viajan al servidor -->
                 <input type="hidden" name="id_alumno" id="hidden_id_alumno" disabled>
                 <input type="hidden" name="id_profesor" id="hidden_id_profesor" disabled>
+            </div>
+
+            <!-- CAMPOS AUTOCOMPLETADOS DE ALUMNO -->
+            <div id="datos_auto_alumno" class="grid-dos-columnas" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px; background: #F8FAFC; padding: 15px; border-radius: 8px; border: 1px solid #DDE6ED;">
+                <div class="grupo-campo">
+                    <label>Matrícula</label>
+                    <input type="text" id="auto_al_matricula" readonly>
+                </div>
+                <div class="grupo-campo">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="auto_al_nombre" readonly>
+                </div>
+                <div class="grupo-campo">
+                    <label>Madre Encargada</label>
+                    <input type="text" id="auto_al_madre" readonly>
+                </div>
+                <div class="grupo-campo">
+                    <label>Familia</label>
+                    <input type="text" id="auto_al_familia" readonly>
+                </div>
+                <div class="grupo-campo">
+                    <label>Piso</label>
+                    <input type="text" id="auto_al_piso" readonly>
+                </div>
+                <div class="grupo-campo">
+                    <label>Grupo</label>
+                    <input type="text" id="auto_al_grupo" readonly>
+                </div>
+            </div>
+
+            <!-- CAMPOS AUTOCOMPLETADOS DE PROFESOR -->
+            <div id="datos_auto_profesor" class="grid-dos-columnas" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px; background: #F8FAFC; padding: 15px; border-radius: 8px; border: 1px solid #DDE6ED;">
+                <div class="grupo-campo">
+                    <label>Matrícula Docente</label>
+                    <input type="text" id="auto_prof_matricula" readonly>
+                </div>
+                <div class="grupo-campo">
+                    <label>Nombre del Profesor</label>
+                    <input type="text" id="auto_prof_nombre" readonly>
+                </div>
+                <div class="grupo-campo" style="grid-column: 1 / -1;">
+                    <label>Academia / Materia(s)</label>
+                    <input type="text" id="auto_prof_materia" readonly>
+                </div>
             </div>
 
             <!-- 3. Selección del Libro -->
@@ -89,7 +128,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
             <div class="grupo-campo">
                 <label>4. Acción a realizar *</label>
                 <select name="accion" required>
-                    <option value="prestar">Prestar Libro (Entrega en 7 días)</option>
+                    <option value="prestar">Prestar Libro (Entrega en 9 días)</option>
                     <option value="apartar">Apartar Libro (Reservar por 48 horas)</option>
                 </select>
             </div>
@@ -116,7 +155,7 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
         if (tipo === 'alumno') {
             bloque.style.display = 'block';
             etiqueta.textContent = '2. Buscar Alumno por Matrícula (o Nombre) *';
-            input.placeholder = 'Escribe la matrícula escolar o el nombre del alumno...';
+            input.placeholder = 'Escribe la matrícula o el nombre del alumno...';
             input.focus();
         } else if (tipo === 'profesor') {
             bloque.style.display = 'block';
@@ -150,11 +189,12 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
                         opcion.style.borderBottom = '1px solid #E2E8F0';
                         opcion.style.cursor = 'pointer';
                         opcion.style.fontSize = '13px';
-                        opcion.innerHTML = `<strong style="color:#0F4C81;">[${item.matricula}]</strong> <b>${item.nombre}</b> <br><small style="color:#64748B;">${item.detalle}</small>`;
+                        const sub = (tipo === 'alumno') ? `Grupo: ${item.grupo} | Familia: ${item.familia}` : item.materia;
+                        opcion.innerHTML = `<strong style="color:#0F4C81;">[${item.matricula}]</strong> <b>${item.nombre}</b> <br><small style="color:#64748B;">${sub}</small>`;
                         
                         opcion.onmouseover = () => opcion.style.backgroundColor = '#F1F5F9';
                         opcion.onmouseout = () => opcion.style.backgroundColor = '#FFFFFF';
-                        opcion.onclick = () => seleccionarUsuario(tipo, item.id, item.matricula, item.nombre);
+                         opcion.onclick = () => seleccionarUsuario(tipo, item);
                         
                         lista.appendChild(opcion);
                     });
@@ -166,48 +206,67 @@ $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Ejemplares_dispo
             .catch(err => console.error('Error al buscar usuario:', err));
     }
 
-    function seleccionarUsuario(tipo, id, matricula, nombre) {
+    function seleccionarUsuario(tipo, item) {
         const input = document.getElementById('input_matricula');
+        const btnCambiar = document.getElementById('btn_cambiar_usuario');
         const lista = document.getElementById('lista_coincidencias');
-        const tarjeta = document.getElementById('usuario_seleccionado');
-        const texto = document.getElementById('texto_seleccionado');
         const hiddenAl = document.getElementById('hidden_id_alumno');
         const hiddenProf = document.getElementById('hidden_id_profesor');
 
-        input.style.display = 'none';
+        input.value = `[${item.matricula}] ${item.nombre}`;
+        input.readOnly = true;
+        btnCambiar.style.display = 'inline-block';
         lista.style.display = 'none';
-        tarjeta.style.display = 'block';
-        texto.innerHTML = `✅ Seleccionado: <b>[${matricula}] ${nombre}</b>`;
 
         if (tipo === 'alumno') {
-            hiddenAl.value = id;
+            hiddenAl.value = item.id;
             hiddenAl.disabled = false;
             hiddenProf.value = '';
             hiddenProf.disabled = true;
+
+            document.getElementById('auto_al_matricula').value = item.matricula;
+            document.getElementById('auto_al_nombre').value = item.nombre;
+            document.getElementById('auto_al_madre').value = item.madre;
+            document.getElementById('auto_al_familia').value = item.familia;
+            document.getElementById('auto_al_piso').value = item.piso;
+            document.getElementById('auto_al_grupo').value = item.grupo;
+
+            document.getElementById('datos_auto_alumno').style.display = 'grid';
+            document.getElementById('datos_auto_profesor').style.display = 'none';
         } else {
-            hiddenProf.value = id;
+            hiddenProf.value = item.id;
             hiddenProf.disabled = false;
             hiddenAl.value = '';
             hiddenAl.disabled = true;
+
+            document.getElementById('auto_prof_matricula').value = item.matricula;
+            document.getElementById('auto_prof_nombre').value = item.nombre;
+            document.getElementById('auto_prof_materia').value = item.materia;
+
+            document.getElementById('datos_auto_profesor').style.display = 'grid';
+            document.getElementById('datos_auto_alumno').style.display = 'none';
         }
     }
 
     function limpiarSeleccionUsuario() {
         const input = document.getElementById('input_matricula');
+        const btnCambiar = document.getElementById('btn_cambiar_usuario');
         const lista = document.getElementById('lista_coincidencias');
-        const tarjeta = document.getElementById('usuario_seleccionado');
         const hiddenAl = document.getElementById('hidden_id_alumno');
         const hiddenProf = document.getElementById('hidden_id_profesor');
 
         input.value = '';
-        input.style.display = 'block';
+        input.readOnly = false;
+        btnCambiar.style.display = 'none';
         lista.style.display = 'none';
         lista.innerHTML = '';
-        tarjeta.style.display = 'none';
         hiddenAl.value = '';
         hiddenAl.disabled = true;
         hiddenProf.value = '';
         hiddenProf.disabled = true;
+
+        document.getElementById('datos_auto_alumno').style.display = 'none';
+        document.getElementById('datos_auto_profesor').style.display = 'none';
     }
 
     function validarSeleccionUsuario() {
