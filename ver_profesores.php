@@ -131,11 +131,11 @@ $resultado = $stmt->get_result();
                         <td><b><?php echo htmlspecialchars($nombre_docente); ?></b></td>
                         <td><span style="color: #0F4C81; font-weight: 500;"><?php echo htmlspecialchars($materias_docente); ?></span></td>
                         <td>
-                            <a href="profesores.php?editar_id=<?php echo $id_actual; ?>"
-                                style="text-decoration: none; padding: 4px 8px; background-color: #007bff; border-radius: 4px; color: white; font-size: 11px; margin-right: 5px; font-weight: bold;">Editar</a>
-                            <a href="profesores.php?eliminar_id=<?php echo $id_actual; ?>"
-                                style="text-decoration: none; padding: 4px 8px; background-color: #f8d7da; border-radius: 4px; color: #721c24; font-size: 11px; font-weight: bold;"
-                                onclick="return confirm('¿Seguro que deseas eliminar este profesor?');">Eliminar</a>
+                            <a href="registrar_usuario.php?editar_rol=profesor&editar_id=<?php echo $id_actual; ?>"
+    style="text-decoration: none; padding: 4px 8px; background-color: #007bff; border-radius: 4px; color: white; font-size: 11px; margin-right: 5px; font-weight: bold;">Editar</a>
+<a href="registrar_usuario.php?eliminar_rol=profesor&eliminar_id=<?php echo $id_actual; ?>"
+    style="text-decoration: none; padding: 4px 8px; background-color: #f8d7da; border-radius: 4px; color: #721c24; font-size: 11px; font-weight: bold;"
+    onclick="return confirm('¿Seguro que deseas eliminar este profesor?');">Eliminar</a>
                         </td>
                     </tr>
                     <?php
@@ -173,10 +173,10 @@ $resultado = $stmt->get_result();
     <?php endif; ?>
 
     <div style="text-align: center; margin-bottom: 40px;">
-        <a href="registrar_usuario.php"
-            style="display: inline-block; padding: 12px 24px; background-color: #2A9D8F; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background-color 0.2s;"
-            onmouseover="this.style.backgroundColor='#218074'" onmouseout="this.style.backgroundColor='#2A9D8F'">➕
-            Registrar Nuevo Profesor</a>
+       <a href="registrar_usuario.php"
+    style="display: inline-block; padding: 12px 24px; background-color: #2A9D8F; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background-color 0.2s;"
+    onmouseover="this.style.backgroundColor='#218074'" onmouseout="this.style.backgroundColor='#2A9D8F'">➕
+    Registrar Nuevo Profesor</a>
     </div>
 
     <div class="z1">

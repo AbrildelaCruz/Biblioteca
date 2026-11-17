@@ -73,6 +73,8 @@ $resultado = $conexion->query('SELECT id_Alumnos, Matricula, Nombre, Madre_encar
           }
         } else {
           echo '<tr><td colspan="8" style="text-align: center;">No hay alumnos registrados actualmente.</td></tr>';
+          echo '<a href="registrar_usuario.php?editar_rol=alumno&editar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #e2e3e5; border-radius: 3px; color: #383d41; font-size: 11px; margin-right: 5px;">Editar</a>';
+          echo '<a href="registrar_usuario.php?eliminar_rol=alumno&eliminar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px;" onclick="return confirm(\'¿Seguro que deseas eliminar este alumno?\');">Eliminar</a>';
         }
         ?>
       </tbody>
@@ -81,9 +83,8 @@ $resultado = $conexion->query('SELECT id_Alumnos, Matricula, Nombre, Madre_encar
 
   <div style="text-align: center; margin-bottom: 40px;">
     <a href="registrar_usuario.php"
-      style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">➕
-      Registrar Nuevo Alumno</a>
-  </div>
+  style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">➕
+  Registrar Nuevo Alumno</a>
 
   <div class="z1">
     <a class="z2" href="registro.php">REGRESAR</a>

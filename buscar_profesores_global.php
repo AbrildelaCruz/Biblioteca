@@ -27,8 +27,8 @@ if ($result && $result->num_rows > 0) {
         // Ajustamos las celdas de acuerdo a tus columnas típicas de profesores
         echo "<td>" . htmlspecialchars($fila['Materia'] ?? '-') . "</td>";
         echo "<td>";
-        echo '<a href="profesores.php?editar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #e2e3e5; border-radius: 3px; color: #383d41; font-size: 11px; margin-right: 5px;">Editar</a>';
-        echo '<a href="profesores.php?eliminar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px;" onclick="return confirm(\'¿Seguro(a) que deseas eliminar este profesor?\');">Eliminar</a>';
+        echo '<a href="registrar_usuario.php?editar_rol=profesor&editar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #e2e3e5; border-radius: 3px; color: #383d41; font-size: 11px; margin-right: 5px;">Editar</a>';
+echo '<a href="registrar_usuario.php?eliminar_rol=profesor&eliminar_id=' . $id_actual . '" style="text-decoration: none; padding: 3px 6px; background-color: #f8d7da; border-radius: 3px; color: #721c24; font-size: 11px;" onclick="return confirm(\'¿Seguro(a) que deseas eliminar este profesor?\');">Eliminar</a>';
         echo "</td>";
         echo "</tr>";
 
