@@ -44,6 +44,8 @@
                     <span class="subtitulo-menu">📝 Altas y Registros</span>
                     <a class="bton-1" href="profesores.php">👨‍🏫 Registrar Profesores</a>
                     <a class="bton-2" href="alumnos.php">👥 Registrar Alumnos</a>
+                    <a class="bton-1" href="registrar_usuario.php">👤 Registrar Usuarios</a>
+                    <a class="bton-2" href="ver_usuarios.php">👥 Padrón de Usuarios</a>
                     <a class="bton-1" href="catalogo.php">✍️ Registrar Libros Nuevos</a>
                     <a class="bton-3" href="nuevo_prestamo.php">➕ Registrar Préstamo</a>
                     <a class="bton-4" href="ver_catalogo.php">📊 Ver Inventario Completo</a>
