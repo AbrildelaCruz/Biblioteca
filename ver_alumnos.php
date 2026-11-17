@@ -20,12 +20,7 @@ $resultado = $conexion->query('SELECT id_Alumnos, Matricula, Nombre, Madre_encar
   <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
-  <div class="contenedor-burbujas">
-    <div class="burbuja"></div>
-    <div class="burbuja"></div>
-    <div class="burbuja"></div>
-    <div class="burbuja"></div>
-  </div>
+  
 
   <?php if ($mensaje !== ''): ?>
     <div class="alerta <?php echo $tipoMensaje; ?>"
@@ -85,7 +80,7 @@ $resultado = $conexion->query('SELECT id_Alumnos, Matricula, Nombre, Madre_encar
   </div>
 
   <div style="text-align: center; margin-bottom: 40px;">
-    <a href="alumnos.php"
+    <a href="registrar_usuario.php"
       style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">➕
       Registrar Nuevo Alumno</a>
   </div>
