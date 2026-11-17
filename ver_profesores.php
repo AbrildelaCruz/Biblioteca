@@ -86,11 +86,6 @@ $resultado = $stmt->get_result();
 
 <body class="body2">
 
-    <div class="contenedor-burbujas">
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-    </div>
 
     <?php if ($mensaje !== ''): ?>
         <div class="alerta"
@@ -178,7 +173,7 @@ $resultado = $stmt->get_result();
     <?php endif; ?>
 
     <div style="text-align: center; margin-bottom: 40px;">
-        <a href="profesores.php"
+        <a href="registrar_usuario.php"
             style="display: inline-block; padding: 12px 24px; background-color: #2A9D8F; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background-color 0.2s;"
             onmouseover="this.style.backgroundColor='#218074'" onmouseout="this.style.backgroundColor='#2A9D8F'">➕
             Registrar Nuevo Profesor</a>
