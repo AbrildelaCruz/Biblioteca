@@ -137,11 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
-    <div class="contenedor-burbujas">
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-    </div>
 
     <?php if ($mensaje !== ''): ?>
         <div class="alerta <?php echo $tipoMensaje; ?>"
@@ -158,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- 1. SELECTOR DE ROL -->
             <div class="grupo-campo">
-                <label>1. Selecciona el Rol del Usuario *</label>
+                <label>Selecciona el Rol del Usuario *</label>
                 <?php if ($modo_editar): ?>
                     <input type="hidden" name="rol_usuario" value="<?php echo htmlspecialchars($rol_editar); ?>">
                     <input type="text" value="<?php echo ($rol_editar === 'alumno') ? '🎓 Alumno' : '👨‍🏫 Profesor'; ?>" readonly>
