@@ -1,123 +1,294 @@
 /* ==========================================================================
-   1. PORTADA DE BIENVENIDA (INDEX.HTML)
+   ⚙️ CONFIGURACIÓN GENERAL Y REINICIO
    ========================================================================== */
-body.body1 {
+body, html {
     margin: 0;
     padding: 0;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   🎬 MÓDULO DE BIENVENIDA - Biblioteca Sullivan (Efecto Cinemático Puro)
+   ========================================================================== */
+#pantalla-biblioteca {
+    position: relative;
     width: 100vw;
-    background-image: url('img/portada.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    height: 100vh;
+    background-color: #0d1b2a;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    perspective: 1000px;
+}
+
+.telon-portada {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transition: transform 0.9s cubic-bezier(0.25, 1, 0.5, 1), 
+                filter 0.8s ease, 
+                opacity 0.8s ease;
+}
+
+.telon-abrir {
+    transform: scale(0.85) translateZ(-100px);
+    filter: blur(12px);
+    opacity: 0;
 }
 
 .interfaz-bienvenida {
-    background: rgba(15, 76, 129, 0.72);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 45px 60px;
-    border-radius: 20px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    color: white;
-    max-width: 90%;
-    animation: fadeInDown 0.8s ease-out;
-}
-
-.interfaz-bienvenida h1 {
-    font-size: 36px;
-    margin: 0 0 10px 0;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-}
-
-.interfaz-bienvenida p {
-    font-size: 16px;
-    color: #E2E8F0;
-    margin: 0 0 35px 0;
-    font-weight: 300;
-}
-
-#btn-entrar {
     position: relative;
-    overflow: hidden;
-    padding: 16px 42px;
-    font-size: 18px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: #ffffff;
-    background: linear-gradient(135deg, #2A9D8F 0%, #1D6E64 100%);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 10px 25px rgba(42, 157, 143, 0.45);
-    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-}
-
-#btn-entrar:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 15px 35px rgba(42, 157, 143, 0.65);
-    background: linear-gradient(135deg, #32B8A8 0%, #238277 100%);
-}
-
-#btn-entrar:active {
-    transform: translateY(2px) scale(0.96);
-    box-shadow: 0 5px 15px rgba(42, 157, 143, 0.4);
+    z-index: 2;
+    text-align: center;
+    transition: transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease;
 }
 
 .efecto-destello {
+    transform: scale(1.6);
+    filter: blur(6px);
+    opacity: 0;
+}
+
+#btn-entrar {
+    padding: 18px 45px !important;
+    font-size: 1.3rem !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #b38f43 0%, #947432 100%) !important;
+    border: 2px solid #ffffff !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4) !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+}
+
+#btn-entrar:hover {
+    background: linear-gradient(135deg, #947432 0%, #735a26 100%) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.6) !important;
+}
+
+#btn-entrar:active {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.4) !important;
+}
+
+.portal-geometrico {
     position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.6);
-    transform: scale(0);
-    animation: ripple-anim 0.6s linear;
-    pointer-events: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    z-index: 1;
 }
 
-@keyframes ripple-anim {
-    to {
-        transform: scale(4);
-        opacity: 0;
-    }
+.hoja {
+    width: 50%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1), 
+                filter 0.8s ease, 
+                opacity 0.8s ease;
 }
 
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
+.puerta-izquierda {
+    background-image: url('1.png');
+    background-position: left center;
+    border-right: 2px solid rgba(212, 175, 55, 0.3);
+    transform-origin: left center;
+}
+
+.puerta-derecha {
+    background-image: url('1.png');
+    background-position: right center;
+    border-left: 2px solid rgba(212, 175, 55, 0.3);
+    transform-origin: right center;
+}
+
+.portal-abrir-izq {
+    transform: translateX(-100%) scale(0.8) rotateY(25deg);
+    filter: blur(10px);
+    opacity: 0;
+}
+
+.portal-abrir-der {
+    transform: translateX(100%) scale(0.8) rotateY(-25deg);
+    filter: blur(10px);
+    opacity: 0;
+}
+
+.hiperespacio {
+    background-color: #ffffff !important; 
 }
 
 /* ==========================================================================
-   2. GENERAL, BURBUJAS DE FONDO Y SCROLLBAR PRINCIPAL
+   🎨 HOJA DE ESTILOS DEL INTERIOR (MÓDULOS Y FORMULARIOS)
+   ========================================================================== */
+.A_uno {
+    padding: 10px 20px;
+    color: white;             
+    text-decoration: none;     
+    border-radius: 6px;       
+    font-weight: bold;         
+    transition: background-color 0.2s;
+    background-color: #2A9D8F;
+}
+
+.A_uno:hover { background-color: #218074; }
+.A_uno:focus { outline: 2px solid #0F4C81; }
+
+/* ==========================================================================
+   🔔 PANEL DE ALERTAS Y NOTIFICACIONES
+   ========================================================================== */
+.dashboard-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    width: 95% !important;
+    max-width: 1100px !important;
+    margin: 50px auto !important;
+    gap: 40px !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+}
+
+.columna-izquierda {
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+.columna-izquierda .contenedorpadrere {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 400px !important;
+}
+
+.panel-notificaciones-derecho {
+    width: 100% !important;
+    max-width: 380px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 25px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(15, 76, 129, 0.08) !important;
+    border: 1px solid rgba(232, 238, 245, 0.6) !important;
+    box-sizing: border-box !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    text-align: left !important;
+}
+
+.seccion-menu {
+    width: 100%;
+    border-top: 2px dashed #DDE6ED;
+    margin-top: 15px;
+    padding-top: 10px;
+}
+
+.subtitulo-menu {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #475569;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.lista-alertas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tarjeta-aviso {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 5px solid;
+    background-color: #F8FAFC;
+    color: #1E293B;
+}
+
+.entrega-vencida {
+    border-left-color: #DC3545 !important;
+    background-color: #FFF5F5 !important;
+    color: #991B1B !important;
+}
+
+.entrega-hoy {
+    border-left-color: #FFC107 !important;
+    background-color: #FFFDF0 !important;
+    color: #92400E !important;
+}
+
+.entrega-proxima {
+    border-left-color: #2A9D8F !important;
+    background-color: #F4FBF9 !important;
+    color: #166534 !important;
+}
+
+.aviso-vacio {
+    text-align: center;
+    padding: 25px;
+    color: #475569;
+    font-style: italic;
+    font-size: 14px;
+    background: #F8FAFC;
+    border-radius: 8px;
+    border: 1px dashed #CBD5E1;
+}
+
+/* ==========================================================================
+   🌊 FONDO Y CONTENEDOR INTERIOR
    ========================================================================== */
 html {
-    background-color: #E8EEF5;
+    background-color: #E8EEF5; 
     margin: 0;
     padding: 0;
     min-height: 100%;
-    overflow-x: hidden;
+    overflow-x: hidden; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body.body2 {
-    background-color: transparent;
+    background-color: transparent; 
     color: #2B2D42;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    min-height: 100vh; 
     position: relative;
     z-index: 1;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .contenedor-burbujas {
@@ -126,8 +297,8 @@ body.body2 {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -10;
-    pointer-events: none;
+    z-index: -10; 
+    pointer-events: none; 
     overflow: hidden;
 }
 
@@ -141,7 +312,7 @@ body.body2 {
 .burbuja:nth-child(1) {
     width: 450px;
     height: 450px;
-    background-color: #CCE0F5;
+    background-color: #CCE0F5; 
     top: -10%;
     left: -10%;
     animation: flotar-burbuja 22s infinite alternate ease-in-out;
@@ -150,7 +321,7 @@ body.body2 {
 .burbuja:nth-child(2) {
     width: 550px;
     height: 550px;
-    background-color: #D2EBE8;
+    background-color: #D2EBE8; 
     bottom: -15%;
     right: -10%;
     animation: flotar-burbuja 28s infinite alternate-reverse ease-in-out;
@@ -159,7 +330,7 @@ body.body2 {
 .burbuja:nth-child(3) {
     width: 350px;
     height: 350px;
-    background-color: #D0DEF0;
+    background-color: #D0DEF0; 
     top: 40%;
     left: 35%;
     animation: flotar-burbuja 25s infinite alternate ease-in-out;
@@ -177,33 +348,34 @@ body.body2 {
 }
 
 ::-webkit-scrollbar-track {
-    background: #E8EEF5;
+    background: #E8EEF5; 
     border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #0F4C81;
+    background: #0F4C81; 
     border-radius: 8px;
-    border: 2px solid #E8EEF5;
+    border: 2px solid #E8EEF5; 
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #2A9D8F;
+    background: #2A9D8F; 
 }
 
 /* ==========================================================================
-   3. DASHBOARD Y PANEL DE MÓDULOS (REGISTRO.PHP)
+   📦 CONTENEDORES DE MÓDULOS Y FORMULARIOS
    ========================================================================== */
-.dashboard-layout {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 30px;
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
+.contenedorpadre {
+    background-color: #FFFFFF;
+    margin: 40px auto;
+    padding: 35px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(15, 76, 129, 0.08);
+    border: 1px solid #DDE6ED;
     box-sizing: border-box;
-    flex-wrap: wrap;
+    text-align: center;
 }
 
 .contenedorpadrere {
@@ -237,27 +409,9 @@ body.body2 {
     letter-spacing: 0.8px;
 }
 
-.subtitulo-menu {
-    display: block;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #64748b;
-    letter-spacing: 1px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-align: left;
-    width: 100%;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    border-bottom: 1px solid #E8EEF5;
-    padding-bottom: 4px;
-}
-
-.seccion-menu {
-    margin-top: 22px;
-}
-
+/* ==========================================================================
+   🔘 BOTONES DEL MENÚ PRINCIPAL (REGISTRO.PHP)
+   ========================================================================== */
 .bton-1, .bton-2, .bton-3, .bton-4 {
     display: block;
     width: 100%;
@@ -280,7 +434,6 @@ body.body2 {
     color: #FFFFFF;
     border: 1px solid #0F4C81;
 }
-
 .bton-1:hover {
     background-color: #1660A0;
     transform: translateY(-2px);
@@ -292,7 +445,6 @@ body.body2 {
     color: #FFFFFF;
     border: 1px solid #2A9D8F;
 }
-
 .bton-3:hover {
     background-color: #238478;
     transform: translateY(-2px);
@@ -304,7 +456,6 @@ body.body2 {
     color: #0F4C81;
     border: 1px solid #CBD5E1;
 }
-
 .bton-4:hover, .bton-2:hover {
     background-color: #0F4C81;
     color: #FFFFFF;
@@ -319,106 +470,11 @@ body.body2 {
 }
 
 /* ==========================================================================
-   4. COLUMNA DERECHA DE ALERTAS (DEVOLUCIONES Y STOCK BAJO)
+   📝 CAMPOS DE TEXTO, ETIQUETAS Y SELECTORES DE FORMULARIOS
    ========================================================================== */
-.columna-derecha-alertas {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 340px;
-    flex-shrink: 0;
-}
-
-.panel-notificaciones-derecho {
-    width: 100%;
-    background-color: #FFFFFF;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 10px 25px rgba(15, 76, 129, 0.08);
-    border: 1px solid #DDE6ED;
-    box-sizing: border-box;
-}
-
-.columna-derecha-alertas .lista-alertas {
-    max-height: 230px;
-    overflow-y: auto;
-    padding-right: 6px;
-}
-
-.columna-derecha-alertas .lista-alertas::-webkit-scrollbar {
-    width: 6px;
-}
-
-.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-track {
-    background: #E8EEF5;
-    border-radius: 8px;
-}
-
-.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-thumb {
-    background: #0F4C81;
-    border-radius: 8px;
-}
-
-.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-thumb:hover {
-    background: #2A9D8F;
-}
-
-.aviso-vacio {
-    padding: 20px 15px;
-    text-align: center;
-    background-color: #F4F7FA;
-    border-radius: 8px;
-    color: #475569;
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-/* ==========================================================================
-   5. FORMULARIOS Y BOTÓN REGRESAR
-   ========================================================================== */
-.contenedorpadre {
-    background-color: #FFFFFF;
-    margin: 40px auto;
-    padding: 35px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 25px rgba(15, 76, 129, 0.08);
-    border: 1px solid #DDE6ED;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.contenedor-form {
-    background-color: #FFFFFF;
-    margin: 20px auto;
-    padding: 30px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 25px rgba(15, 76, 129, 0.08);
-    border: 1px solid #DDE6ED;
-    box-sizing: border-box;
-    text-align: left;
-}
-
-label,
-.a2,
-.a5,
-.a8,
-.a11,
-.a13,
-.a15,
-.a17,
-.a19,
-.a21,
-.a23,
-.b1,
-.b3,
-.b5,
-.b7,
-.b9,
-.b11 {
+label, 
+.a2, .a5, .a8, .a11, .a13, .a15, .a17, .a19, .a21, .a23,
+.b1, .b3, .b5, .b7, .b9, .b11 {
     display: block;
     font-size: 13px;
     font-weight: bold;
@@ -430,26 +486,12 @@ label,
     letter-spacing: 0.5px;
 }
 
-input[type="text"],
-input[type="number"],
+input[type="text"], 
+input[type="number"], 
 input[type="date"],
 select,
-.a3,
-.a6,
-.a9,
-.a12,
-.a14,
-.a16,
-.a18,
-.a20,
-.a22,
-.a24,
-.b2,
-.b4,
-.b6,
-.b8,
-.b10,
-.b12 {
+.a3, .a6, .a9, .a12, .a14, .a16, .a18, .a20, .a22, .a24,
+.b2, .b4, .b6, .b8, .b10, .b12 {
     width: 100%;
     padding: 12px;
     border: 1.5px solid #CBD5E1;
@@ -461,16 +503,17 @@ select,
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input:focus,
-select:focus {
+input:focus, select:focus {
     border-color: #0F4C81;
     background-color: #FFFFFF;
     outline: none;
     box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.15);
 }
 
-button[type="submit"],
-.bt-enviar {
+/* ==========================================================================
+   ✅ BOTÓN DE GUARDADO / ENVÍO
+   ========================================================================== */
+button[type="submit"], .bt-enviar {
     width: 100%;
     padding: 14px;
     background-color: #2A9D8F;
@@ -487,12 +530,14 @@ button[type="submit"],
     box-shadow: 0 4px 10px rgba(42, 157, 143, 0.25);
 }
 
-button[type="submit"]:hover,
-.bt-enviar:hover {
+button[type="submit"]:hover, .bt-enviar:hover {
     background-color: #21867A;
     transform: translateY(-2px);
 }
 
+/* ==========================================================================
+   🔙 BOTÓN FLOTANTE REGRESAR (ESQUINA INFERIOR IZQUIERDA)
+   ========================================================================== */
 .z1 {
     position: fixed;
     bottom: 20px;
@@ -521,17 +566,8 @@ button[type="submit"]:hover,
 }
 
 /* ==========================================================================
-   6. TABLAS, ESTADOS DE ENTREGA Y BOTONES DE ACCIÓN
+   📊 TABLAS DE DATOS Y ESTADOS DE ENTREGA (CON ANIMACIÓN)
    ========================================================================== */
-.tabla-responsiva {
-    width: 95%;
-    max-width: 1200px;
-    margin: 20px auto;
-    overflow-x: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.05);
-}
-
 .tabla-datos {
     width: 95%;
     max-width: 1200px;
@@ -563,86 +599,101 @@ button[type="submit"]:hover,
     font-size: 14px;
 }
 
+.tabla-datos tbody tr {
+    transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+    position: relative;
+}
+
 .tabla-datos tbody tr:hover {
-    background-color: #F8FAFC;
+    background-color: #F4F8FB;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.12);
+    z-index: 2;
 }
 
 .tabla-datos tbody tr.entrega-vencida {
     background-color: #FEE2E2;
     border-left: 5px solid #DC2626;
 }
-
 .tabla-datos tbody tr.entrega-vencida td {
     color: #7F1D1D;
+}
+.tabla-datos tbody tr.entrega-vencida:hover {
+    background-color: #FECACA;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 .tabla-datos tbody tr.entrega-hoy {
     background-color: #FEF3C7;
     border-left: 5px solid #D97706;
 }
-
 .tabla-datos tbody tr.entrega-hoy td {
     color: #78350F;
+}
+.tabla-datos tbody tr.entrega-hoy:hover {
+    background-color: #FDE68A;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
 }
 
 .tabla-datos tbody tr.entrega-proxima {
     background-color: #F0FDF4;
     border-left: 5px solid #16A34A;
 }
-
-.tarjeta-aviso.entrega-vencida {
-    background-color: #FEE2E2;
-    border-left-color: #DC2626;
-    color: #991B1B;
-}
-
-.tarjeta-aviso.entrega-hoy {
-    background-color: #FEF3C7;
-    border-left-color: #D97706;
-    color: #92400E;
-}
-
-.tarjeta-aviso.entrega-proxima {
-    background-color: #F0FDF4;
-    border-left-color: #16A34A;
-    color: #166534;
-}
-
-.btn-editar {
-    display: inline-block;
-    background-color: #0284C7;
-    color: #FFFFFF;
-    padding: 6px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
-
-.btn-editar:hover {
-    background-color: #0369A1;
-}
-
-.btn-eliminar {
-    display: inline-block;
-    background-color: #DC2626;
-    color: #FFFFFF;
-    padding: 6px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: bold;
-    margin-left: 5px;
-    transition: background-color 0.2s;
-}
-
-.btn-eliminar:hover {
-    background-color: #B91C1C;
+.tabla-datos tbody tr.entrega-proxima:hover {
+    background-color: #DCFCE7;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.18);
 }
 
 /* ==========================================================================
-   7. CATÁLOGO INTERACTIVO (TARJETAS DE LIBROS Y MODAL)
+   ⚡ BOTONES DE ACCIÓN EN TABLAS Y MENSAJES DE ALERTA
+   ========================================================================== */
+.btn-editar, .btn-eliminar, .btn-recibir, .btn-perdido {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    color: #FFFFFF;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-editar { background-color: #0284C7; }
+.btn-editar:hover { background-color: #0369A1; transform: scale(1.05); }
+
+.btn-eliminar, .btn-perdido { background-color: #DC2626; }
+.btn-eliminar:hover, .btn-perdido:hover { background-color: #B91C1C; transform: scale(1.05); }
+
+.btn-recibir { background-color: #2A9D8F; }
+.btn-recibir:hover { background-color: #21867A; transform: scale(1.05); }
+
+.alerta {
+    padding: 15px 20px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.alerta.exito {
+    background-color: #DCFCE7;
+    color: #166534;
+    border: 1px solid #86EFAC;
+}
+
+.alerta.error {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #FCA5A5;
+}
+
+/* ==========================================================================
+   📚 ESTILOS PARA EL CATÁLOGO INTERACTIVO Y MODAL
    ========================================================================== */
 .grid-catalogo {
     display: grid;
@@ -749,8 +800,61 @@ button[type="submit"]:hover,
     color: #DC2626;
 }
 
+.tabla-responsiva {
+    width: 95%;
+    max-width: 1200px;
+    margin: 20px auto;
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.05);
+}
+
 /* ==========================================================================
-   8. PESTAÑAS DE FILTRO RÁPIDO Y PAGINACIÓN EN BITÁCORA (PRESTAMOS.PHP)
+   📌 COLUMNA DERECHA APILADA (NOTIFICACIONES ARRIBA Y STOCK BAJO ABAJO)
+   ========================================================================== */
+.columna-derecha-alertas {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 340px;
+    flex-shrink: 0;
+}
+
+.columna-derecha-alertas .panel-notificaciones-derecho {
+    position: relative !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box;
+}
+
+.columna-derecha-alertas .lista-alertas {
+    max-height: 230px !important;
+    overflow-y: auto !important;
+    padding-right: 6px;
+}
+
+.columna-derecha-alertas .lista-alertas::-webkit-scrollbar {
+    width: 6px;
+}
+
+.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-track {
+    background: #E8EEF5;
+    border-radius: 8px;
+}
+
+.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-thumb {
+    background: #0F4C81;
+    border-radius: 8px;
+}
+
+.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-thumb:hover {
+    background: #2A9D8F;
+}
+
+/* ==========================================================================
+   📑 PESTAÑAS DE FILTRO RÁPIDO Y PAGINACIÓN EN BITÁCORA (PRESTAMOS.PHP)
    ========================================================================== */
 .paginacion {
     text-align: center;
@@ -855,3 +959,4 @@ button[type="submit"]:hover,
 .tab-filtro.activa-devueltos .badge-filtro {
     background-color: rgba(255, 255, 255, 0.25);
 }
+

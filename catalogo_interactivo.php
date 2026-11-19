@@ -178,20 +178,22 @@ $categorias_disponibles = [
             <?php while ($libro = $libros_res->fetch_assoc()):
                 $es_disponible = ($libro['Ejemplares_disponibles'] > 0);
                 $cat_libro = $libro['Categoria'] ?? 'Novela y Narrativa';
-                  $isbn_limpio = preg_replace('/[^0-9X]/i', '', $libro['ISBN'] ?? '');
+ $isbn_limpio = preg_replace('/[^0-9X]/i', '', $libro['ISBN'] ?? '');
     $url_portada = !empty($isbn_limpio) 
         ? "https://openlibrary.org{$isbn_limpio}-M.jpg?default=false" 
-        : "logobiblioteca.png";
-                ?>
+        : "";
+?>
                  <div class="tarjeta-libro" data-categoria="<?php echo htmlspecialchars($cat_libro); ?>">
         
         <div class="fila-tarjeta-contenido">
-            <img 
+           <img 
                 src="<?php echo $url_portada; ?>" 
                 alt="Portada" 
                 class="portada-libro"
-                onerror="this.onerror=null; this.src='logobiblioteca.png';"
-            >
+                data-titulo="<?php echo htmlspecialchars($libro['Titulo']); ?>"
+                data-autor="<?php echo htmlspecialchars($libro['Autor']); ?>"
+                onerror="buscarEnGoogleBooks(this)"
+             >
 
             <div class="info-libro">
                 <span style="display: inline-block; padding: 2px 8px; background: #EFF6FF; color: #1E40AF; border-radius: 10px; font-size: 11px; font-weight: bold; margin-bottom: 6px;">
@@ -378,6 +380,49 @@ while ($prof = $profesores_res->fetch_assoc()) {
             }
         }
     </script>
+
+<script>
+const SVG_RESPALDO = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://w3.org" width="85" height="125" viewBox="0 0 85 125"><rect width="85" height="125" rx="6" fill="#EFF6FF"/><path d="M27 42h31v41H27z" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linejoin="round"/><path d="M33 42v41M39 52h13M39 60h13" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/></svg>');
+
+async function buscarEnGoogleBooks(img) {
+  img.onerror = null;
+
+  const titulo = (img.dataset.titulo || '').replace(/\(Ej\..*?\)/gi, '').trim();
+  const autor = (img.dataset.autor || '').trim();
+
+  if (!titulo) {
+    img.src = SVG_RESPALDO;
+    return;
+  }
+
+  const claveCache = `portada_${titulo}_${autor}`;
+  const guardada = sessionStorage.getItem(claveCache);
+  if (guardada) {
+    img.src = guardada;
+    return;
+  }
+
+  try {
+    const query = encodeURIComponent(`intitle:${titulo} inauthor:${autor}`);
+    const respuesta = await fetch(`https://googleapis.com{query}&maxResults=1`);
+    const datos = await respuesta.json();
+
+    const links = datos.items?.[0]?.volumeInfo?.imageLinks;
+    let urlFinal = links?.thumbnail || links?.smallThumbnail;
+
+    if (urlFinal) {
+      urlFinal = urlFinal.replace(/^http:/, 'https:');
+      img.src = urlFinal;
+      sessionStorage.setItem(claveCache, urlFinal);
+    } else {
+      img.src = SVG_RESPALDO;
+      sessionStorage.setItem(claveCache, SVG_RESPALDO);
+    }
+  } catch (error) {
+    img.src = SVG_RESPALDO;
+  }
+}
+</script>
 
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
