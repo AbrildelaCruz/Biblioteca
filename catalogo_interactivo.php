@@ -11,7 +11,7 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
 $alumnos_res = $conexion->query("SELECT id_Alumnos, Matricula, Nombre FROM alumnos ORDER BY Nombre ASC");
 $profesores_res = $conexion->query("SELECT id_profesores, Matricula, Nombre FROM profesores ORDER BY Nombre ASC");
-$libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Categoria, Editorial, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY Titulo ASC");
+$libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Categoria, Editorial, ISBN, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY Titulo ASC");
 
 $categorias_disponibles = [
     'Novela y Narrativa',
@@ -178,24 +178,37 @@ $categorias_disponibles = [
             <?php while ($libro = $libros_res->fetch_assoc()):
                 $es_disponible = ($libro['Ejemplares_disponibles'] > 0);
                 $cat_libro = $libro['Categoria'] ?? 'Novela y Narrativa';
+                  $isbn_limpio = preg_replace('/[^0-9X]/i', '', $libro['ISBN'] ?? '');
+    $url_portada = !empty($isbn_limpio) 
+        ? "https://openlibrary.org{$isbn_limpio}-M.jpg?default=false" 
+        : "logobiblioteca.png";
                 ?>
-                <div class="tarjeta-libro" data-categoria="<?php echo htmlspecialchars($cat_libro); ?>">
-                    <div class="info-libro">
-                        <span style="display: inline-block; padding: 2px 8px; background: #EFF6FF; color: #1E40AF; border-radius: 10px; font-size: 11px; font-weight: bold; margin-bottom: 6px;">
-                            <?php echo htmlspecialchars($cat_libro); ?>
-                        </span>
-                        <h3 class="titulo-libro"><?php echo htmlspecialchars($libro['Titulo']); ?></h3>
-                        <p class="autor-libro"><b>Autor:</b> <?php echo htmlspecialchars($libro['Autor']); ?></p>
-                        <p><b>Editorial:</b> <?php echo htmlspecialchars($libro['Editorial']); ?></p>
-                        <p><b>En Estantería:</b> <?php echo $libro['Ejemplares_disponibles'] ?? 0; ?> copias</p>
+                 <div class="tarjeta-libro" data-categoria="<?php echo htmlspecialchars($cat_libro); ?>">
+        
+        <div class="fila-tarjeta-contenido">
+            <img 
+                src="<?php echo $url_portada; ?>" 
+                alt="Portada" 
+                class="portada-libro"
+                onerror="this.onerror=null; this.src='logobiblioteca.png';"
+            >
 
-                        <?php if ($es_disponible): ?>
-                            <span class="semaforo disponible">🟢 Disponible</span>
-                        <?php else: ?>
-                            <span class="semaforo agotado">🔴 Todo Prestado / Apartado</span>
-                        <?php endif; ?>
-                    </div>
+            <div class="info-libro">
+                <span style="display: inline-block; padding: 2px 8px; background: #EFF6FF; color: #1E40AF; border-radius: 10px; font-size: 11px; font-weight: bold; margin-bottom: 6px;">
+                    <?php echo htmlspecialchars($cat_libro); ?>
+                </span>
+                <h3 class="titulo-libro"><?php echo htmlspecialchars($libro['Titulo']); ?></h3>
+                <p class="autor-libro"><b>Autor:</b> <?php echo htmlspecialchars($libro['Autor']); ?></p>
+                <p><b>Editorial:</b> <?php echo htmlspecialchars($libro['Editorial']); ?></p>
+                <p><b>En Estantería:</b> <?php echo $libro['Ejemplares_disponibles'] ?? 0; ?> copias</p>
 
+                <?php if ($es_disponible): ?>
+                    <span class="semaforo disponible">🟢 Disponible</span>
+                <?php else: ?>
+                    <span class="semaforo agotado">🔴 Todo Prestado / Apartado</span>
+                <?php endif; ?>
+            </div>
+        </div>
                     <?php if ($es_disponible): ?>
                         <div class="formulario-prestamo">
                             <form action="procesar_movimiento.php" method="POST" style="display: flex; flex-direction: column; gap: 8px;">

@@ -131,54 +131,6 @@
             </div>
 
             <!-- PANEL 2: ALERTAS DE STOCK BAJO EN INVENTARIO -->
-            <div class="panel-notificaciones-derecho">
-                <h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-                    📦 Alertas de Stock Bajo
-                </h3>
-                <div class="lista-alertas">
-                    <?php
-                    $sql_stock = "SELECT Titulo, Autor, Ejemplares_disponibles, Ejemplares_totales 
-                                  FROM libros 
-                                  WHERE Ejemplares_disponibles <= 1 
-                                  ORDER BY Ejemplares_disponibles ASC, Titulo ASC";
-                    $res_stock = $conexion->query($sql_stock);
-
-                    if ($res_stock && $res_stock->num_rows > 0) {
-                        while ($libro_bajo = $res_stock->fetch_assoc()) {
-                            $disp = (int)$libro_bajo['Ejemplares_disponibles'];
-                            $totales = (int)$libro_bajo['Ejemplares_totales'];
-
-                            if ($disp === 0) {
-                                $clase_stock = "entrega-vencida";
-                                $etiqueta_stock = "🚫 AGOTADO (0 DISPONIBLES)";
-                            } else {
-                                $clase_stock = "entrega-hoy";
-                                $etiqueta_stock = "⚠️ ÚLTIMO EJEMPLAR (1 DISPONIBLE)";
-                            }
-                            ?>
-                            <div class="tarjeta-aviso <?php echo $clase_stock; ?>" style="padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; font-size: 13px; line-height: 1.4;">
-                                <span style="display: block; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
-                                    <?php echo $etiqueta_stock; ?>
-                                </span>
-                                <strong style="display: block; color: #1E293B; font-size: 14px;">
-                                    <?php echo htmlspecialchars($libro_bajo['Titulo']); ?>
-                                </strong>
-                                <span style="display: block; color: #475569; font-size: 12px; margin-top: 2px;">
-                                    Autor: <?php echo htmlspecialchars($libro_bajo['Autor'] ?? 'Sin autor'); ?> | Total en acervo: <b><?php echo $totales; ?></b>
-                                </span>
-                            </div>
-                            <?php
-                        }
-                    } else {
-                        echo '<div class="aviso-vacio">✅ Todos los títulos cuentan con suficiente stock disponible.</div>';
-                    }
-                    ?>
-                </div>
-            </div>
-
-        </div>
-    </div>
-            <!-- PANEL 2: ALERTAS DE STOCK BAJO EN INVENTARIO -->
             <div class="panel-notificaciones-derecho" style="width: 100%; max-width: 100%; box-sizing: border-box;">
                 <h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
                     📦 Alertas de Stock Bajo
