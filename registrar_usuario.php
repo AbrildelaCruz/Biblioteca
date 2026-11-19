@@ -20,6 +20,35 @@ $piso = '';
 $grupo = '';
 $materias_actuales = '';
 
+// ==========================================
+// 0. VERIFICAR SI SE PIDIÓ ELIMINAR UN REGISTRO
+// ==========================================
+if (isset($_GET['eliminar_rol']) && isset($_GET['eliminar_id'])) {
+    $rol_eliminar = $_GET['eliminar_rol'];
+    $id_eliminar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
+
+    if ($id_eliminar && ($rol_eliminar === 'alumno' || $rol_eliminar === 'profesor')) {
+        try {
+            if ($rol_eliminar === 'alumno') {
+                $stmt_del = $conexion->prepare("DELETE FROM alumnos WHERE id_Alumnos = ?");
+                $pagina_destino = "ver_alumnos.php";
+            } else {
+                $stmt_del = $conexion->prepare("DELETE FROM profesores WHERE id_profesores = ?");
+                $pagina_destino = "ver_profesores.php";
+            }
+            $stmt_del->bind_param("i", $id_eliminar);
+            $stmt_del->execute();
+            $stmt_del->close();
+
+            header("Location: " . $pagina_destino);
+            exit();
+        } catch (mysqli_sql_exception $e) {
+            $mensaje = "❌ No se puede eliminar este usuario porque tiene préstamos registrados en la bitácora.";
+            $tipoMensaje = "error";
+        }
+    }
+}
+
 // 1. CARGAR DATOS SI VENIMOS A EDITAR
 if ($id_editar && ($rol_editar === 'alumno' || $rol_editar === 'profesor')) {
     if ($rol_editar === 'alumno') {
@@ -123,6 +152,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Redirige directo a la tabla de profesores
         header("Location: ver_profesores.php");
+        exit();
+    }
+}
+// 3. PROCESAR ELIMINACIÓN DESDE LAS TABLAS
+if (isset($_GET['eliminar_id'], $_GET['eliminar_rol'])) {
+    $id_del = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);
+    $rol_del = $_GET['eliminar_rol'];
+
+    if ($id_del && ($rol_del === 'alumno' || $rol_del === 'profesor')) {
+        $tabla = ($rol_del === 'alumno') ? 'alumnos' : 'profesores';
+        $col_id = ($rol_del === 'alumno') ? 'id_Alumnos' : 'id_profesores';
+        $destino = ($rol_del === 'alumno') ? 'ver_alumnos.php' : 'ver_profesores.php';
+
+        $stmt = $conexion->prepare("DELETE FROM $tabla WHERE $col_id = ?");
+        $stmt->bind_param("i", $id_del);
+        if ($stmt->execute()) {
+            $_SESSION['mensaje'] = '🗑️ Registro eliminado correctamente.';
+            $_SESSION['tipoMensaje'] = 'exito';
+        } else {
+            $_SESSION['mensaje'] = '❌ No se pudo eliminar (verifica que no tenga préstamos registrados).';
+            $_SESSION['tipoMensaje'] = 'error';
+        }
+        $stmt->close();
+        header("Location: $destino");
         exit();
     }
 }
