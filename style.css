@@ -1010,3 +1010,110 @@ body.body2::-webkit-scrollbar-thumb:hover {
 .columna-derecha-alertas .lista-alertas::-webkit-scrollbar-thumb:hover {
     background: #2A9D8F;
 }
+
+/* ==========================================================================
+   📑 PESTAÑAS DE FILTRO RÁPIDO Y PAGINACIÓN EN BITÁCORA (PRESTAMOS.PHP)
+   ========================================================================== */
+.paginacion {
+    text-align: center;
+    margin: 30px auto;
+}
+
+.paginacion a {
+    display: inline-block;
+    padding: 8px 14px;
+    margin: 0 4px;
+    background-color: #f1f5f9;
+    color: #1e293b;
+    text-decoration: none;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.paginacion a.activa {
+    background-color: #0F4C81;
+    color: white;
+    border-color: #0F4C81;
+}
+
+.paginacion a:hover:not(.activa) {
+    background-color: #e2e8f0;
+}
+
+.paginacion span.desactivado {
+    display: inline-block;
+    padding: 8px 14px;
+    margin: 0 4px;
+    background-color: #f8fafc;
+    color: #94a3b8;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    font-size: 13px;
+    cursor: not-allowed;
+}
+
+.barra-filtros {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 95%;
+    max-width: 850px;
+    margin: 0 auto 18px auto;
+}
+
+.tab-filtro {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    background-color: #FFFFFF;
+    color: #475569;
+    border: 1.5px solid #CBD5E1;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(15, 76, 129, 0.04);
+}
+
+.tab-filtro:hover {
+    border-color: #0F4C81;
+    color: #0F4C81;
+    transform: translateY(-1px);
+}
+
+.tab-filtro.activa {
+    background-color: #0F4C81;
+    color: #FFFFFF;
+    border-color: #0F4C81;
+}
+
+.tab-filtro.activa-vencidos {
+    background-color: #DC3545;
+    color: #FFFFFF;
+    border-color: #DC3545;
+}
+
+.tab-filtro.activa-devueltos {
+    background-color: #2A9D8F;
+    color: #FFFFFF;
+    border-color: #2A9D8F;
+}
+
+.badge-filtro {
+    padding: 2px 7px;
+    border-radius: 12px;
+    font-size: 11px;
+    background-color: rgba(15, 76, 129, 0.1);
+    color: inherit;
+}
+
+.tab-filtro.activa .badge-filtro,
+.tab-filtro.activa-vencidos .badge-filtro,
+.tab-filtro.activa-devueltos .badge-filtro {
+    background-color: rgba(255, 255, 255, 0.25);
+}

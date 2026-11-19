@@ -5,6 +5,16 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+date_default_timezone_set('America/Mexico_City');
+$fecha_hoy = date('Y-m-d');
+
+// Filtro activo (todos, pendientes, vencidos, devueltos)
+$filtro_actual = $_GET['filtro'] ?? 'todos';
+$filtros_validos = ['todos', 'pendientes', 'vencidos', 'devueltos'];
+if (!in_array($filtro_actual, $filtros_validos, true)) {
+    $filtro_actual = 'todos';
+}
+
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
@@ -45,7 +55,7 @@ if (isset($_GET['devolver_id'])) {
             $stmt_dev->close();
         }
     }
-    header("Location: prestamos.php");
+    header("Location: prestamos.php?filtro=" . urlencode($filtro_actual));
     exit();
 }
 
@@ -79,7 +89,7 @@ if (isset($_GET['renovar_id'])) {
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
-    header("Location: prestamos.php");
+    header("Location: prestamos.php?filtro=" . urlencode($filtro_actual));
     exit();
 }
 
@@ -90,8 +100,6 @@ if (isset($_GET['perdido_id'])) {
     $id_prestamo_perdido = filter_input(INPUT_GET, 'perdido_id', FILTER_VALIDATE_INT);
     
     if ($id_prestamo_perdido) {
-        $fecha_hoy = date('Y-m-d');
-        
         $stmt_buscar = $conexion->prepare("SELECT id_libro FROM prestamos WHERE id_prestamo = ?");
         $stmt_buscar->bind_param("i", $id_prestamo_perdido);
         $stmt_buscar->execute();
@@ -124,8 +132,26 @@ if (isset($_GET['perdido_id'])) {
             }
         }
     }
-    header("Location: prestamos.php");
+    header("Location: prestamos.php?filtro=" . urlencode($filtro_actual));
     exit();
+}
+
+// ==========================================
+// CONTADORES PARA LAS PESTAÑAS DE FILTRO
+// ==========================================
+$conteo_todos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos")->fetch_assoc()['total'] ?? 0;
+$conteo_pendientes = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE fecha_devolucion_real IS NULL")->fetch_assoc()['total'] ?? 0;
+$conteo_vencidos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE fecha_devolucion_real IS NULL AND fecha_devolucion_esperada < '$fecha_hoy'")->fetch_assoc()['total'] ?? 0;
+$conteo_devueltos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE fecha_devolucion_real IS NOT NULL")->fetch_assoc()['total'] ?? 0;
+
+// Condición SQL según la pestaña elegida
+$condicion_where = "";
+if ($filtro_actual === 'pendientes') {
+    $condicion_where = "WHERE p.fecha_devolucion_real IS NULL";
+} elseif ($filtro_actual === 'vencidos') {
+    $condicion_where = "WHERE p.fecha_devolucion_real IS NULL AND p.fecha_devolucion_esperada < '$fecha_hoy'";
+} elseif ($filtro_actual === 'devueltos') {
+    $condicion_where = "WHERE p.fecha_devolucion_real IS NOT NULL";
 }
 
 // ==========================================
@@ -140,8 +166,8 @@ if (!$pagina_actual || $pagina_actual < 1) {
 
 $inicio = ($pagina_actual - 1) * $registros_por_pagina;
 
-$total_res = $conexion->query("SELECT COUNT(*) AS total FROM prestamos");
-$total_filas = $total_res->fetch_assoc()['total'];
+$total_res = $conexion->query("SELECT COUNT(*) AS total FROM prestamos p $condicion_where");
+$total_filas = $total_res->fetch_assoc()['total'] ?? 0;
 $total_paginas = ceil($total_filas / $registros_por_pagina);
 
 // ==========================================
@@ -161,6 +187,7 @@ $sql_bitacora = "SELECT
                  JOIN libros l ON p.id_libro = l.id_libro
                  LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos
                  LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores
+                 $condicion_where
                  ORDER BY p.id_prestamo DESC
                  LIMIT $registros_por_pagina OFFSET $inicio";
 
@@ -175,13 +202,6 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
     <title>Bitácora General de Préstamos - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
-    <style>
-        .paginacion { text-align: center; margin: 30px auto; }
-        .paginacion a { display: inline-block; padding: 8px 14px; margin: 0 4px; background-color: #f1f5f9; color: #1e293b; text-decoration: none; border-radius: 4px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 13px; }
-        .paginacion a.activa { background-color: #0F4C81; color: white; border-color: #0F4C81; }
-        .paginacion a:hover:not(.activa) { background-color: #e2e8f0; }
-        .paginacion span.desactivado { display: inline-block; padding: 8px 14px; margin: 0 4px; background-color: #f8fafc; color: #94a3b8; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 13px; cursor: not-allowed; }
-    </style>
 </head>
 
 <body class="body2">
@@ -201,6 +221,21 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
 
     <h2 style="text-align: center; color: #0F4C81; margin-top: 30px;">📋 Bitácora General de Préstamos y Apartados</h2>
     <p style="text-align: center; color: #475569; margin-bottom: 20px;">Cuaderno digital de control para registrar devoluciones, renovaciones y revisar el historial.</p>
+
+    <div class="barra-filtros">
+        <a href="prestamos.php?filtro=todos" class="tab-filtro <?php echo $filtro_actual === 'todos' ? 'activa' : ''; ?>">
+            📋 Todos <span class="badge-filtro"><?php echo $conteo_todos; ?></span>
+        </a>
+        <a href="prestamos.php?filtro=pendientes" class="tab-filtro <?php echo $filtro_actual === 'pendientes' ? 'activa' : ''; ?>">
+            ⏳ Pendientes <span class="badge-filtro"><?php echo $conteo_pendientes; ?></span>
+        </a>
+        <a href="prestamos.php?filtro=vencidos" class="tab-filtro <?php echo $filtro_actual === 'vencidos' ? 'activa-vencidos' : ''; ?>">
+            ⚠️ Vencidos <span class="badge-filtro"><?php echo $conteo_vencidos; ?></span>
+        </a>
+        <a href="prestamos.php?filtro=devueltos" class="tab-filtro <?php echo $filtro_actual === 'devueltos' ? 'activa-devueltos' : ''; ?>">
+            ✅ Devueltos <span class="badge-filtro"><?php echo $conteo_devueltos; ?></span>
+        </a>
+    </div>
 
     <div class="contenedor-busqueda" style="width: 95%; max-width: 500px; margin: 0 auto 20px auto; text-align: center;">
         <input type="text" id="buscador-bitacora" class="input-busqueda" 
@@ -225,14 +260,14 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
         <tbody>
             <?php if ($resultado_bitacora && $resultado_bitacora->num_rows > 0): ?>
                 <?php 
-                date_default_timezone_set('America/Mexico_City');
-                $fecha_hoy_timestamp = strtotime(date('Y-m-d'));
+                $fecha_hoy_timestamp = strtotime($fecha_hoy);
                 $contador_visual = $total_filas - $inicio;
                 
                 while ($fila = $resultado_bitacora->fetch_assoc()):
                     $entregado = ($fila['fecha_devolucion_real'] !== null);
                     $es_apartado = ($fila['tipo_movimiento'] === 'Apartado');
                     $ya_renovado = ($fila['estado_libro'] === 'Renovado');
+                    $es_perdido = ($fila['estado_libro'] === 'Perdido');
                     
                     $clase_fila = ''; 
                     if (!$entregado) {
@@ -268,7 +303,11 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                         </td>
                         <td>
                             <?php if ($entregado): ?>
-                                <span style="color: green; font-weight: bold;">✔ <?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_real'])); ?></span>
+                                <?php if ($es_perdido): ?>
+                                    <span style="color: #DC3545; font-weight: bold;">❌ Perdido (<?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_real'])); ?>)</span>
+                                <?php else: ?>
+                                    <span style="color: green; font-weight: bold;">✔ <?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_real'])); ?></span>
+                                <?php endif; ?>
                             <?php else: ?>
                                 <span style="color: #475569; font-style: italic; font-weight: bold;">Pendiente</span>
                             <?php endif; ?>
@@ -276,17 +315,17 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                         <td>
                             <?php if (!$entregado): ?>
                                 <!-- 1. Botón Recibir -->
-                                <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
+                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
                                  
                                 <!-- 2. Botón Renovar (+7 días en 1 clic) -->
                                 <?php if (!$ya_renovado): ?>
-                                    <a href="prestamos.php?renovar_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #0F4C81; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('¿Deseas renovar este préstamo por 7 días adicionales?');">🔄 Renovar (+7d)</a>
+                                    <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&renovar_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #0F4C81; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('¿Deseas renovar este préstamo por 7 días adicionales?');">🔄 Renovar (+7d)</a>
                                 <?php else: ?>
                                     <span style="padding: 4px 8px; background-color: #E2E8F0; border-radius: 4px; color: #475569; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;">✔ Renovado</span>
                                 <?php endif; ?>
 
                                 <!-- 3. Botón Perdido -->
-                                <a href="prestamos.php?perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
+                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
                             <?php else: ?>
                                 <span style="font-weight: bold; color: #475569;">Completado</span>
                             <?php endif; ?>
@@ -297,7 +336,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                 endwhile; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="9" style="text-align: center; font-weight: bold; padding: 20px;">No se ha registrado ningún préstamo o apartado en el sistema todavía.</td>
+                    <td colspan="9" style="text-align: center; font-weight: bold; padding: 20px;">No hay registros que coincidan con este filtro.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
@@ -306,19 +345,19 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
     <?php if ($total_paginas > 1): ?>
         <div class="paginacion">
           <?php if ($pagina_actual > 1): ?>
-            <a href="prestamos.php?pagina=<?php echo $pagina_actual - 1; ?>">« Anterior</a>
+            <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&pagina=<?php echo $pagina_actual - 1; ?>">« Anterior</a>
           <?php else: ?>
             <span class="desactivado">« Anterior</span>
           <?php endif; ?>
 
           <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-            <a href="prestamos.php?pagina=<?php echo $i; ?>" class="<?php echo ($i === $pagina_actual) ? 'activa' : ''; ?>">
+            <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&pagina=<?php echo $i; ?>" class="<?php echo ($i === $pagina_actual) ? 'activa' : ''; ?>">
               <?php echo $i; ?>
             </a>
           <?php endfor; ?>
 
           <?php if ($pagina_actual < $total_paginas): ?>
-            <a href="prestamos.php?pagina=<?php echo $pagina_actual + 1; ?>">Siguiente »</a>
+            <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&pagina=<?php echo $pagina_actual + 1; ?>">Siguiente »</a>
           <?php else: ?>
             <span class="desactivado">Siguiente »</span>
           <?php endif; ?>
@@ -337,9 +376,8 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
         filas.forEach(function(fila) {
             if (fila.cells.length < 3) return;
 
-            var textoLibro = fila.cells[1].textContent.toLowerCase();
-            var textoPersona = fila.cells[2].textContent.toLowerCase();
-
+            var textoLibro = fila.cells.textContent.toLowerCase();
+            var textoPersona = fila.cells.textContent.toLowerCase();
             if (textoLibro.includes(filtro) || textoPersona.includes(filtro)) {
                 fila.style.display = '';
             } else {
