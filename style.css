@@ -946,3 +946,23 @@ body.body2::-webkit-scrollbar-thumb:hover {
         font-size: 11px !important;
     }
 }
+/* ==========================================================================
+   🖱️ BARRAS DE DESPLAZAMIENTO INTERNAS PARA ALERTAS (DEVOLUCIÓN Y STOCK)
+   ========================================================================== */
+.lista-alertas::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lista-alertas::-webkit-scrollbar-track {
+    background: #E8EEF5;
+    border-radius: 8px;
+}
+
+.lista-alertas::-webkit-scrollbar-thumb {
+    background: #0F4C81;
+    border-radius: 8px;
+}
+
+.lista-alertas::-webkit-scrollbar-thumb:hover {
+    background: #2A9D8F;
+}

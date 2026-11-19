@@ -71,7 +71,7 @@
                 <h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
                     🔔 Alertas de Devolución
                 </h3>
-                <div class="lista-alertas">
+                <div class="lista-alertas" style="max-height: 260px; overflow-y: auto; padding-right: 6px;"></div>
                     <?php
                     date_default_timezone_set('America/Mexico_City');
                     $fecha_hoy = date('Y-m-d');
@@ -136,13 +136,13 @@
                 <h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
                     📦 Alertas de Stock Bajo
                 </h3>
-                <div class="lista-alertas">
+                <div class="lista-alertas" style="max-height: 260px; overflow-y: auto; padding-right: 6px;">
+
                     <?php
                     $sql_stock = "SELECT Titulo, Autor, Ejemplares_disponibles, Ejemplares_totales 
                                   FROM libros 
                                   WHERE Ejemplares_disponibles <= 1 
-                                  ORDER BY Ejemplares_disponibles ASC, Titulo ASC 
-                                  LIMIT 5";
+                                  ORDER BY Ejemplares_disponibles ASC, Titulo ASC";
                     $res_stock = $conexion->query($sql_stock);
 
                     if ($res_stock && $res_stock->num_rows > 0) {

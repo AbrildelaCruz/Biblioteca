@@ -55,8 +55,8 @@ if ($result && $result->num_rows > 0) {
 echo "<h3 style='margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;'>🔔 Alertas de Devolución</h3>";
 
 if (!empty($alertas)) {
-    echo "<div class='lista-alertas'>";
-    foreach ($alertas as $alerta) {
+        echo "<div class='lista-alertas' style='max-height: 260px; overflow-y: auto; padding-right: 6px;'>";
+        foreach ($alertas as $alerta) {
         echo "<div class='tarjeta-aviso " . $alerta['clase'] . "' style='padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; font-size: 13px; line-height: 1.4;'>";
         echo "<span>" . $alerta['texto'] . "</span>";
         echo "</div>";
