@@ -966,3 +966,47 @@ body.body2::-webkit-scrollbar-thumb:hover {
 .lista-alertas::-webkit-scrollbar-thumb:hover {
     background: #2A9D8F;
 }
+
+/* ==========================================================================
+   📌 COLUMNA DERECHA APILADA (NOTIFICACIONES ARRIBA Y STOCK BAJO ABAJO)
+   ========================================================================== */
+.columna-derecha-alertas {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 340px;
+    flex-shrink: 0;
+}
+
+.columna-derecha-alertas .panel-notificaciones-derecho {
+    position: relative !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box;
+}
+
+.columna-derecha-alertas .lista-alertas {
+    max-height: 230px !important;
+    overflow-y: auto !important;
+    padding-right: 6px;
+}
+
+.columna-derecha-alertas .lista-alertas::-webkit-scrollbar {
+    width: 6px;
+}
+
+.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-track {
+    background: #E8EEF5;
+    border-radius: 8px;
+}
+
+.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-thumb {
+    background: #0F4C81;
+    border-radius: 8px;
+}
+
+.columna-derecha-alertas .lista-alertas::-webkit-scrollbar-thumb:hover {
+    background: #2A9D8F;
+}
