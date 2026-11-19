@@ -18,7 +18,6 @@ if (isset($_GET['devolver_id'])) {
     if ($id_prestamo_dev) {
         $fecha_real = date('Y-m-d');
 
-        // Buscar qué libro es para devolverlo al inventario
         $stmt_buscar = $conexion->prepare("SELECT id_libro FROM prestamos WHERE id_prestamo = ?");
         $stmt_buscar->bind_param("i", $id_prestamo_dev);
         $stmt_buscar->execute();
@@ -28,12 +27,10 @@ if (isset($_GET['devolver_id'])) {
         if ($res_buscar) {
             $id_libro_update = $res_buscar['id_libro'];
 
-            // Marcar como devuelto
             $stmt_dev = $conexion->prepare("UPDATE prestamos SET fecha_devolucion_real = ?, estado_libro = 'Excelente' WHERE id_prestamo = ?");
             $stmt_dev->bind_param("si", $fecha_real, $id_prestamo_dev);
 
             if ($stmt_dev->execute()) {
-                // Sumar 1 disponible y restar 1 prestado en la tabla de libros
                 $stmt_upd_lib = $conexion->prepare("UPDATE libros SET Ejemplares_disponibles = Ejemplares_disponibles + 1, Ejemplares_prestados = GREATEST(0, Ejemplares_prestados - 1) WHERE id_libro = ?");
                 $stmt_upd_lib->bind_param("i", $id_libro_update);
                 $stmt_upd_lib->execute();
@@ -52,15 +49,49 @@ if (isset($_GET['devolver_id'])) {
     exit();
 }
 
-// 🚀 PROCESAR REPORTE DE LIBRO PERDIDO
-// ===================================================
+// ==========================================
+// 2. PROCESAR ACCIÓN: RENOVAR PRÉSTAMO (+7 DÍAS)
+// ==========================================
+if (isset($_GET['renovar_id'])) {
+    $id_prestamo_ren = filter_input(INPUT_GET, 'renovar_id', FILTER_VALIDATE_INT);
+
+    if ($id_prestamo_ren) {
+        $stmt_check = $conexion->prepare("SELECT fecha_devolucion_real, estado_libro FROM prestamos WHERE id_prestamo = ?");
+        $stmt_check->bind_param("i", $id_prestamo_ren);
+        $stmt_check->execute();
+        $res_check = $stmt_check->get_result()->fetch_assoc();
+        $stmt_check->close();
+
+        if ($res_check && $res_check['fecha_devolucion_real'] === null && $res_check['estado_libro'] !== 'Renovado') {
+            $stmt_ren = $conexion->prepare("UPDATE prestamos SET fecha_devolucion_esperada = DATE_ADD(fecha_devolucion_esperada, INTERVAL 7 DAY), estado_libro = 'Renovado' WHERE id_prestamo = ?");
+            $stmt_ren->bind_param("i", $id_prestamo_ren);
+
+            if ($stmt_ren->execute()) {
+                $_SESSION['mensaje'] = "🔄 Préstamo renovado con éxito. Se agregaron 7 días adicionales a la fecha límite.";
+                $_SESSION['tipoMensaje'] = 'exito';
+            } else {
+                $_SESSION['mensaje'] = "Error al renovar el préstamo en la base de datos.";
+                $_SESSION['tipoMensaje'] = 'error';
+            }
+            $stmt_ren->close();
+        } else {
+            $_SESSION['mensaje'] = "⚠️ Este préstamo ya fue renovado anteriormente o ya fue devuelto.";
+            $_SESSION['tipoMensaje'] = 'error';
+        }
+    }
+    header("Location: prestamos.php");
+    exit();
+}
+
+// ==========================================
+// 3. PROCESAR REPORTE DE LIBRO PERDIDO
+// ==========================================
 if (isset($_GET['perdido_id'])) {
     $id_prestamo_perdido = filter_input(INPUT_GET, 'perdido_id', FILTER_VALIDATE_INT);
     
     if ($id_prestamo_perdido) {
         $fecha_hoy = date('Y-m-d');
         
-        // Buscar qué libro está asociado a este préstamo
         $stmt_buscar = $conexion->prepare("SELECT id_libro FROM prestamos WHERE id_prestamo = ?");
         $stmt_buscar->bind_param("i", $id_prestamo_perdido);
         $stmt_buscar->execute();
@@ -72,13 +103,11 @@ if (isset($_GET['perdido_id'])) {
             
             $conexion->begin_transaction();
             try {
-                // Cerrar el préstamo marcándolo como 'Perdido' en el estado
                 $stmt_perdido = $conexion->prepare("UPDATE prestamos SET fecha_devolucion_real = ?, estado_libro = 'Perdido' WHERE id_prestamo = ?");
                 $stmt_perdido->bind_param("si", $fecha_hoy, $id_prestamo_perdido);
                 $stmt_perdido->execute();
                 $stmt_perdido->close();
                 
-                // AJUSTE DE INVENTARIO: Restamos 1 de Ejemplares Totales y 1 de Ejemplares Prestados
                 $stmt_upd_lib = $conexion->prepare("UPDATE libros SET Ejemplares_totales = GREATEST(0, Ejemplares_totales - 1), Ejemplares_prestados = GREATEST(0, Ejemplares_prestados - 1) WHERE id_libro = ?");
                 $stmt_upd_lib->bind_param("i", $id_libro_update);
                 $stmt_upd_lib->execute();
@@ -100,9 +129,9 @@ if (isset($_GET['perdido_id'])) {
 }
 
 // ==========================================
-// 🛠️ CONFIGURACIÓN GLOBAL DEL PAGINADOR
+// CONFIGURACIÓN GLOBAL DEL PAGINADOR
 // ==========================================
-$registros_por_pagina = 12; // Cantidad de movimientos por vista
+$registros_por_pagina = 12;
 
 $pagina_actual = isset($_GET['pagina']) ? filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT) : 1;
 if (!$pagina_actual || $pagina_actual < 1) {
@@ -111,13 +140,12 @@ if (!$pagina_actual || $pagina_actual < 1) {
 
 $inicio = ($pagina_actual - 1) * $registros_por_pagina;
 
-// 1. Contar total absoluto de préstamos
 $total_res = $conexion->query("SELECT COUNT(*) AS total FROM prestamos");
 $total_filas = $total_res->fetch_assoc()['total'];
 $total_paginas = ceil($total_filas / $registros_por_pagina);
 
 // ==========================================
-// 2. CONSULTAR EL HISTORIAL DE PRÉSTAMOS
+// CONSULTAR EL HISTORIAL DE PRÉSTAMOS
 // ==========================================
 $sql_bitacora = "SELECT 
                     p.id_prestamo,
@@ -127,7 +155,8 @@ $sql_bitacora = "SELECT
                     p.fecha_salida,
                     p.fecha_devolucion_esperada,
                     p.fecha_devolucion_real,
-                    p.tipo_movimiento
+                    p.tipo_movimiento,
+                    p.estado_libro
                  FROM prestamos p
                  JOIN libros l ON p.id_libro = l.id_libro
                  LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos
@@ -147,7 +176,6 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
     <style>
-        /* Estilos limpios y estéticos para el paginador */
         .paginacion { text-align: center; margin: 30px auto; }
         .paginacion a { display: inline-block; padding: 8px 14px; margin: 0 4px; background-color: #f1f5f9; color: #1e293b; text-decoration: none; border-radius: 4px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 13px; }
         .paginacion a.activa { background-color: #0F4C81; color: white; border-color: #0F4C81; }
@@ -172,9 +200,8 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
     <?php endif; ?>
 
     <h2 style="text-align: center; color: #0F4C81; margin-top: 30px;">📋 Bitácora General de Préstamos y Apartados</h2>
-    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Cuaderno digital de control para registrar devoluciones y revisar el historial.</p>
+    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Cuaderno digital de control para registrar devoluciones, renovaciones y revisar el historial.</p>
 
-    <!-- 🔍 BARRA DE BÚSQUEDA EN TIEMPO REAL PARA LA BITÁCORA -->
     <div class="contenedor-busqueda" style="width: 95%; max-width: 500px; margin: 0 auto 20px auto; text-align: center;">
         <input type="text" id="buscador-bitacora" class="input-busqueda" 
                placeholder="🔍 Busca por título de libro o nombre de usuario..." 
@@ -200,15 +227,13 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                 <?php 
                 date_default_timezone_set('America/Mexico_City');
                 $fecha_hoy_timestamp = strtotime(date('Y-m-d'));
-                
-                // 🟢 CONTADOR DINÁMICO DESCENDENTE:
-                // Calcula el número más alto correspondiente al primer registro de esta página
                 $contador_visual = $total_filas - $inicio;
                 
                 while ($fila = $resultado_bitacora->fetch_assoc()):
                     $entregado = ($fila['fecha_devolucion_real'] !== null);
                     $es_apartado = ($fila['tipo_movimiento'] === 'Apartado');
-                    // Cálculo dinámico para la asignación de color a la fila
+                    $ya_renovado = ($fila['estado_libro'] === 'Renovado');
+                    
                     $clase_fila = ''; 
                     if (!$entregado) {
                         $fecha_limite_timestamp = strtotime($fila['fecha_devolucion_esperada']);
@@ -225,7 +250,6 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                     }
                     ?>
                     <tr class="<?php echo $clase_fila; ?>">
-                        <!-- Imprime el conteo numérico de la fila de forma ordenada -->
                         <td style="font-weight: bold; text-align: center;"><?php echo $contador_visual; ?></td>
                         <td><b><?php echo htmlspecialchars($fila['Libro']); ?></b></td>
                         <td><u><?php echo htmlspecialchars($fila['Persona']); ?></u></td>
@@ -236,7 +260,12 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                             </span>
                         </td>
                         <td><?php echo date('d/m/Y', strtotime($fila['fecha_salida'])); ?></td>
-                        <td style="font-weight: bold;"><?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_esperada'])); ?></td>
+                        <td style="font-weight: bold;">
+                            <?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_esperada'])); ?>
+                            <?php if ($ya_renovado && !$entregado): ?>
+                                <span style="display: block; font-size: 10px; color: #0F4C81;">(Renovado +7d)</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <?php if ($entregado): ?>
                                 <span style="color: green; font-weight: bold;">✔ <?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_real'])); ?></span>
@@ -249,12 +278,12 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                                 <!-- 1. Botón Recibir -->
                                 <a href="prestamos.php?devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
                                  
-                                <!-- 2. Botón Renovar -->
-                                <button type="button" 
-                                        onclick="prepararRenovacion('<?php echo strtolower($fila['TipoPersona']); ?>', '<?php echo htmlspecialchars($fila['Persona'], ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars($fila['Libro'], ENT_QUOTES, 'UTF-8'); ?>')" 
-                                        style="padding: 4px 8px; background-color: #0F4C81; border: none; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px; cursor: pointer; font-family: 'Segoe UI', Arial, sans-serif;">
-                                    🔄 Renovar
-                                </button>
+                                <!-- 2. Botón Renovar (+7 días en 1 clic) -->
+                                <?php if (!$ya_renovado): ?>
+                                    <a href="prestamos.php?renovar_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #0F4C81; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('¿Deseas renovar este préstamo por 7 días adicionales?');">🔄 Renovar (+7d)</a>
+                                <?php else: ?>
+                                    <span style="padding: 4px 8px; background-color: #E2E8F0; border-radius: 4px; color: #475569; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;">✔ Renovado</span>
+                                <?php endif; ?>
 
                                 <!-- 3. Botón Perdido -->
                                 <a href="prestamos.php?perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
@@ -264,7 +293,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                         </td>
                     </tr>
                 <?php 
-                    $contador_visual--; // Restamos para la siguiente fila
+                    $contador_visual--;
                 endwhile; ?>
             <?php else: ?>
                 <tr>
@@ -273,58 +302,44 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
             <?php endif; ?>
         </tbody>
     </table>
-     <!-- ==========================================
-    🎮 CONTROLADORES VISUALES DE LA PAGINACIÓN
-    ========================================== -->
+
     <?php if ($total_paginas > 1): ?>
         <div class="paginacion">
-          
-          <!-- Botón de Página Anterior -->
           <?php if ($pagina_actual > 1): ?>
             <a href="prestamos.php?pagina=<?php echo $pagina_actual - 1; ?>">« Anterior</a>
           <?php else: ?>
             <span class="desactivado">« Anterior</span>
           <?php endif; ?>
 
-          <!-- Números de Páginas Dinámicos (1, 2, 3...) -->
           <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
             <a href="prestamos.php?pagina=<?php echo $i; ?>" class="<?php echo ($i === $pagina_actual) ? 'activa' : ''; ?>">
               <?php echo $i; ?>
             </a>
           <?php endfor; ?>
 
-          <!-- Botón de Página Siguiente -->
           <?php if ($pagina_actual < $total_paginas): ?>
             <a href="prestamos.php?pagina=<?php echo $pagina_actual + 1; ?>">Siguiente »</a>
           <?php else: ?>
             <span class="desactivado">Siguiente »</span>
           <?php endif; ?>
-
         </div>
     <?php endif; ?>
 
-    <!-- Botón Regresar de la Bitácora -->
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 
-    <!-- ==========================================================
-         ZONA DE SCRIPTS JAVASCRIPT UNIFICADA AL FINAL
-    ========================================================== -->
     <script>
-    // 1. MOTOR DE FILTRADO EN TIEMPO REAL PARA LA BITÁCORA
     document.getElementById('buscador-bitacora').addEventListener('input', function () {
         var filtro = this.value.toLowerCase().trim();
         var filas = document.querySelectorAll('.tabla-datos tbody tr');
 
         filas.forEach(function(fila) {
-            // Si la fila muestra el mensaje de que "no hay registros", la saltamos
             if (fila.cells.length < 3) return;
 
             var textoLibro = fila.cells[1].textContent.toLowerCase();
             var textoPersona = fila.cells[2].textContent.toLowerCase();
 
-            // Si coincide con el título del libro o con el nombre de la persona, la muestra
             if (textoLibro.includes(filtro) || textoPersona.includes(filtro)) {
                 fila.style.display = '';
             } else {
@@ -332,14 +347,6 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
             }
         });
     });
-
-    // 2. SISTEMA DE LOGÍSTICA PARA LA MEMORIA DE RENOVACIÓN
-    function prepararRenovacion(rol, nombrePersona, tituloLibro) {
-        sessionStorage.setItem('renovar_rol', rol);
-        sessionStorage.setItem('renovar_nombre', nombrePersona);
-        sessionStorage.setItem('renovar_libro', tituloLibro);
-        window.location.href = 'nuevo_prestamo.php';
-    }
     </script>
 </body>
 </html>
