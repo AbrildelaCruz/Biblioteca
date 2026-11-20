@@ -51,14 +51,14 @@ if ($result && $result->num_rows > 0) {
         }
     }
 }
-
-
+?>
+<?php
 $claseCampana = !empty($alertas) ? 'campanita-icono pendiente' : 'campanita-icono'; ?>
 <h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
     <span class="<?php echo $claseCampana; ?>" onclick="activarCampanita(this)" title="Probar sonido de alerta">🔔</span>
     Alertas de Devolución
 </h3>
-
+<?
 if (!empty($alertas)) {
         echo "<div class='lista-alertas' style='max-height: 260px; overflow-y: auto; padding-right: 6px;'>";
         foreach ($alertas as $alerta) {
