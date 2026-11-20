@@ -1183,3 +1183,36 @@ body.body2::-webkit-scrollbar-thumb:hover {
     white-space: nowrap;
 }
 
+/* ==========================================================================
+   🖼️ PORTADA AL COSTADO EN TARJETAS DEL CATÁLOGO
+   ========================================================================== */
+.grid-catalogo {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)) !important;
+}
+
+.tarjeta-libro {
+    max-width: 400px !important;
+}
+
+.fila-tarjeta-contenido {
+    display: flex;
+    flex-direction: row; /* Coloca la portada a la izquierda y los datos a la derecha */
+    gap: 15px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.portada-libro {
+    width: 85px;
+    height: 125px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0; /* Evita que la imagen se aplaste si el título es muy largo */
+    background-color: #EFF6FF;
+    border: 1px solid #CBD5E1;
+}
+
+.info-libro {
+    flex: 1;
+    min-width: 0;
+}
