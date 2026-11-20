@@ -10,17 +10,11 @@
 </head>
 <body class="body2">
 
-    <div class="contenedor-burbujas">
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-    </div>
-
     <h2 style="text-align: center; color: #0F4C81; margin-top: 30px;">👥 Alumnos Registrados en el Sistema</h2>
 
     <div class="contenedor-busqueda" style="width: 90%; max-width: 500px; margin: 20px auto; text-align: center;">
         <input type="text" id="buscador-alumnos" class="input-busqueda" 
-               placeholder="🔍 Escribe el nombre, grado o grupo del alumno..." 
+               placeholder="🔍 Escribe el nombre o grupo del alumno..." 
                style="width: 100%; padding: 12px 20px; font-size: 15px; border: 2px solid #DDE6ED; border-radius: 30px; outline: none; box-sizing: border-box; box-shadow: 0 4px 6px rgba(15, 76, 129, 0.03);">
     </div>
 
@@ -33,7 +27,6 @@
             <tr>
                 <th>#</th>
                 <th>Nombre Completo</th>
-                <th>Grado</th>
                 <th>Grupo</th>
                 <th>Acciones</th>
             </tr>
@@ -50,7 +43,6 @@
                     echo "<tr>";
                     echo "<td style='font-weight: bold; color: #0F4C81; text-align: center;'>" . $contador_visual . "</td>";
                     echo "<td><b>" . htmlspecialchars($fila['Nombre']) . "</b></td>";
-                    echo "<td>" . htmlspecialchars($fila['Grado']) . "</td>";
                     echo "<td>" . htmlspecialchars($fila['Grupo']) . "</td>";
                     echo "<td>";
                     echo "<a href='registrar_usuario.php?editar_rol=alumno&editar_id=" . $id_actual . "' class='btn-editar'>✏️ Editar</a> ";
@@ -60,7 +52,7 @@
                     $contador_visual--;
                 }
             } else {
-                echo "<tr><td colspan='5' style='text-align: center;'>No hay alumnos registrados todavía.</td></tr>";
+                echo "<tr><td colspan='4' style='text-align: center;'>No hay alumnos registrados todavía.</td></tr>";
             }
             ?>
         </tbody>
