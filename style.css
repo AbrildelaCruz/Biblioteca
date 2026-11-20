@@ -946,3 +946,121 @@ body.body2::-webkit-scrollbar-thumb:hover {
         font-size: 11px !important;
     }
 }
+
+/* ==========================================================================
+   🏷️ BARRA DE PESTAÑAS DE FILTRO (Todos, Pendientes, Vencidos, Devueltos)
+   ========================================================================== */
+.barra-filtros {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 95%;
+    max-width: 900px;
+    margin: 0 auto 22px auto;
+}
+
+.tab-filtro {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    background-color: #FFFFFF;
+    color: #1E293B;
+    border: 1.5px solid #DDE6ED;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(15, 76, 129, 0.05);
+    transition: all 0.2s ease;
+}
+
+.tab-filtro:hover {
+    background-color: #F1F5F9;
+    border-color: #0F4C81;
+    transform: translateY(-1px);
+}
+
+.badge-filtro {
+    background-color: #E8EEF5;
+    color: #0F4C81;
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Estados activos de cada ficha */
+.tab-filtro.activa {
+    background-color: #0F4C81;
+    color: #FFFFFF;
+    border-color: #0F4C81;
+}
+
+.tab-filtro.activa-vencidos {
+    background-color: #DC3545;
+    color: #FFFFFF;
+    border-color: #DC3545;
+}
+
+.tab-filtro.activa-devueltos {
+    background-color: #2A9D8F;
+    color: #FFFFFF;
+    border-color: #2A9D8F;
+}
+
+.tab-filtro.activa .badge-filtro,
+.tab-filtro.activa-vencidos .badge-filtro,
+.tab-filtro.activa-devueltos .badge-filtro {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+}
+
+/* ==========================================================================
+   🔢 PAGINACIÓN UNIFICADA (.paginacion y .paginador)
+   ========================================================================== */
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 25px auto 40px auto;
+}
+
+.paginacion a,
+.paginacion span.desactivado {
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    border: 1px solid #DDE6ED;
+    transition: all 0.2s ease;
+}
+
+.paginacion a {
+    background-color: #FFFFFF;
+    color: #0F4C81;
+}
+
+.paginacion a:hover {
+    background-color: #E8EEF5;
+    border-color: #0F4C81;
+}
+
+.paginacion a.activa {
+    background-color: #0F4C81;
+    color: #FFFFFF;
+    border-color: #0F4C81;
+}
+
+.paginacion span.desactivado {
+    background-color: #F8FAFC;
+    color: #94A3B8;
+    border-color: #E2E8F0;
+    cursor: not-allowed;
+}
+
