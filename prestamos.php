@@ -17,7 +17,8 @@ if (!in_array($filtro_actual, $filtros_validos, true)) {
 
 $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
-unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
+$sonar_campana = $_SESSION['sonar_campana'] ?? false;
+unset($_SESSION['mensaje'], $_SESSION['tipoMensaje'], $_SESSION['sonar_campana']);
 
 // ==========================================
 // 1. PROCESAR ACCIÓN: REGISTRAR DEVOLUCIÓN
@@ -48,6 +49,7 @@ if (isset($_GET['devolver_id'])) {
 
                 $_SESSION['mensaje'] = "🟢 Devolución asentada con éxito. El libro ha regresado al inventario disponible.";
                 $_SESSION['tipoMensaje'] = 'exito';
+                $_SESSION['sonar_campana'] = true;
             } else {
                 $_SESSION['mensaje'] = "Error al asentar la devolución en la base de datos.";
                 $_SESSION['tipoMensaje'] = 'error';
@@ -206,18 +208,15 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
 
 <body class="body2">
 
-    <div class="contenedor-burbujas">
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-    </div>
-
     <?php if ($mensaje !== ''): ?>
-        <div class="alerta <?php echo $tipoMensaje; ?>"
-            style="padding: 10px; margin: 15px auto; max-width: 850px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
-            <?php echo $mensaje; ?>
-        </div>
-    <?php endif; ?>
+    <div class="alerta <?php echo $tipoMensaje; ?>"
+        style="padding: 12px; margin: 15px auto; max-width: 850px; text-align: center; border-radius: 8px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
+        <?php if ($sonar_campana): ?>
+            <span id="campana-devolucion" class="campanita-icono sonar" onclick="tocarSonidoCampanita()" style="margin-right: 6px;">🔔</span>
+        <?php endif; ?>
+        <?php echo $mensaje; ?>
+    </div>
+<?php endif; ?>
 
     <h2 style="text-align: center; color: #0F4C81; margin-top: 30px;">📋 Bitácora General de Préstamos y Apartados</h2>
     <p style="text-align: center; color: #475569; margin-bottom: 20px;">Cuaderno digital de control para registrar devoluciones, renovaciones y revisar el historial.</p>
@@ -368,23 +367,34 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 
-    <script>
-    document.getElementById('buscador-bitacora').addEventListener('input', function () {
-        var filtro = this.value.toLowerCase().trim();
-        var filas = document.querySelectorAll('.tabla-datos tbody tr');
+    <?php if ($sonar_campana): ?>
+<script>
+function tocarSonidoCampanita() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    if (ctx.state === 'suspended') ctx.resume();
 
-        filas.forEach(function(fila) {
-            if (fila.cells.length < 3) return;
-
-            var textoLibro = fila.cells.textContent.toLowerCase();
-            var textoPersona = fila.cells.textContent.toLowerCase();
-            if (textoLibro.includes(filtro) || textoPersona.includes(filtro)) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
-        });
+    const ahora = ctx.currentTime;
+    [1318.5, 1975.5].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const ganancia = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ahora + i * 0.09);
+        ganancia.gain.setValueAtTime(0.18, ahora + i * 0.09);
+        ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + i * 0.09 + 0.95);
+        osc.connect(ganancia);
+        ganancia.connect(ctx.destination);
+        osc.start(ahora + i * 0.09);
+        osc.stop(ahora + i * 0.09 + 0.95);
     });
-    </script>
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    tocarSonidoCampanita();
+});
+</script>
+<?php endif; ?>
+
 </body>
 </html>
