@@ -66,11 +66,6 @@ $claseCampana = $hayUrgentes ? 'campanita-icono pendiente urgente' : 'campanita-
 echo "<h3 style='margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;'><span class='" . $claseCampana . "' onclick='activarCampanita(this)' title='Clic para probar sonido'>🔔</span> Alertas de Devolución</h3>";
 ?>
 
-<h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-    <span class="<?php echo $claseCampana; ?>" onclick="activarCampanita(this)" title="Clic para probar sonido">🔔</span>
-    Alertas de Devolución
-</h3>
-
 <?php
 if (!empty($alertas)) {
         echo "<div class='lista-alertas' style='max-height: 260px; overflow-y: auto; padding-right: 6px;'>";
