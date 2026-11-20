@@ -185,12 +185,58 @@
     </div>
 
     <script>
+    function tocarSonidoCampanita() {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+
+        const ctx = new AudioCtx();
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+
+        const ahora = ctx.currentTime;
+        const frecuencias = [1318.5, 1975.5]; // Timbre doble cristalino (Mi6 -> Si6)
+
+        frecuencias.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const ganancia = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ahora + i * 0.09);
+
+            ganancia.gain.setValueAtTime(0.18, ahora + i * 0.09);
+            ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + i * 0.09 + 0.95);
+
+            osc.connect(ganancia);
+            ganancia.connect(ctx.destination);
+
+            osc.start(ahora + i * 0.09);
+            osc.stop(ahora + i * 0.09 + 0.95);
+        });
+    }
+
+    function activarCampanita(elemento) {
+        tocarSonidoCampanita();
+        if (elemento) {
+            elemento.classList.remove('sonar');
+            void elemento.offsetWidth;
+            elemento.classList.add('sonar');
+        }
+    }
+
     function cargarAlertasCampana() {
         fetch('obtener_alertas.php')
             .then(response => response.text())
             .then(html => {
                 const panel = document.querySelector('.panel-notificaciones-derecho');
-                if (panel) { panel.innerHTML = html; }
+                if (panel) {
+                    panel.innerHTML = html;
+                    // Si hay alertas pendientes, intenta sonar al cargar
+                    const campana = panel.querySelector('.campanita-icono.pendiente');
+                    if (campana) {
+                        activarCampanita(campana);
+                    }
+                }
             })
             .catch(error => console.error('Error cargando alertas:', error));
     }
@@ -199,5 +245,6 @@
         cargarAlertasCampana();
     };
     </script>
+
 </body>
 </html>

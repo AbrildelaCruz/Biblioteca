@@ -1064,3 +1064,44 @@ body.body2::-webkit-scrollbar-thumb:hover {
     cursor: not-allowed;
 }
 
+/* ==========================================================================
+   🔔 ANIMACIÓN DE CAMPANITA Y COLUMNA DERECHA DE ALERTAS
+   ========================================================================== */
+.columna-derecha-alertas {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 420px;
+    width: 100%;
+}
+
+@keyframes campanita-ring {
+    0%   { transform: rotate(0deg); }
+    12%  { transform: rotate(18deg); }
+    24%  { transform: rotate(-16deg); }
+    36%  { transform: rotate(12deg); }
+    48%  { transform: rotate(-10deg); }
+    60%  { transform: rotate(6deg); }
+    72%  { transform: rotate(-4deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.campanita-icono {
+    display: inline-block;
+    transform-origin: top center;
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+}
+
+/* Suena al pasar el mouse o al activarse por JS */
+.campanita-icono:hover,
+.campanita-icono.sonar {
+    animation: campanita-ring 0.9s ease-in-out;
+}
+
+/* Movimiento sutil continuo cuando hay alertas activas */
+.campanita-icono.pendiente {
+    animation: campanita-ring 2.2s ease-in-out infinite;
+}
