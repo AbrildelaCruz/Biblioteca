@@ -5,41 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenida - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="logobiblioteca.png">
+
 </head>
 <body>
 
-    <!-- Contenedor Maestro -->
-    <div id="pantalla-biblioteca">
-        
-        <!-- Telón de fondo cinemático (Una sola capa, sin líneas divisorias) -->
-        <div class="telon-portada"></div>
-
-        <!-- Interfaz flotante con tu botón dorado institucional -->
-        <div class="interfaz-bienvenida" id="bloque-entrada">
-            <button id="btn-entrar" onclick="activarEfectoPortal()">Ingresar al Sistema</button>
+    <div class="portada-bienvenida">
+        <div class="tarjeta-bienvenida">
+            <h1>📚 Biblioteca Sullivan</h1>
+            <p>Sistema de Información y Control de Préstamos</p>
+            <a href="registro.php" class="btn-ingresar" onclick="entrarConSonido(event, this.href)">
+                Ingresar al Sistema
+            </a>
         </div>
-
     </div>
 
     <script>
-    function activarEfectoPortal() {
-        const bloqueEntrada = document.getElementById('bloque-entrada');
-        const telon = document.querySelector('.telon-portada');
-        
-        // 1. El botón se desvanece con un leve destello
-        bloqueEntrada.classList.add('efecto-destello');
-        
-        // 2. Activamos el efecto cinemático de alejamiento y desvanecido en la portada
+    function entrarConSonido(evento, urlDestino) {
+        evento.preventDefault();
+
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+
+                const ahora = ctx.currentTime;
+                // Acorde ascendente suave de bienvenida (Do5 -> Mi5 -> Sol5)
+                const notas = [523.25, 659.25, 783.99];
+
+                notas.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const ganancia = ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, ahora + i * 0.08);
+
+                    ganancia.gain.setValueAtTime(0.18, ahora + i * 0.08);
+                    ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + i * 0.08 + 0.55);
+
+                    osc.connect(ganancia);
+                    ganancia.connect(ctx.destination);
+
+                    osc.start(ahora + i * 0.08);
+                    osc.stop(ahora + i * 0.08 + 0.55);
+                });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
+        // Espera 400ms para que el acorde termine de sonar antes de cambiar de página
         setTimeout(() => {
-            telon.classList.add('telon-abrir');
-        }, 150);
-        
-        // 3. Redirección automática hacia tu archivo de registro PHP
-        setTimeout(() => {
-            window.location.href = 'registro.php';
-        }, 1300);
+            window.location.href = urlDestino;
+        }, 400);
     }
     </script>
+
 </body>
 </html>
