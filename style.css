@@ -1105,3 +1105,58 @@ body.body2::-webkit-scrollbar-thumb:hover {
 .campanita-icono.pendiente {
     animation: campanita-ring 2.2s ease-in-out infinite;
 }
+
+/* ==========================================================================
+   ✏️🗑️ BOTONES DE ACCIÓN EN TABLAS (Editar y Eliminar)
+   ========================================================================== */
+.tabla-datos td:last-child {
+    white-space: nowrap;
+}
+
+.btn-editar,
+.btn-eliminar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 13px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+/* Botón Editar: Azul institucional limpio */
+.btn-editar {
+    background-color: #E8EEF5;
+    color: #0F4C81 !important;
+    border-color: #CBD5E1;
+}
+
+.btn-editar:hover {
+    background-color: #0F4C81;
+    color: #FFFFFF !important;
+    border-color: #0F4C81;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(15, 76, 129, 0.2);
+}
+
+/* Botón Eliminar: Rojo suave que resalta al pasar el cursor */
+.btn-eliminar {
+    background-color: #FFF5F5;
+    color: #DC3545 !important;
+    border-color: #FECACA;
+    margin-right: 0;
+}
+
+.btn-eliminar:hover {
+    background-color: #DC3545;
+    color: #FFFFFF !important;
+    border-color: #DC3545;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.2);
+}

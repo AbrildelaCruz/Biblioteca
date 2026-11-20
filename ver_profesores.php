@@ -131,11 +131,8 @@ $resultado = $stmt->get_result();
                         <td><b><?php echo htmlspecialchars($nombre_docente); ?></b></td>
                         <td><span style="color: #0F4C81; font-weight: 500;"><?php echo htmlspecialchars($materias_docente); ?></span></td>
                         <td>
-                            <a href="registrar_usuario.php?editar_rol=profesor&editar_id=<?php echo $id_actual; ?>"
-    style="text-decoration: none; padding: 4px 8px; background-color: #007bff; border-radius: 4px; color: white; font-size: 11px; margin-right: 5px; font-weight: bold;">Editar</a>
-<a href="registrar_usuario.php?eliminar_rol=profesor&eliminar_id=<?php echo $id_actual; ?>"
-    style="text-decoration: none; padding: 4px 8px; background-color: #f8d7da; border-radius: 4px; color: #721c24; font-size: 11px; font-weight: bold;"
-    onclick="return confirm('¿Seguro que deseas eliminar este profesor?');">Eliminar</a>
+                            <a href="registrar_usuario.php?editar_rol=profesor&editar_id=<?php echo $id_actual; ?>" class="btn-editar">✏️ Editar</a>
+                            <a href="registrar_usuario.php?eliminar_rol=profesor&eliminar_id=<?php echo $id_actual; ?>" class="btn-eliminar" onclick="return confirm('¿Seguro que deseas eliminar este profesor?');">🗑️ Eliminar</a>
                         </td>
                     </tr>
                     <?php
