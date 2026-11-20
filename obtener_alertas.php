@@ -58,7 +58,8 @@ $claseCampana = !empty($alertas) ? 'campanita-icono pendiente' : 'campanita-icon
     <span class="<?php echo $claseCampana; ?>" onclick="activarCampanita(this)" title="Probar sonido de alerta">🔔</span>
     Alertas de Devolución
 </h3>
-<?
+
+<?php
 if (!empty($alertas)) {
         echo "<div class='lista-alertas' style='max-height: 260px; overflow-y: auto; padding-right: 6px;'>";
         foreach ($alertas as $alerta) {
