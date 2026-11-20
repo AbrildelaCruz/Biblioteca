@@ -53,16 +53,17 @@ if ($result && $result->num_rows > 0) {
 }
 ?>
 <?php
-// Verificamos si hay al menos una alerta de hoy, mañana o vencida (<= 1 día)
+// Verificamos si hay al menos una alerta vencida o que vence HOY
 $hayUrgentes = false;
 foreach ($alertas as $a) {
-    $dias = (int)((strtotime($a['Fecha_Devolucion_Esperada']) - strtotime($hoy)) / 86400);
-    if ($dias <= 1) {
+    if ($a['clase'] === 'entrega-vencida' || $a['clase'] === 'entrega-hoy') {
         $hayUrgentes = true;
         break;
     }
 }
 $claseCampana = $hayUrgentes ? 'campanita-icono pendiente urgente' : 'campanita-icono';
+
+echo "<h3 style='margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;'><span class='" . $claseCampana . "' onclick='activarCampanita(this)' title='Clic para probar sonido'>🔔</span> Alertas de Devolución</h3>";
 ?>
 
 <h3 style="margin-top: 0; color: #0F4C81; font-size: 16px; border-bottom: 2px solid #E8EEF5; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
