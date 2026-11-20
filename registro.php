@@ -231,16 +231,17 @@
                 const panel = document.querySelector('.panel-notificaciones-derecho');
                 if (panel) {
                     panel.innerHTML = html;
-                    // Si hay alertas pendientes, intenta sonar al cargar
-                    const campana = panel.querySelector('.campanita-icono.pendiente');
-                    if (campana) {
-                        activarCampanita(campana);
+
+                    // Solo suena si hay libros vencidos o a 1 día de vencer, y NO ha sonado ya en esta sesión
+                    const campanaUrgente = panel.querySelector('.campanita-icono.urgente');
+                    if (campanaUrgente && !sessionStorage.getItem('alerta_campana_sonada')) {
+                        activarCampanita(campanaUrgente);
+                        sessionStorage.setItem('alerta_campana_sonada', '2');
                     }
                 }
             })
             .catch(error => console.error('Error cargando alertas:', error));
     }
-
     window.onload = function() {
         cargarAlertasCampana();
     };
