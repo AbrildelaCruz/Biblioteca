@@ -141,6 +141,9 @@ $categorias_disponibles = [
                     ? "https://openlibrary.org{$isbn_limpio}-M.jpg?default=false" 
                     : "";
             ?>
+            <!-- CONTENEDOR DEL PAGINADOR -->
+    <div class="paginador" id="paginador-interactivo"></div>
+
             <div class="tarjeta-libro" data-categoria="<?php echo htmlspecialchars($cat_libro); ?>">
                 <div class="fila-tarjeta-contenido">
                     <img 
@@ -202,9 +205,31 @@ $categorias_disponibles = [
             <p style="text-align: center; grid-column: 1/-1;">No hay libros registrados en el inventario.</p>
         <?php endif; ?>
     </div>
-
-    <script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    const instanciasChoices = {};
         let categoriaSeleccionada = '';
+        
+        // CONFIGURACIÓN DE PAGINACIÓN
+        let paginaActual = 1;
+        const librosPorPagina = 9; // Puedes cambiar a 6, 9, 12, etc.
+        let tarjetasFiltradas = [];
+
+        function inicializarBuscadores() {
+            const selectores = document.querySelectorAll('.buscador-autocompletado');
+            selectores.forEach(select => {
+                if (!instanciasChoices[select.id]) {
+                    instanciasChoices[select.id] = new Choices(select, {
+                        searchEnabled: true,
+                        noResultsText: 'No se encontraron coincidencias',
+                        noChoicesText: 'No hay registros cargados',
+                        itemSelectText: 'Clic para seleccionar',
+                        placeholder: true,
+                        searchPlaceholderValue: 'Escribe matrícula o nombre...',
+                        shouldSort: false 
+                    });
+                }
+            });
+        }
 
         function seleccionarCategoria(categoria, boton) {
             categoriaSeleccionada = categoria;
@@ -214,109 +239,130 @@ $categorias_disponibles = [
         }
 
         function filtrarCatalogo() {
-            var filtro = document.getElementById('buscar-libro').value.toLowerCase().trim();
-            var tarjetas = document.getElementsByClassName('tarjeta-libro');
-            var mensajeVacio = document.getElementById('mensaje-vacio');
-            var encontrados = 0;
+            const filtro = document.getElementById('buscar-libro').value.toLowerCase().trim();
+            const todasLasTarjetas = Array.from(document.getElementsByClassName('tarjeta-libro'));
+            const mensajeVacio = document.getElementById('mensaje-vacio');
+            
+            tarjetasFiltradas = [];
 
-            for (var i = 0; i < tarjetas.length; i++) {
-                var tituloElemento = tarjetas[i].querySelector('.titulo-libro');
-                var autorElemento = tarjetas[i].querySelector('.autor-libro');
-                var catTarjeta = tarjetas[i].getAttribute('data-categoria');
+            // 1. Filtrar cuáles tarjetas cumplen con texto y categoría
+            todasLasTarjetas.forEach(tarjeta => {
+                const tituloElemento = tarjeta.querySelector('.titulo-libro');
+                const autorElemento = tarjeta.querySelector('.autor-libro');
+                const catTarjeta = tarjeta.getAttribute('data-categoria');
 
-                var textoTitulo = tituloElemento ? tituloElemento.textContent.toLowerCase() : '';
-                var textoAutor = autorElemento ? autorElemento.textContent.toLowerCase() : '';
+                const textoTitulo = tituloElemento ? tituloElemento.textContent.toLowerCase() : '';
+                const textoAutor = autorElemento ? autorElemento.textContent.toLowerCase() : '';
 
-                var coincideTexto = (textoTitulo.includes(filtro) || textoAutor.includes(filtro));
-                var coincideCat = (categoriaSeleccionada === '' || catTarjeta === categoriaSeleccionada);
+                const coincideTexto = (textoTitulo.includes(filtro) || textoAutor.includes(filtro));
+                const coincideCat = (categoriaSeleccionada === '' || catTarjeta === categoriaSeleccionada);
 
                 if (coincideTexto && coincideCat) {
-                    tarjetas[i].style.setProperty('display', 'block', 'important');
-                    encontrados++;
-                } else {
-                    tarjetas[i].style.setProperty('display', 'none', 'important');
+                    tarjetasFiltradas.push(tarjeta);
                 }
-            }
+                // Ocultar todas inicialmente
+                tarjeta.style.setProperty('display', 'none', 'important');
+            });
 
-            mensajeVacio.style.setProperty('display', encontrados === 0 ? 'block' : 'none', 'important');
-        }
-
-        function prepararBuscadorTarjeta(idLibro) {
-            const rol = document.getElementById('rol_' + idLibro).value;
-            const wrap = document.getElementById('wrap_user_' + idLibro);
-            const input = document.getElementById('input_user_' + idLibro);
-            const sug = document.getElementById('sug_user_' + idLibro);
-            const hidAl = document.getElementById('hidden_al_' + idLibro);
-            const hidProf = document.getElementById('hidden_prof_' + idLibro);
-
-            hidAl.value = ''; hidAl.disabled = true;
-            hidProf.value = ''; hidProf.disabled = true;
-            input.value = '';
-            sug.style.display = 'none';
-            sug.innerHTML = '';
-
-            if (rol === 'alumno' || rol === 'profesor') {
-                wrap.style.display = 'block';
-                input.placeholder = rol === 'alumno' ? '🔍 Busca alumno por nombre o matrícula...' : '🔍 Busca profesor por nombre o matrícula...';
-                input.focus();
+            // 2. Mostrar mensaje de vacío si no hay resultados
+            if (tarjetasFiltradas.length === 0) {
+                mensajeVacio.style.setProperty('display', 'block', 'important');
             } else {
-                wrap.style.display = 'none';
+                mensajeVacio.style.setProperty('display', 'none', 'important');
+            }
+
+            // 3. Reiniciar siempre a la página 1 al aplicar un filtro nuevo
+            paginaActual = 1;
+            renderizarPagina();
+        }
+
+        function renderizarPagina() {
+            const totalPaginas = Math.ceil(tarjetasFiltradas.length / librosPorPagina);
+            const inicio = (paginaActual - 1) * librosPorPagina;
+            const fin = inicio + librosPorPagina;
+
+            // Ocultar todas y mostrar solo el rango de la página actual
+            document.querySelectorAll('.tarjeta-libro').forEach(t => {
+                t.style.setProperty('display', 'none', 'important');
+            });
+
+            tarjetasFiltradas.slice(inicio, fin).forEach(tarjeta => {
+                tarjeta.style.setProperty('display', 'block', 'important');
+            });
+
+            generarBotonesPaginador(totalPaginas);
+        }
+
+        function generarBotonesPaginador(totalPaginas) {
+            const contenedor = document.getElementById('paginador-interactivo');
+            contenedor.innerHTML = '';
+
+            // Si hay 1 página o menos, no mostramos controles
+            if (totalPaginas <= 1) return;
+
+            // Botón Anterior
+            const btnAnterior = document.createElement('a');
+            btnAnterior.href = '#';
+            btnAnterior.textContent = '« Anterior';
+            if (paginaActual === 1) btnAnterior.classList.add('deshabilitado');
+            btnAnterior.onclick = (e) => {
+                e.preventDefault();
+                if (paginaActual > 1) {
+                    paginaActual--;
+                    renderizarPagina();
+                    desplazarAlCatalogo();
+                }
+            };
+            contenedor.appendChild(btnAnterior);
+
+            // Botones numéricos
+            for (let i = 1; i <= totalPaginas; i++) {
+                const btnNum = document.createElement('a');
+                btnNum.href = '#';
+                btnNum.textContent = i;
+                if (i === paginaActual) btnNum.classList.add('activa');
+                btnNum.onclick = (e) => {
+                    e.preventDefault();
+                    paginaActual = i;
+                    renderizarPagina();
+                    desplazarAlCatalogo();
+                };
+                contenedor.appendChild(btnNum);
+            }
+
+            // Botón Siguiente
+            const btnSiguiente = document.createElement('a');
+            btnSiguiente.href = '#';
+            btnSiguiente.textContent = 'Siguiente »';
+            if (paginaActual === totalPaginas) btnSiguiente.classList.add('deshabilitado');
+            btnSiguiente.onclick = (e) => {
+                e.preventDefault();
+                if (paginaActual < totalPaginas) {
+                    paginaActual++;
+                    renderizarPagina();
+                    desplazarAlCatalogo();
+                }
+            };
+            contenedor.appendChild(btnSiguiente);
+        }
+
+        function desplazarAlCatalogo() {
+            const buscador = document.getElementById('buscar-libro');
+            if (buscador) {
+                buscador.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
-        function buscarUsuarioTarjeta(idLibro) {
-            const rol = document.getElementById('rol_' + idLibro).value;
-            const q = document.getElementById('input_user_' + idLibro).value.trim();
-            const sug = document.getElementById('sug_user_' + idLibro);
-            const hidAl = document.getElementById('hidden_al_' + idLibro);
-            const hidProf = document.getElementById('hidden_prof_' + idLibro);
-
-            hidAl.disabled = true;
-            hidProf.disabled = true;
-
-            if (q.length < 1) {
-                sug.style.display = 'none';
-                sug.innerHTML = '';
-                return;
-            }
-
-            fetch(`buscar_usuario.php?tipo=${encodeURIComponent(rol)}&q=${encodeURIComponent(q)}`)
-                .then(res => res.json())
-                .then(datos => {
-                    sug.innerHTML = '';
-                    if (datos.length > 0) {
-                        datos.forEach(item => {
-                            const div = document.createElement('div');
-                            div.className = 'item-sug-user';
-                            div.innerHTML = `<strong style="color:#0F4C81;">[${item.matricula}]</strong> ${item.nombre}`;
-                            div.onclick = () => {
-                                document.getElementById('input_user_' + idLibro).value = `[${item.matricula}] ${item.nombre}`;
-                                if (rol === 'alumno') {
-                                    hidAl.value = item.id;
-                                    hidAl.disabled = false;
-                                } else {
-                                    hidProf.value = item.id;
-                                    hidProf.disabled = false;
-                                }
-                                sug.style.display = 'none';
-                            };
-                            sug.appendChild(div);
-                        });
-                    } else {
-                        sug.innerHTML = '<div class="item-sug-user" style="color:#991B1B; cursor:default;">❌ Sin coincidencias</div>';
-                    }
-                    sug.style.display = 'block';
-                });
+        // Inicialización al cargar la página
+        function iniciarCatalogo() {
+            inicializarBuscadores();
+            filtrarCatalogo(); // Aplica la paginación inicial desde el primer momento
         }
 
-        function validarUsuarioTarjeta(idLibro) {
-            const hidAl = document.getElementById('hidden_al_' + idLibro);
-            const hidProf = document.getElementById('hidden_prof_' + idLibro);
-            if (hidAl.disabled && hidProf.disabled) {
-                alert('⚠️ Busca y selecciona un usuario de las sugerencias antes de continuar.');
-                return false;
-            }
-            return true;
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', iniciarCatalogo);
+        } else {
+            iniciarCatalogo();
         }
     </script>
 
