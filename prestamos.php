@@ -62,24 +62,26 @@ if (isset($_GET['devolver_id'])) {
 }
 
 // ==========================================
-// 2. PROCESAR ACCIÓN: RENOVAR PRÉSTAMO (+7 DÍAS)
+// 2. PROCESAR ACCIÓN: RENOVAR PRÉSTAMO (+7 DÍAS ILIMITADO)
 // ==========================================
 if (isset($_GET['renovar_id'])) {
     $id_prestamo_ren = filter_input(INPUT_GET, 'renovar_id', FILTER_VALIDATE_INT);
 
     if ($id_prestamo_ren) {
-        $stmt_check = $conexion->prepare("SELECT fecha_devolucion_real, estado_libro FROM prestamos WHERE id_prestamo = ?");
+        $stmt_check = $conexion->prepare("SELECT fecha_devolucion_real, IFNULL(Renovacion, 0) AS veces_renovado FROM prestamos WHERE id_prestamo = ?");
         $stmt_check->bind_param("i", $id_prestamo_ren);
         $stmt_check->execute();
         $res_check = $stmt_check->get_result()->fetch_assoc();
         $stmt_check->close();
 
-        if ($res_check && $res_check['fecha_devolucion_real'] === null && $res_check['estado_libro'] !== 'Renovado') {
-            $stmt_ren = $conexion->prepare("UPDATE prestamos SET fecha_devolucion_esperada = DATE_ADD(fecha_devolucion_esperada, INTERVAL 7 DAY), estado_libro = 'Renovado' WHERE id_prestamo = ?");
-            $stmt_ren->bind_param("i", $id_prestamo_ren);
+        if ($res_check && $res_check['fecha_devolucion_real'] === null) {
+            $nuevo_conteo = intval($res_check['veces_renovado']) + 1;
+
+            $stmt_ren = $conexion->prepare("UPDATE prestamos SET fecha_devolucion_esperada = DATE_ADD(fecha_devolucion_esperada, INTERVAL 7 DAY), estado_libro = 'Renovado', Renovacion = ? WHERE id_prestamo = ?");
+            $stmt_ren->bind_param("ii", $nuevo_conteo, $id_prestamo_ren);
 
             if ($stmt_ren->execute()) {
-                $_SESSION['mensaje'] = "🔄 Préstamo renovado con éxito. Se agregaron 7 días adicionales a la fecha límite.";
+                $_SESSION['mensaje'] = "🔄 Préstamo renovado con éxito (+7 días). Total de renovaciones de este libro: $nuevo_conteo.";
                 $_SESSION['tipoMensaje'] = 'exito';
             } else {
                 $_SESSION['mensaje'] = "Error al renovar el préstamo en la base de datos.";
@@ -87,7 +89,7 @@ if (isset($_GET['renovar_id'])) {
             }
             $stmt_ren->close();
         } else {
-            $_SESSION['mensaje'] = "⚠️ Este préstamo ya fue renovado anteriormente o ya fue devuelto.";
+            $_SESSION['mensaje'] = "⚠️ Este libro ya fue devuelto y no se puede renovar.";
             $_SESSION['tipoMensaje'] = 'error';
         }
     }
@@ -146,7 +148,6 @@ $conteo_pendientes = $conexion->query("SELECT COUNT(*) AS total FROM prestamos W
 $conteo_vencidos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE fecha_devolucion_real IS NULL AND fecha_devolucion_esperada < '$fecha_hoy'")->fetch_assoc()['total'] ?? 0;
 $conteo_devueltos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE fecha_devolucion_real IS NOT NULL")->fetch_assoc()['total'] ?? 0;
 
-// Condición SQL según la pestaña elegida
 $condicion_where = "";
 if ($filtro_actual === 'pendientes') {
     $condicion_where = "WHERE p.fecha_devolucion_real IS NULL";
@@ -178,13 +179,18 @@ $total_paginas = ceil($total_filas / $registros_por_pagina);
 $sql_bitacora = "SELECT 
                     p.id_prestamo,
                     l.Titulo AS Libro,
-                    COALESCE(a.Nombre, prof.Nombre, 'Desconocido') AS Persona,
-                    CASE WHEN a.Nombre IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS TipoPersona,
+                    COALESCE(
+                        NULLIF(TRIM(CONCAT_WS(' ', a.Nombre, a.Apellido_Paterno, a.Apellido_Materno)), ''),
+                        NULLIF(TRIM(CONCAT_WS(' ', prof.Nombre, prof.Apellido_Paterno, prof.Apellido_Materno)), ''),
+                        'Desconocido'
+                    ) AS Persona,
+                    CASE WHEN a.id_Alumnos IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS TipoPersona,
                     p.fecha_salida,
                     p.fecha_devolucion_esperada,
                     p.fecha_devolucion_real,
                     p.tipo_movimiento,
-                    p.estado_libro
+                    p.estado_libro,
+                    IFNULL(p.Renovacion, 0) AS veces_renovado
                  FROM prestamos p
                  JOIN libros l ON p.id_libro = l.id_libro
                  LEFT JOIN alumnos a ON p.id_alumnos = a.id_Alumnos
@@ -209,17 +215,17 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
 <body class="body2">
 
     <?php if ($mensaje !== ''): ?>
-    <div class="alerta <?php echo $tipoMensaje; ?>"
+        <div class="alerta <?php echo $tipoMensaje; ?>"
         style="padding: 12px; margin: 15px auto; max-width: 850px; text-align: center; border-radius: 8px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
-        <?php if ($sonar_campana): ?>
-            <span id="campana-devolucion" class="campanita-icono sonar" onclick="tocarSonidoCampanita()" style="margin-right: 6px;">🔔</span>
-        <?php endif; ?>
-        <?php echo $mensaje; ?>
-    </div>
-<?php endif; ?>
+            <?php if ($sonar_campana): ?>
+                <span id="campana-devolucion" class="campanita-icono sonar" onclick="tocarSonidoCampanita()" style="margin-right: 6px;">🔔</span>
+            <?php endif; ?>
+            <?php echo $mensaje; ?>
+        </div>
+    <?php endif; ?>
 
     <h2 style="text-align: center; color: #0F4C81; margin-top: 30px;">📋 Bitácora General de Préstamos y Apartados</h2>
-    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Registro de devoluciones, renovaciones y revición del historial.</p>
+    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Registro de devoluciones, renovaciones y revisión del historial.</p>
 
     <div class="barra-filtros">
         <a href="prestamos.php?filtro=todos" class="tab-filtro <?php echo $filtro_actual === 'todos' ? 'activa' : ''; ?>">
@@ -265,8 +271,8 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                 while ($fila = $resultado_bitacora->fetch_assoc()):
                     $entregado = ($fila['fecha_devolucion_real'] !== null);
                     $es_apartado = ($fila['tipo_movimiento'] === 'Apartado');
-                    $ya_renovado = ($fila['estado_libro'] === 'Renovado');
                     $es_perdido = ($fila['estado_libro'] === 'Perdido');
+                    $veces_renovado = (int)($fila['veces_renovado'] ?? 0);
                     
                     $clase_fila = ''; 
                     if (!$entregado) {
@@ -294,10 +300,14 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                             </span>
                         </td>
                         <td><?php echo date('d/m/Y', strtotime($fila['fecha_salida'])); ?></td>
-                        <td style="font-weight: bold;">
-                            <?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_esperada'])); ?>
-                            <?php if ($ya_renovado && !$entregado): ?>
-                                <span style="display: block; font-size: 10px; color: #0F4C81;">(Renovado +7d)</span>
+                        <td>
+                            <strong><?php echo date('d/m/Y', strtotime($fila['fecha_devolucion_esperada'])); ?></strong>
+                            <?php if ($veces_renovado > 0): ?>
+                                <span class="badge-renovaciones">
+                                    🔄 Renovado: <?php echo $veces_renovado; ?> <?php echo ($veces_renovado === 1) ? 'vez' : 'veces'; ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="sin-renovaciones">Sin renovaciones</span>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -313,20 +323,11 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                         </td>
                         <td>
                             <?php if (!$entregado): ?>
-                                <!-- 1. Botón Recibir -->
-                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&devolver_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #2A9D8F; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block;" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
-                                 
-                                <!-- 2. Botón Renovar (+7 días en 1 clic) -->
-                                <?php if (!$ya_renovado): ?>
-                                    <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&renovar_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #0F4C81; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('¿Deseas renovar este préstamo por 7 días adicionales?');">🔄 Renovar (+7d)</a>
-                                <?php else: ?>
-                                    <span style="padding: 4px 8px; background-color: #E2E8F0; border-radius: 4px; color: #475569; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;">✔ Renovado</span>
-                                <?php endif; ?>
-
-                                <!-- 3. Botón Perdido -->
-                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&perdido_id=<?php echo $fila['id_prestamo']; ?>" style="text-decoration: none; padding: 4px 8px; background-color: #dc3545; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 4px;" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
+                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&devolver_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-recibir" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
+                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&renovar_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-renovar" onclick="return confirm('¿Deseas renovar este préstamo por 7 días adicionales?');">🔄 Renovar (+7d)</a>
+                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&perdido_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-perdido" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
                             <?php else: ?>
-                                <span style="font-weight: bold; color: #475569;">Completado</span>
+                                <span class="texto-completado">Completado</span>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -368,33 +369,33 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
     </div>
 
     <?php if ($sonar_campana): ?>
-<script>
-function tocarSonidoCampanita() {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    if (ctx.state === 'suspended') ctx.resume();
+    <script>
+    function tocarSonidoCampanita() {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        if (ctx.state === 'suspended') ctx.resume();
 
-    const ahora = ctx.currentTime;
-    [1318.5, 1975.5].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const ganancia = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ahora + i * 0.09);
-        ganancia.gain.setValueAtTime(0.18, ahora + i * 0.09);
-        ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + i * 0.09 + 0.95);
-        osc.connect(ganancia);
-        ganancia.connect(ctx.destination);
-        osc.start(ahora + i * 0.09);
-        osc.stop(ahora + i * 0.09 + 0.95);
+        const ahora = ctx.currentTime;
+        [1318.5, 1975.5].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const ganancia = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ahora + i * 0.09);
+            ganancia.gain.setValueAtTime(0.18, ahora + i * 0.09);
+             ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + i * 0.09 + 0.95);
+            osc.connect(ganancia);
+            ganancia.connect(ctx.destination);
+            osc.start(ahora + i * 0.09);
+            osc.stop(ahora + i * 0.09 + 0.95);
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        tocarSonidoCampanita();
     });
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-    tocarSonidoCampanita();
-});
-</script>
-<?php endif; ?>
+    </script>
+    <?php endif; ?>
 
 </body>
 </html>

@@ -141,9 +141,6 @@ $categorias_disponibles = [
                     ? "https://openlibrary.org{$isbn_limpio}-M.jpg?default=false" 
                     : "";
             ?>
-            <!-- CONTENEDOR DEL PAGINADOR -->
-    <div class="paginador" id="paginador-interactivo"></div>
-
             <div class="tarjeta-libro" data-categoria="<?php echo htmlspecialchars($cat_libro); ?>">
                 <div class="fila-tarjeta-contenido">
                     <img 
@@ -209,8 +206,33 @@ $categorias_disponibles = [
             <p style="text-align: center; grid-column: 1/-1;">No hay libros registrados en el inventario.</p>
         <?php endif; ?>
     </div>
+            <!-- CONTENEDOR DEL PAGINADOR -->
+    <div class="paginador" id="paginador-interactivo"></div>
  <script>
+         const instanciasChoices = {};
         let categoriaSeleccionada = '';
+        
+        // CONFIGURACIÓN DE PAGINACIÓN
+        let paginaActual = 1;
+        const librosPorPagina = 6; // Puedes cambiar a 6, 9, 12, etc.
+        let tarjetasFiltradas = [];
+
+        function inicializarBuscadores() {
+            const selectores = document.querySelectorAll('.buscador-autocompletado');
+            selectores.forEach(select => {
+                if (!instanciasChoices[select.id]) {
+                    instanciasChoices[select.id] = new Choices(select, {
+                        searchEnabled: true,
+                        noResultsText: 'No se encontraron coincidencias',
+                        noChoicesText: 'No hay registros cargados',
+                        itemSelectText: 'Clic para seleccionar',
+                        placeholder: true,
+                        searchPlaceholderValue: 'Escribe matrícula o nombre...',
+                        shouldSort: false 
+                    });
+                }
+            });
+        }
 
         function seleccionarCategoria(categoria, boton) {
             categoriaSeleccionada = categoria;
@@ -221,14 +243,16 @@ $categorias_disponibles = [
 
         function filtrarCatalogo() {
             const filtro = document.getElementById('buscar-libro').value.toLowerCase().trim();
-            const tarjetas = document.getElementsByClassName('tarjeta-libro');
+            const todasLasTarjetas = Array.from(document.getElementsByClassName('tarjeta-libro'));
             const mensajeVacio = document.getElementById('mensaje-vacio');
-            let encontrados = 0;
+            
+            tarjetasFiltradas = [];
 
-            for (let i = 0; i < tarjetas.length; i++) {
-                const tituloElemento = tarjetas[i].querySelector('.titulo-libro');
-                const autorElemento = tarjetas[i].querySelector('.autor-libro');
-                const catTarjeta = tarjetas[i].getAttribute('data-categoria');
+            // 1. Filtrar cuáles tarjetas cumplen con texto y categoría
+            todasLasTarjetas.forEach(tarjeta => {
+                const tituloElemento = tarjeta.querySelector('.titulo-libro');
+                const autorElemento = tarjeta.querySelector('.autor-libro');
+                const catTarjeta = tarjeta.getAttribute('data-categoria');
 
                 const textoTitulo = tituloElemento ? tituloElemento.textContent.toLowerCase() : '';
                 const textoAutor = autorElemento ? autorElemento.textContent.toLowerCase() : '';
@@ -237,151 +261,113 @@ $categorias_disponibles = [
                 const coincideCat = (categoriaSeleccionada === '' || catTarjeta === categoriaSeleccionada);
 
                 if (coincideTexto && coincideCat) {
-                    tarjetas[i].style.setProperty('display', 'block', 'important');
-                    encontrados++;
-                } else {
-                    tarjetas[i].style.setProperty('display', 'none', 'important');
+                    tarjetasFiltradas.push(tarjeta);
                 }
-            }
+                // Ocultar todas inicialmente
+                tarjeta.style.setProperty('display', 'none', 'important');
+            });
 
-            mensajeVacio.style.setProperty('display', encontrados === 0 ? 'block' : 'none', 'important');
-        }
-
-        function prepararBuscadorTarjeta(idLibro) {
-            const rol = document.getElementById('rol_' + idLibro).value;
-            const wrap = document.getElementById('wrap_user_' + idLibro);
-
-            limpiarUsuarioTarjeta(idLibro, false);
-
-            if (rol === 'alumno' || rol === 'profesor') {
-                wrap.style.display = 'block';
-                const input = document.getElementById('input_user_' + idLibro);
-                input.placeholder = rol === 'alumno'
-                    ? '🔍 Buscar alumno (nombre o matrícula)...'
-                    : '🔍 Buscar profesor (nombre o matrícula)...';
-                input.focus();
+            // 2. Mostrar mensaje de vacío si no hay resultados
+            if (tarjetasFiltradas.length === 0) {
+                mensajeVacio.style.setProperty('display', 'block', 'important');
             } else {
-                wrap.style.display = 'none';
+                mensajeVacio.style.setProperty('display', 'none', 'important');
             }
+
+            // 3. Reiniciar siempre a la página 1 al aplicar un filtro nuevo
+            paginaActual = 1;
+            renderizarPagina();
         }
 
-        function limpiarUsuarioTarjeta(idLibro, enfocar = true) {
-            const input = document.getElementById('input_user_' + idLibro);
-            const sug = document.getElementById('sug_user_' + idLibro);
-            const btnLimpiar = document.getElementById('btn_limpiar_' + idLibro);
-            const hidAl = document.getElementById('hidden_al_' + idLibro);
-            const hidProf = document.getElementById('hidden_prof_' + idLibro);
+        function renderizarPagina() {
+            const totalPaginas = Math.ceil(tarjetasFiltradas.length / librosPorPagina);
+            const inicio = (paginaActual - 1) * librosPorPagina;
+            const fin = inicio + librosPorPagina;
 
-            hidAl.value = ''; hidAl.disabled = true;
-            hidProf.value = ''; hidProf.disabled = true;
-            input.value = '';
-            input.readOnly = false;
-            btnLimpiar.style.display = 'none';
-            sug.style.display = 'none';
-            sug.innerHTML = '';
+            // Ocultar todas y mostrar solo el rango de la página actual
+            document.querySelectorAll('.tarjeta-libro').forEach(t => {
+                t.style.setProperty('display', 'none', 'important');
+            });
 
-            if (enfocar) input.focus();
+            tarjetasFiltradas.slice(inicio, fin).forEach(tarjeta => {
+                tarjeta.style.setProperty('display', 'block', 'important');
+            });
+
+            generarBotonesPaginador(totalPaginas);
         }
 
-        function buscarUsuarioTarjeta(idLibro) {
-            const rol = document.getElementById('rol_' + idLibro).value;
-            const q = document.getElementById('input_user_' + idLibro).value.trim();
-            const sug = document.getElementById('sug_user_' + idLibro);
-            const hidAl = document.getElementById('hidden_al_' + idLibro);
-            const hidProf = document.getElementById('hidden_prof_' + idLibro);
+        function generarBotonesPaginador(totalPaginas) {
+            const contenedor = document.getElementById('paginador-interactivo');
+            contenedor.innerHTML = '';
 
-            hidAl.disabled = true;
-            hidProf.disabled = true;
+            // Si hay 1 página o menos, no mostramos controles
+            if (totalPaginas <= 1) return;
 
-            if (q.length < 1) {
-                sug.style.display = 'none';
-                sug.innerHTML = '';
-                return;
-            }
-
-            fetch('buscar_usuario.php?tipo=' + encodeURIComponent(rol) + '&q=' + encodeURIComponent(q))
-                .then(res => res.json())
-                .then(datos => {
-                    sug.innerHTML = '';
-                    if (datos.length > 0) {
-                        datos.forEach(item => {
-                            const div = document.createElement('div');
-                            div.className = 'item-sug-user';
-                            div.innerHTML = '<strong>[' + item.matricula + ']</strong> ' + item.nombre;
-                            div.onclick = function() {
-                                const input = document.getElementById('input_user_' + idLibro);
-                                input.value = '[' + item.matricula + '] ' + item.nombre;
-                                input.readOnly = true;
-                                document.getElementById('btn_limpiar_' + idLibro).style.display = 'inline-block';
-
-                                if (rol === 'alumno') {
-                                    hidAl.value = item.id;
-                                    hidAl.disabled = false;
-                                } else {
-                                    hidProf.value = item.id;
-                                    hidProf.disabled = false;
-                                }
-                                sug.style.display = 'none';
-                            };
-                            sug.appendChild(div);
-                        });
-                    } else {
-                        sug.innerHTML = '<div class="item-sug-user sin-resultados">❌ Sin coincidencias</div>';
-                    }
-                    sug.style.display = 'block';
-                });
-        }
-
-        function validarUsuarioTarjeta(idLibro) {
-            const hidAl = document.getElementById('hidden_al_' + idLibro);
-            const hidProf = document.getElementById('hidden_prof_' + idLibro);
-            if (hidAl.disabled && hidProf.disabled) {
-                alert('⚠️ Busca y selecciona un usuario de las sugerencias antes de continuar.');
-                return false;
-            }
-            return true;
-        }
-
-        const SVG_RESPALDO = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://w3.org" width="85" height="125" viewBox="0 0 85 125"><rect width="85" height="125" rx="6" fill="#EFF6FF"/><path d="M27 42h31v41H27z" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linejoin="round"/><path d="M33 42v41M39 52h13M39 60h13" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/></svg>');
-
-        async function buscarEnGoogleBooks(img) {
-            img.onerror = null;
-            const titulo = (img.dataset.titulo || '').replace(/\(Ej\..*?\)/gi, '').trim();
-            const autor = (img.dataset.autor || '').trim();
-
-            if (!titulo) {
-                img.src = SVG_RESPALDO;
-                return;
-            }
-
-            const claveCache = 'portada_' + titulo + '_' + autor;
-            const guardada = sessionStorage.getItem(claveCache);
-            if (guardada) {
-                img.src = guardada;
-                return;
-            }
-
-            try {
-                const query = encodeURIComponent('intitle:' + titulo + ' inauthor:' + autor);
-                const respuesta = await fetch('https://googleapis.com' + query + '&maxResults=1');
-                const datos = await respuesta.json();
-
-                const links = datos.items && datos.items[0] && datos.items[0].volumeInfo ? datos.items[0].volumeInfo.imageLinks : null;
-                let urlFinal = links ? (links.thumbnail || links.smallThumbnail) : null;
-
-                if (urlFinal) {
-                    urlFinal = urlFinal.replace(/^http:/, 'https:');
-                    img.src = urlFinal;
-                    sessionStorage.setItem(claveCache, urlFinal);
-                } else {
-                    img.src = SVG_RESPALDO;
-                    sessionStorage.setItem(claveCache, SVG_RESPALDO);
+            // Botón Anterior
+            const btnAnterior = document.createElement('a');
+            btnAnterior.href = '#';
+            btnAnterior.textContent = '« Anterior';
+            if (paginaActual === 1) btnAnterior.classList.add('deshabilitado');
+            btnAnterior.onclick = (e) => {
+                e.preventDefault();
+                if (paginaActual > 1) {
+                    paginaActual--;
+                    renderizarPagina();
+                    desplazarAlCatalogo();
                 }
-            } catch (error) {
-                img.src = SVG_RESPALDO;
+            };
+            contenedor.appendChild(btnAnterior);
+
+            // Botones numéricos
+            for (let i = 1; i <= totalPaginas; i++) {
+                const btnNum = document.createElement('a');
+                btnNum.href = '#';
+                btnNum.textContent = i;
+                if (i === paginaActual) btnNum.classList.add('activa');
+                btnNum.onclick = (e) => {
+                    e.preventDefault();
+                    paginaActual = i;
+                    renderizarPagina();
+                    desplazarAlCatalogo();
+                };
+                contenedor.appendChild(btnNum);
+            }
+
+            // Botón Siguiente
+            const btnSiguiente = document.createElement('a');
+            btnSiguiente.href = '#';
+            btnSiguiente.textContent = 'Siguiente »';
+            if (paginaActual === totalPaginas) btnSiguiente.classList.add('deshabilitado');
+            btnSiguiente.onclick = (e) => {
+                e.preventDefault();
+                if (paginaActual < totalPaginas) {
+                    paginaActual++;
+                    renderizarPagina();
+                    desplazarAlCatalogo();
+                }
+            };
+            contenedor.appendChild(btnSiguiente);
+        }
+
+        function desplazarAlCatalogo() {
+            const buscador = document.getElementById('buscar-libro');
+            if (buscador) {
+                buscador.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
-    </script>
+
+        // Inicialización al cargar la página
+        function iniciarCatalogo() {
+            inicializarBuscadores();
+            filtrarCatalogo(); // Aplica la paginación inicial desde el primer momento
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', iniciarCatalogo);
+        } else {
+            iniciarCatalogo();
+        }
+            </script>
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
