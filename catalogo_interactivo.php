@@ -207,7 +207,7 @@ $categorias_disponibles = [
         <?php endif; ?>
     </div>
             <!-- CONTENEDOR DEL PAGINADOR -->
-    <div class="paginador" id="paginador-interactivo"></div>
+    <div class="paginador" id="paginador-interactivo" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 30px; padding: 0 20px;"></div>
  <script>
          const instanciasChoices = {};
         let categoriaSeleccionada = '';

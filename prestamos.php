@@ -141,6 +141,32 @@ if (isset($_GET['perdido_id'])) {
 }
 
 // ==========================================
+// 4. CONVERTIR APARTADO A PRÉSTAMO ACTIVO (+9 DÍAS DESDE HOY)
+// ==========================================
+if (isset($_GET['convertir_prestamo_id'])) {
+    $id_apartado = filter_input(INPUT_GET, 'convertir_prestamo_id', FILTER_VALIDATE_INT);
+
+    if ($id_apartado) {
+        $fecha_nueva_salida = date('Y-m-d');
+        $fecha_nueva_limite = date('Y-m-d', strtotime('+9 days'));
+
+        $stmt_conv = $conexion->prepare("UPDATE prestamos SET tipo_movimiento = 'Prestado', fecha_salida = ?, fecha_devolucion_esperada = ? WHERE id_prestamo = ? AND tipo_movimiento = 'Apartado' AND fecha_devolucion_real IS NULL");
+        $stmt_conv->bind_param("ssi", $fecha_nueva_salida, $fecha_nueva_limite, $id_apartado);
+
+        if ($stmt_conv->execute() && $stmt_conv->affected_rows > 0) {
+            $_SESSION['mensaje'] = "📖 ¡Apartado convertido a Préstamo! Nueva fecha límite de entrega: " . date('d/m/Y', strtotime($fecha_nueva_limite)) . " (9 días).";
+            $_SESSION['tipoMensaje'] = 'exito';
+        } else {
+            $_SESSION['mensaje'] = "⚠️ No se pudo convertir el apartado (verifica que siga activo).";
+            $_SESSION['tipoMensaje'] = 'error';
+        }
+        $stmt_conv->close();
+    }
+    header("Location: prestamos.php?filtro=" . urlencode($filtro_actual));
+    exit();
+}
+
+// ==========================================
 // CONTADORES PARA LAS PESTAÑAS DE FILTRO
 // ==========================================
 $conteo_todos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos")->fetch_assoc()['total'] ?? 0;
