@@ -9,8 +9,6 @@ $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-$alumnos_res = $conexion->query("SELECT id_Alumnos, Matricula, Nombre FROM alumnos ORDER BY Nombre ASC");
-$profesores_res = $conexion->query("SELECT id_profesores, Matricula, Nombre FROM profesores ORDER BY Nombre ASC");
 $libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Categoria, Editorial, ISBN, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY Titulo ASC");
 
 $categorias_disponibles = [
@@ -32,44 +30,8 @@ $categorias_disponibles = [
     <title>Catálogo - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
-
-    <link rel="stylesheet" href="https://jsdelivr.net" />
-    <script src="https://jsdelivr.net"></script>
-    
-    <style>
-        .choices { margin-bottom: 0px; font-size: 13px; color: #1e293b; }
-        .choices__inner { background-color: white; border-radius: 4px; border: 1px solid #CBD5E1; padding: 4px; min-height: 36px; }
-        .choices__list--dropdown { z-index: 1000 !important; }
-        .barra-categorias {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            max-width: 950px;
-            margin: 0 auto 20px auto;
-            padding: 0 15px;
-        }
-        .btn-cat {
-            padding: 7px 14px;
-            border-radius: 20px;
-            border: 1px solid #CBD5E1;
-            background-color: #FFFFFF;
-            color: #0F4C81;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-cat.activa, .btn-cat:hover {
-            background-color: #0F4C81;
-            color: #FFFFFF;
-            border-color: #0F4C81;
-        }
-    </style>
 </head>
-
 <body class="body2 scroll-catalogo">
-
 
     <?php if ($mensaje !== ''): ?>
         <div class="alerta <?php echo $tipoMensaje; ?>"
@@ -171,87 +133,70 @@ $categorias_disponibles = [
     <div class="grid-catalogo">
         <?php if ($libros_res && $libros_res->num_rows > 0): ?>
             <?php while ($libro = $libros_res->fetch_assoc()):
+                $idL = $libro['id_libro'];
                 $es_disponible = ($libro['Ejemplares_disponibles'] > 0);
                 $cat_libro = $libro['Categoria'] ?? 'Novela y Narrativa';
- $isbn_limpio = preg_replace('/[^0-9X]/i', '', $libro['ISBN'] ?? '');
-    $url_portada = !empty($isbn_limpio) 
-        ? "https://openlibrary.org{$isbn_limpio}-M.jpg?default=false" 
-        : "";
-?>
-                 <div class="tarjeta-libro" data-categoria="<?php echo htmlspecialchars($cat_libro); ?>">
-        
-        <div class="fila-tarjeta-contenido">
-           <img 
-                src="<?php echo $url_portada; ?>" 
-                alt="Portada" 
-                class="portada-libro"
-                data-titulo="<?php echo htmlspecialchars($libro['Titulo']); ?>"
-                data-autor="<?php echo htmlspecialchars($libro['Autor']); ?>"
-                onerror="buscarEnGoogleBooks(this)"
-             >
+                $isbn_limpio = preg_replace('/[^0-9X]/i', '', $libro['ISBN'] ?? '');
+                $url_portada = !empty($isbn_limpio) 
+                    ? "https://openlibrary.org{$isbn_limpio}-M.jpg?default=false" 
+                    : "";
+            ?>
+            <div class="tarjeta-libro" data-categoria="<?php echo htmlspecialchars($cat_libro); ?>">
+                <div class="fila-tarjeta-contenido">
+                    <img 
+                        src="<?php echo $url_portada; ?>" 
+                        alt="Portada" 
+                        class="portada-libro"
+                        data-titulo="<?php echo htmlspecialchars($libro['Titulo']); ?>"
+                        data-autor="<?php echo htmlspecialchars($libro['Autor']); ?>"
+                        onerror="buscarEnGoogleBooks(this)"
+                    >
 
-            <div class="info-libro">
-                <span style="display: inline-block; padding: 2px 8px; background: #EFF6FF; color: #1E40AF; border-radius: 10px; font-size: 11px; font-weight: bold; margin-bottom: 6px;">
-                    <?php echo htmlspecialchars($cat_libro); ?>
-                </span>
-                <h3 class="titulo-libro"><?php echo htmlspecialchars($libro['Titulo']); ?></h3>
-                <p class="autor-libro"><b>Autor:</b> <?php echo htmlspecialchars($libro['Autor']); ?></p>
-                <p><b>Editorial:</b> <?php echo htmlspecialchars($libro['Editorial']); ?></p>
-                <p><b>En Estantería:</b> <?php echo $libro['Ejemplares_disponibles'] ?? 0; ?> copias</p>
+                    <div class="info-libro">
+                        <span style="display: inline-block; padding: 2px 8px; background: #EFF6FF; color: #1E40AF; border-radius: 10px; font-size: 11px; font-weight: bold; margin-bottom: 6px;">
+                            <?php echo htmlspecialchars($cat_libro); ?>
+                        </span>
+                        <h3 class="titulo-libro"><?php echo htmlspecialchars($libro['Titulo']); ?></h3>
+                        <p class="autor-libro"><b>Autor:</b> <?php echo htmlspecialchars($libro['Autor']); ?></p>
+                        <p><b>Editorial:</b> <?php echo htmlspecialchars($libro['Editorial']); ?></p>
+                        <p><b>En Estantería:</b> <?php echo $libro['Ejemplares_disponibles'] ?? 0; ?> copias</p>
+
+                        <?php if ($es_disponible): ?>
+                            <span class="semaforo disponible">🟢 Disponible</span>
+                        <?php else: ?>
+                            <span class="semaforo agotado">🔴 Todo Prestado / Apartado</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
                 <?php if ($es_disponible): ?>
-                    <span class="semaforo disponible">🟢 Disponible</span>
-                <?php else: ?>
-                    <span class="semaforo agotado">🔴 Todo Prestado / Apartado</span>
+                    <div class="formulario-prestamo">
+                        <form action="procesar_movimiento.php" method="POST" onsubmit="return validarUsuarioTarjeta(<?php echo $idL; ?>)" style="display: flex; flex-direction: column; gap: 8px;">
+                            <input type="hidden" name="id_libro" value="<?php echo $idL; ?>">
+                            <input type="hidden" name="id_alumno" id="hidden_al_<?php echo $idL; ?>" disabled>
+                            <input type="hidden" name="id_profesor" id="hidden_prof_<?php echo $idL; ?>" disabled>
+
+                            <select name="tipo_usuario" id="rol_<?php echo $idL; ?>" required onchange="prepararBuscadorTarjeta(<?php echo $idL; ?>)" style="padding: 8px; border-radius: 6px; border: 1px solid #CBD5E1;">
+                                <option value="">¿Quién solicita?</option>
+                                <option value="alumno">Alumno</option>
+                                <option value="profesor">Profesor</option>
+                            </select>
+
+                            <div class="buscador-usuario-tarjeta" id="wrap_user_<?php echo $idL; ?>" style="display: none;">
+                                <input type="text" id="input_user_<?php echo $idL; ?>" class="input-user-catalogo"
+                                       placeholder="Escribe nombre, apellido o matrícula..." autocomplete="off"
+                                       onkeyup="buscarUsuarioTarjeta(<?php echo $idL; ?>)">
+                                <div class="sugerencias-user-catalogo" id="sug_user_<?php echo $idL; ?>"></div>
+                            </div>
+
+                            <div style="display: flex; gap: 8px; margin-top: 5px;">
+                                <button type="submit" name="accion" value="prestar" style="flex: 1; background-color: #2A9D8F; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Prestar</button>
+                                <button type="submit" name="accion" value="apartar" style="flex: 1; background-color: #E2E8F0; color: #1E293B; border: 1px solid #CBD5E1; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Apartar</button>
+                            </div>
+                        </form>
+                    </div>
                 <?php endif; ?>
             </div>
-        </div>
-                    <?php if ($es_disponible): ?>
-                        <div class="formulario-prestamo">
-                            <form action="procesar_movimiento.php" method="POST" style="display: flex; flex-direction: column; gap: 8px;">
-                                <input type="hidden" name="id_libro" value="<?php echo $libro['id_libro']; ?>">
-                                <select name="tipo_usuario" required onchange="alternarUsuarios(this, <?php echo $libro['id_libro']; ?>)">
-                                    <option value="">¿Quién solicita?</option>
-                                    <option value="alumno">Alumno</option>
-                                    <option value="profesor">Profesor</option>
-                                </select>
-
-                                <div id="wrapper_alumno_<?php echo $libro['id_libro']; ?>" style="display:none;">
-                                    <select name="id_alumno" id="select_alumno_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado" disabled>
-                                        <option value="">Busca por Matrícula o Nombre...</option>
-                                        <?php
-                                        $alumnos_res->data_seek(0);
-                                        while ($al = $alumnos_res->fetch_assoc()) {
-                                            $mat = htmlspecialchars($al['Matricula'] ?? '');
-                                            $nom = htmlspecialchars($al['Nombre']);
-                                            echo "<option value='{$al['id_Alumnos']}'>[{$mat}] {$nom}</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div id="wrapper_profesor_<?php echo $libro['id_libro']; ?>" style="display:none;">
-                                    <select name="id_profesor" id="select_profesor_<?php echo $libro['id_libro']; ?>" class="buscador-autocompletado" disabled>
-                                        <option value="">Escribe el nombre del Docente...</option>
-                                        <?php
-$profesores_res->data_seek(0);
-while ($prof = $profesores_res->fetch_assoc()) {
-    $mat_p = htmlspecialchars($prof['Matricula'] ?? '');
-    $nom_p = htmlspecialchars($prof['Nombre']);
-    echo "<option value='{$prof['id_profesores']}'>[{$mat_p}] {$nom_p}</option>";
-}
-?>
-                                    </select>
-                                </div>
-
-                                <div style="display: flex; gap: 8px; margin-top: 5px;">
-                                    <button type="submit" name="accion" value="prestar" style="flex: 1; background-color: #2A9D8F; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Prestar</button>
-                                    <button type="submit" name="accion" value="apartar" style="flex: 1; background-color: #E2E8F0; color: #1E293B; border: 1px solid #CBD5E1; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer;">Apartar</button>
-                                </div>
-                            </form>
-                        </div>
-                    <?php endif; ?>
-                </div>
             <?php endwhile; ?>
         <?php else: ?>
             <p style="text-align: center; grid-column: 1/-1;">No hay libros registrados en el inventario.</p>
@@ -259,31 +204,7 @@ while ($prof = $profesores_res->fetch_assoc()) {
     </div>
 
     <script>
-        const instanciasChoices = {};
         let categoriaSeleccionada = '';
-
-        function inicializarBuscadores() {
-            const selectores = document.querySelectorAll('.buscador-autocompletado');
-            selectores.forEach(select => {
-                if (!instanciasChoices[select.id]) {
-                    instanciasChoices[select.id] = new Choices(select, {
-                        searchEnabled: true,
-                        noResultsText: 'No se encontraron coincidencias',
-                        noChoicesText: 'No hay registros cargados',
-                        itemSelectText: 'Clic para seleccionar',
-                        placeholder: true,
-                        searchPlaceholderValue: 'Escribe matrícula o nombre...',
-                        shouldSort: false 
-                    });
-                }
-            });
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', inicializarBuscadores);
-        } else {
-            inicializarBuscadores();
-        }
 
         function seleccionarCategoria(categoria, boton) {
             categoriaSeleccionada = categoria;
@@ -317,107 +238,130 @@ while ($prof = $profesores_res->fetch_assoc()) {
                 }
             }
 
-            if (encontrados === 0) {
-                mensajeVacio.style.setProperty('display', 'block', 'important');
+            mensajeVacio.style.setProperty('display', encontrados === 0 ? 'block' : 'none', 'important');
+        }
+
+        function prepararBuscadorTarjeta(idLibro) {
+            const rol = document.getElementById('rol_' + idLibro).value;
+            const wrap = document.getElementById('wrap_user_' + idLibro);
+            const input = document.getElementById('input_user_' + idLibro);
+            const sug = document.getElementById('sug_user_' + idLibro);
+            const hidAl = document.getElementById('hidden_al_' + idLibro);
+            const hidProf = document.getElementById('hidden_prof_' + idLibro);
+
+            hidAl.value = ''; hidAl.disabled = true;
+            hidProf.value = ''; hidProf.disabled = true;
+            input.value = '';
+            sug.style.display = 'none';
+            sug.innerHTML = '';
+
+            if (rol === 'alumno' || rol === 'profesor') {
+                wrap.style.display = 'block';
+                input.placeholder = rol === 'alumno' ? '🔍 Busca alumno por nombre o matrícula...' : '🔍 Busca profesor por nombre o matrícula...';
+                input.focus();
             } else {
-                mensajeVacio.style.setProperty('display', 'none', 'important');
+                wrap.style.display = 'none';
             }
         }
 
-        function alternarUsuarios(selector, idLibro) {
-            var wrapperAlumno = document.getElementById('wrapper_alumno_' + idLibro);
-            var wrapperProfesor = document.getElementById('wrapper_profesor_' + idLibro);
-            var selectAlumno = document.getElementById('select_alumno_' + idLibro);
-            var selectProfesor = document.getElementById('select_profesor_' + idLibro);
+        function buscarUsuarioTarjeta(idLibro) {
+            const rol = document.getElementById('rol_' + idLibro).value;
+            const q = document.getElementById('input_user_' + idLibro).value.trim();
+            const sug = document.getElementById('sug_user_' + idLibro);
+            const hidAl = document.getElementById('hidden_al_' + idLibro);
+            const hidProf = document.getElementById('hidden_prof_' + idLibro);
 
-            if (selector.value === 'alumno') {
-                wrapperAlumno.style.display = 'block';
-                selectAlumno.disabled = false;
-                selectAlumno.required = true;
-                if (instanciasChoices['select_alumno_' + idLibro]) instanciasChoices['select_alumno_' + idLibro].enable();
+            hidAl.disabled = true;
+            hidProf.disabled = true;
 
-                wrapperProfesor.style.display = 'none';
-                selectProfesor.disabled = true;
-                selectProfesor.required = false;
-                if (instanciasChoices['select_profesor_' + idLibro]) {
-                    instanciasChoices['select_profesor_' + idLibro].setChoiceByValue('');
-                    instanciasChoices['select_profesor_' + idLibro].disable();
-                }
-
-            } else if (selector.value === 'profesor') {
-                wrapperProfesor.style.display = 'block';
-                selectProfesor.disabled = false;
-                selectProfesor.required = true;
-                if (instanciasChoices['select_profesor_' + idLibro]) instanciasChoices['select_profesor_' + idLibro].enable();
-
-                wrapperAlumno.style.display = 'none';
-                selectAlumno.disabled = true;
-                selectAlumno.required = false;
-                if (instanciasChoices['select_alumno_' + idLibro]) {
-                    instanciasChoices['select_alumno_' + idLibro].setChoiceByValue('');
-                    instanciasChoices['select_alumno_' + idLibro].disable();
-                }
-
-            } else {
-                wrapperAlumno.style.display = 'none';
-                selectAlumno.disabled = true;
-                if (instanciasChoices['select_alumno_' + idLibro]) {
-                    instanciasChoices['select_alumno_' + idLibro].setChoiceByValue('');
-                    instanciasChoices['select_alumno_' + idLibro].disable();
-                }
-
-                wrapperProfesor.style.display = 'none';
-                selectProfesor.disabled = true;
-                if (instanciasChoices['select_profesor_' + idLibro]) {
-                    instanciasChoices['select_profesor_' + idLibro].setChoiceByValue('');
-                    instanciasChoices['select_profesor_' + idLibro].disable();
-                }
+            if (q.length < 1) {
+                sug.style.display = 'none';
+                sug.innerHTML = '';
+                return;
             }
+
+            fetch(`buscar_usuario.php?tipo=${encodeURIComponent(rol)}&q=${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(datos => {
+                    sug.innerHTML = '';
+                    if (datos.length > 0) {
+                        datos.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'item-sug-user';
+                            div.innerHTML = `<strong style="color:#0F4C81;">[${item.matricula}]</strong> ${item.nombre}`;
+                            div.onclick = () => {
+                                document.getElementById('input_user_' + idLibro).value = `[${item.matricula}] ${item.nombre}`;
+                                if (rol === 'alumno') {
+                                    hidAl.value = item.id;
+                                    hidAl.disabled = false;
+                                } else {
+                                    hidProf.value = item.id;
+                                    hidProf.disabled = false;
+                                }
+                                sug.style.display = 'none';
+                            };
+                            sug.appendChild(div);
+                        });
+                    } else {
+                        sug.innerHTML = '<div class="item-sug-user" style="color:#991B1B; cursor:default;">❌ Sin coincidencias</div>';
+                    }
+                    sug.style.display = 'block';
+                });
+        }
+
+        function validarUsuarioTarjeta(idLibro) {
+            const hidAl = document.getElementById('hidden_al_' + idLibro);
+            const hidProf = document.getElementById('hidden_prof_' + idLibro);
+            if (hidAl.disabled && hidProf.disabled) {
+                alert('⚠️ Busca y selecciona un usuario de las sugerencias antes de continuar.');
+                return false;
+            }
+            return true;
         }
     </script>
 
-<script>
-const SVG_RESPALDO = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://w3.org" width="85" height="125" viewBox="0 0 85 125"><rect width="85" height="125" rx="6" fill="#EFF6FF"/><path d="M27 42h31v41H27z" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linejoin="round"/><path d="M33 42v41M39 52h13M39 60h13" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/></svg>');
+    <script>
+    const SVG_RESPALDO = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://w3.org" width="85" height="125" viewBox="0 0 85 125"><rect width="85" height="125" rx="6" fill="#EFF6FF"/><path d="M27 42h31v41H27z" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linejoin="round"/><path d="M33 42v41M39 52h13M39 60h13" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/></svg>');
 
-async function buscarEnGoogleBooks(img) {
-  img.onerror = null;
+    async function buscarEnGoogleBooks(img) {
+      img.onerror = null;
 
-  const titulo = (img.dataset.titulo || '').replace(/\(Ej\..*?\)/gi, '').trim();
-  const autor = (img.dataset.autor || '').trim();
+      const titulo = (img.dataset.titulo || '').replace(/\(Ej\..*?\)/gi, '').trim();
+      const autor = (img.dataset.autor || '').trim();
 
-  if (!titulo) {
-    img.src = SVG_RESPALDO;
-    return;
-  }
+      if (!titulo) {
+        img.src = SVG_RESPALDO;
+        return;
+      }
 
-  const claveCache = `portada_${titulo}_${autor}`;
-  const guardada = sessionStorage.getItem(claveCache);
-  if (guardada) {
-    img.src = guardada;
-    return;
-  }
+      const claveCache = `portada_${titulo}_${autor}`;
+      const guardada = sessionStorage.getItem(claveCache);
+      if (guardada) {
+        img.src = guardada;
+        return;
+      }
 
-  try {
-    const query = encodeURIComponent(`intitle:${titulo} inauthor:${autor}`);
-    const respuesta = await fetch(`https://googleapis.com{query}&maxResults=1`);
-    const datos = await respuesta.json();
+      try {
+        const query = encodeURIComponent(`intitle:${titulo} inauthor:${autor}`);
+        const respuesta = await fetch(`https://googleapis.com{query}&maxResults=1`);
+        const datos = await respuesta.json();
 
-    const links = datos.items?.[0]?.volumeInfo?.imageLinks;
-    let urlFinal = links?.thumbnail || links?.smallThumbnail;
+        const links = datos.items?.[0]?.volumeInfo?.imageLinks;
+        let urlFinal = links?.thumbnail || links?.smallThumbnail;
 
-    if (urlFinal) {
-      urlFinal = urlFinal.replace(/^http:/, 'https:');
-      img.src = urlFinal;
-      sessionStorage.setItem(claveCache, urlFinal);
-    } else {
-      img.src = SVG_RESPALDO;
-      sessionStorage.setItem(claveCache, SVG_RESPALDO);
+        if (urlFinal) {
+          urlFinal = urlFinal.replace(/^http:/, 'https:');
+          img.src = urlFinal;
+          sessionStorage.setItem(claveCache, urlFinal);
+        } else {
+          img.src = SVG_RESPALDO;
+          sessionStorage.setItem(claveCache, SVG_RESPALDO);
+        }
+      } catch (error) {
+        img.src = SVG_RESPALDO;
+      }
     }
-  } catch (error) {
-    img.src = SVG_RESPALDO;
-  }
-}
-</script>
+    </script>
 
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>

@@ -21,16 +21,39 @@ body, html {
 /* ==========================================================================
    🎬 MÓDULO DE BIENVENIDA - Biblioteca Sullivan (Efecto Cinemático Puro)
    ========================================================================== */
-#pantalla-biblioteca {
-    position: relative;
+
+    #pantalla-biblioteca {
+    position: fixed;
+    inset: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #0d1b2a; /* Fondo oscuro que se revela al fondo */
+    background-color: #0d1b2a;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     perspective: 1000px;
+}
+
+.interfaz-bienvenida {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease;
+}
+
+#btn-entrar {
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin: 0 auto !important;
 }
 
 /* Telón de una sola pieza (Imagen 1.png limpia, sin cortes) */
@@ -58,13 +81,6 @@ body, html {
     opacity: 0; /* Se desvanece por completo */
 }
 
-/* Capa del botón interactivo al frente */
-.interfaz-bienvenida {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    transition: transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease;
-}
 
 /* Efecto de explosión del botón */
 .efecto-destello {
@@ -73,22 +89,6 @@ body, html {
     opacity: 0;
 }
 
-/* Tu botón dorado institucional */
-.btn-entrar {
-    padding: 18px 45px !important;
-    font-size: 1.3rem !important;
-    color: #ffffff !important;
-    background: linear-gradient(135deg, #b38f43 0%, #947432 100%) !important;
-    border: 2px solid #ffffff !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    font-weight: bold !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.4) !important;
-    transition: all 0.3s ease !important;
-    display: inline-block !important;
-}
 
 .btn-entrar:hover {
     background: linear-gradient(135deg, #947432 0%, #735a26 100%) !important;
@@ -1216,4 +1216,78 @@ body.body2::-webkit-scrollbar-thumb:hover {
 .info-libro {
     flex: 1;
     min-width: 0;
+}
+
+/* ==========================================================================
+   🔍 CATEGORÍAS Y BUSCADOR DE USUARIOS EN CATÁLOGO INTERACTIVO
+   ========================================================================== */
+.barra-categorias {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 950px;
+    margin: 0 auto 20px auto;
+    padding: 0 15px;
+}
+
+.btn-cat {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid #CBD5E1;
+    background-color: #FFFFFF;
+    color: #0F4C81;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cat.activa, .btn-cat:hover {
+    background-color: #0F4C81;
+    color: #FFFFFF;
+    border-color: #0F4C81;
+}
+
+.buscador-usuario-tarjeta {
+    position: relative;
+    width: 100%;
+}
+
+.input-user-catalogo {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.sugerencias-user-catalogo {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 999;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    display: none;
+    text-align: left;
+}
+
+.item-sug-user {
+    padding: 8px 10px;
+    font-size: 12px;
+    border-bottom: 1px solid #F1F5F9;
+    cursor: pointer;
+    color: #1E293B;
+}
+
+.item-sug-user:hover {
+    background-color: #EFF6FF;
+    color: #0F4C81;
 }

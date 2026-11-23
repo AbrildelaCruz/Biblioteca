@@ -5,59 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenida - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css">
-
+    <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body>
+    <div id="pantalla-biblioteca">
+        <div class="telon-portada" id="telon"></div>
 
-    <div class="portada-bienvenida">
-        <div class="telon-portada">
-            <h1>📚 Biblioteca Sullivan</h1>
-            <a href="registro.php" class="btn-entrar" onclick="entrarConSonido(event, this.href)">
-                Ingresar al Sistema
-            </a>
+        <div class="interfaz-bienvenida" id="bloque-entrada">
+            <button id="btn-entrar" onclick="activarEfectoPortal()">
+                INGRESAR AL SISTEMA
+            </button>
+        </div>
     </div>
 
     <script>
-    function entrarConSonido(evento, urlDestino) {
-        evento.preventDefault();
+    function activarEfectoPortal() {
+        const bloqueEntrada = document.getElementById('bloque-entrada');
+        const telon = document.getElementById('telon');
 
-        try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (AudioCtx) {
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+        bloqueEntrada.classList.add('efecto-destello');
 
-                const ahora = ctx.currentTime;
-                // Acorde ascendente suave de bienvenida (Do5 -> Mi5 -> Sol5)
-                const notas = [523.25, 659.25, 783.99];
-
-                notas.forEach((freq, i) => {
-                    const osc = ctx.createOscillator();
-                    const ganancia = ctx.createGain();
-
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, ahora + i * 0.08);
-
-                    ganancia.gain.setValueAtTime(0.18, ahora + i * 0.08);
-                    ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + i * 0.08 + 0.55);
-
-                    osc.connect(ganancia);
-                    ganancia.connect(ctx.destination);
-
-                    osc.start(ahora + i * 0.08);
-                    osc.stop(ahora + i * 0.08 + 0.55);
-                });
-            }
-        } catch (e) {
-            console.error(e);
-        }
-
-        // Espera 400ms para que el acorde termine de sonar antes de cambiar de página
         setTimeout(() => {
-            window.location.href = urlDestino;
-        }, 400);
+            telon.classList.add('telon-abrir');
+        }, 150);
+
+        setTimeout(() => {
+            window.location.href = 'registro.php';
+        }, 1050);
     }
     </script>
-
 </body>
 </html>
