@@ -14,7 +14,7 @@ $busqueda = "%" . $q . "%";
 $resultados = [];
 
 if ($tipo === 'alumno') {
-    $stmt = $conexion->prepare("SELECT id_Alumnos AS id, IFNULL(Matricula, 'S/M') AS matricula, TRIM(CONCAT_WS(' ', Nombre, Apellido_Paterno, Apellido_Materno)) AS nombre, IFNULL(Madre_encargada, '-') AS madre, IFNULL(Familia, '-') AS familia, IFNULL(Piso, '-') AS piso, IFNULL(Grupo, '-') AS grupo FROM alumnos WHERE Matricula LIKE ? OR CONCAT_WS(' ', Nombre, Apellido_Paterno, Apellido_Materno) LIKE ? ORDER BY Nombre ASC LIMIT 10");
+    $stmt = $conexion->prepare("SELECT id_Alumnos AS id, IFNULL(Matricula, 'S/M') AS matricula, TRIM(CONCAT_WS(' ', Nombre, Apellido_Paterno, Apellido_Materno)) AS nombre FROM alumnos WHERE Matricula LIKE ? OR CONCAT_WS(' ', Nombre, Apellido_Paterno, Apellido_Materno) LIKE ? ORDER BY Nombre ASC LIMIT 8");
     $stmt->bind_param("ss", $busqueda, $busqueda);
     $stmt->execute();
     $res = $stmt->get_result();
@@ -23,7 +23,7 @@ if ($tipo === 'alumno') {
     }
     $stmt->close();
 } elseif ($tipo === 'profesor') {
-    $stmt = $conexion->prepare("SELECT id_profesores AS id, IFNULL(Matricula, 'S/M') AS matricula, TRIM(CONCAT_WS(' ', Nombre, Apellido_Paterno, Apellido_Materno)) AS nombre, IFNULL(Materia, '-') AS materia FROM profesores WHERE Matricula LIKE ? OR CONCAT_WS(' ', Nombre, Apellido_Paterno, Apellido_Materno) LIKE ? ORDER BY Nombre ASC LIMIT 10");
+    $stmt = $conexion->prepare("SELECT id_profesores AS id, IFNULL(Matricula, 'S/M') AS matricula, TRIM(CONCAT_WS(' ', Nombre, Apellido_Paterno, Apellido_Materno)) AS nombre FROM profesores WHERE Matricula LIKE ? OR CONCAT_WS(' ', Nombre, Apellido_Paterno, Apellido_Materno) LIKE ? ORDER BY Nombre ASC LIMIT 8");
     $stmt->bind_param("ss", $busqueda, $busqueda);
     $stmt->execute();
     $res = $stmt->get_result();

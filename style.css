@@ -1291,3 +1291,67 @@ body.body2::-webkit-scrollbar-thumb:hover {
     background-color: #EFF6FF;
     color: #0F4C81;
 }
+
+.form-tarjeta-prestamo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.select-rol-tarjeta {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #CBD5E1;
+    font-size: 13px;
+    background-color: #FFFFFF;
+}
+
+.fila-input-busqueda {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.btn-limpiar-user {
+    background-color: #DC3545;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.item-sug-user.sin-resultados {
+    color: #991B1B;
+    cursor: default;
+}
+
+.botones-tarjeta-accion {
+    display: flex;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.btn-tarjeta-prestar {
+    flex: 1;
+    background-color: #2A9D8F;
+    color: #FFFFFF;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-tarjeta-apartar {
+    flex: 1;
+    background-color: #E2E8F0;
+    color: #1E293B;
+    border: 1px solid #CBD5E1;
+    padding: 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
