@@ -18,11 +18,6 @@ unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
-    <div class="contenedor-burbujas">
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-    </div>
 
     <?php if ($mensaje !== ''): ?>
         <div class="alerta <?php echo $tipoMensaje; ?>" style="padding: 12px; margin: 15px auto; max-width: 700px; text-align: center; border-radius: 6px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">

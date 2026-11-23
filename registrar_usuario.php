@@ -49,7 +49,7 @@ if (isset($_GET['eliminar_rol']) && isset($_GET['eliminar_id'])) {
     }
 }
 
-// 1. CARGAR DATOS SI VENIMOS A EDITAR
+// 1. CARGAR DATOS SI Vamos a EDITAR
 if ($id_editar && ($rol_editar === 'alumno' || $rol_editar === 'profesor')) {
     if ($rol_editar === 'alumno') {
         $stmt = $conexion->prepare("SELECT * FROM alumnos WHERE id_Alumnos = ?");
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['Nombre'] ?? '');
 
     if ($nombre === '' || ($rol !== 'alumno' && $rol !== 'profesor')) {
-        $_SESSION['mensaje'] = '⚠️ Selecciona un rol y escribe el nombre completo.';
+        $_SESSION['mensaje'] = '⚠️ Selecciona un rol y escribe el nombre completo incluyendo apellido o matrícula';
         $_SESSION['tipoMensaje'] = 'error';
         header("Location: registrar_usuario.php");
         exit();
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("sssssi", $nombre, $madreEncargada, $familia, $piso, $grupo, $id_post);
             $ok = $stmt->execute();
             $stmt->close();
-            $_SESSION['mensaje'] = $ok ? '✅ Datos del alumno actualizados correctamente.' : '❌ Error al actualizar alumno.';
+            $_SESSION['mensaje'] = $ok ? '✅ Datos del alumno actualizados correctamente.' : '❌ Error al actualizar datos del alumno.';
             $_SESSION['tipoMensaje'] = $ok ? 'exito' : 'error';
         } else {
             $res_max = $conexion->query("SELECT IFNULL(MAX(id_Alumnos), 0) + 1 AS sig FROM alumnos");

@@ -29,7 +29,7 @@ $categorias_disponibles = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Interactivo - Biblioteca Sullivan</title>
+    <title>Catálogo - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 
@@ -70,11 +70,6 @@ $categorias_disponibles = [
 
 <body class="body2 scroll-catalogo">
 
-    <div class="contenedor-burbujas">
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-    </div>
 
     <?php if ($mensaje !== ''): ?>
         <div class="alerta <?php echo $tipoMensaje; ?>"
@@ -152,8 +147,8 @@ $categorias_disponibles = [
         </div>
     </div>
 
-    <h2 style="color: #0F4C81; text-align: center; margin-top: 20px;">📚 Catálogo Digital Interactivo</h2>
-    <p style="text-align: center; color: #475569; margin-bottom: 15px;">Filtra por categoría o busca un libro por título o autor.</p>
+    <h2 style="color: #0F4C81; text-align: center; margin-top: 20px;">📚 Catálogo </h2>
+    <p style="text-align: center; color: #475569; margin-bottom: 15px;"> Busca por categoría o por libro, título o/y autor.</p>
 
     <!-- BOTONES DE CATEGORÍAS -->
     <div class="barra-categorias">

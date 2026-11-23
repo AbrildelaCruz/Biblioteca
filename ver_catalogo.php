@@ -50,12 +50,6 @@ $resultado = $stmt->get_result();
 
 <body class="body2">
 
-    <div class="contenedor-burbujas">
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-        <div class="burbuja"></div>
-    </div>
-
     <?php if ($mensaje !== ''): ?>
         <div class="alerta <?php echo $tipoMensaje; ?>"
             style="padding: 10px; margin: 15px auto; max-width: 850px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
@@ -90,9 +84,9 @@ $resultado = $stmt->get_result();
                     <th>ISBN</th>
                     <th style="text-align: center;">Año</th>
                     <th>Clasificación</th>
-                    <th style="text-align: center;">Tot.</th>
-                    <th style="text-align: center;">Disp.</th>
-                    <th style="text-align: center;">Prest.</th>
+                    <th style="text-align: center;">Totales</th>
+                    <th style="text-align: center;">Disponibles</th>
+                    <th style="text-align: center;">Prestados</th>
                     <th style="text-align: center;">Acciones</th>
                 </tr>
             </thead>

@@ -47,7 +47,7 @@ if (isset($_GET['devolver_id'])) {
                 $stmt_upd_lib->execute();
                 $stmt_upd_lib->close();
 
-                $_SESSION['mensaje'] = "🟢 Devolución asentada con éxito. El libro ha regresado al inventario disponible.";
+                $_SESSION['mensaje'] = "🟢 Devolución realizada con éxito. El libro ha regresado al inventario disponible.";
                 $_SESSION['tipoMensaje'] = 'exito';
                 $_SESSION['sonar_campana'] = true;
             } else {
@@ -219,7 +219,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
 <?php endif; ?>
 
     <h2 style="text-align: center; color: #0F4C81; margin-top: 30px;">📋 Bitácora General de Préstamos y Apartados</h2>
-    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Cuaderno digital de control para registrar devoluciones, renovaciones y revisar el historial.</p>
+    <p style="text-align: center; color: #475569; margin-bottom: 20px;">Registro de devoluciones, renovaciones y revición del historial.</p>
 
     <div class="barra-filtros">
         <a href="prestamos.php?filtro=todos" class="tab-filtro <?php echo $filtro_actual === 'todos' ? 'activa' : ''; ?>">
@@ -335,7 +335,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                 endwhile; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="9" style="text-align: center; font-weight: bold; padding: 20px;">No hay registros que coincidan con este filtro.</td>
+                    <td colspan="9" style="text-align: center; font-weight: bold; padding: 20px;">No hay registros que coincidan.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
@@ -346,7 +346,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
           <?php if ($pagina_actual > 1): ?>
             <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&pagina=<?php echo $pagina_actual - 1; ?>">« Anterior</a>
           <?php else: ?>
-            <span class="desactivado">« Anterior</span>
+            <span class="desactivado">Anterior</span>
           <?php endif; ?>
 
           <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
@@ -356,9 +356,9 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
           <?php endfor; ?>
 
           <?php if ($pagina_actual < $total_paginas): ?>
-            <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&pagina=<?php echo $pagina_actual + 1; ?>">Siguiente »</a>
+            <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&pagina=<?php echo $pagina_actual + 1; ?>">Siguiente</a>
           <?php else: ?>
-            <span class="desactivado">Siguiente »</span>
+            <span class="desactivado">Siguiente</span>
           <?php endif; ?>
         </div>
     <?php endif; ?>
