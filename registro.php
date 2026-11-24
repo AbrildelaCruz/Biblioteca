@@ -187,9 +187,9 @@ require_once 'conexion.php';
         </div>
     </div>
 
-    <div class="z1">
-        <a class="z2" href="index.html">REGRESAR</a>
-    </div>
+<div class="z1">
+    <a class="z2" href="cerrar_sesion.php">CERRAR SESIÓN</a>
+</div>
 
     <script>
     function tocarSonidoCampanita() {
