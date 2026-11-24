@@ -1,5 +1,11 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 require_once 'conexion.php';
+?>
 
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $categoria = isset($_GET['categoria']) ? trim($_GET['categoria']) : '';

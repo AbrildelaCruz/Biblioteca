@@ -1,5 +1,11 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 require_once 'conexion.php';
+?>
 header('Content-Type: application/json; charset=utf-8');
 
 $q = trim($_GET['q'] ?? '');

@@ -1,4 +1,11 @@
-<?php require_once 'conexion.php'; ?>
+<?php
+session_start();
+if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
+require_once 'conexion.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

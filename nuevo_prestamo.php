@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 require_once 'conexion.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

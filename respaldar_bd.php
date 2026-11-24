@@ -1,5 +1,10 @@
 <?php
-// respaldar_bd.php
+//resapldo de bd
+session_start();
+if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 require_once 'conexion.php';
 
 $nombreBD = "biblioteca-bd";
