@@ -8,7 +8,7 @@ if (isset($_SESSION['admin_autenticado']) && $_SESSION['admin_autenticado'] === 
 }
 
 // 🔑 CONFIGURA AQUÍ TU CONTRASEÑA DE ACCESO
-$CONTRASENA_SISTEMA = "Sullivan2026";
+$CONTRASENA_SISTEMA = "123"; // Cambia esto a la contraseña que desees
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
