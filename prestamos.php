@@ -210,7 +210,7 @@ $sql_bitacora = "SELECT
                         NULLIF(TRIM(CONCAT_WS(' ', prof.Nombre, prof.Apellido_Paterno, prof.Apellido_Materno)), ''),
                         'Desconocido'
                     ) AS Persona,
-                    CASE WHEN a.id_Alumnos IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS TipoPersona,
+                     CASE WHEN a.id_Alumnos IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS TipoPersona,
                     p.fecha_salida,
                     p.fecha_devolucion_esperada,
                     p.fecha_devolucion_real,
@@ -349,8 +349,12 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                         </td>
                         <td>
                             <?php if (!$entregado): ?>
-                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&devolver_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-recibir" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
-                                <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&renovar_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-renovar" onclick="return confirm('¿Deseas renovar este préstamo por 7 días adicionales?');">🔄 Renovar (+7d)</a>
+                                <?php if ($es_apartado): ?>
+                                    <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&convertir_prestamo_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-prestar" onclick="return confirm('¿El usuario ya recogió el libro apartado? Se cambiará a Préstamo activo por 9 días.');">📖 Prestar</a>
+                                <?php else: ?>
+                                    <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&devolver_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-recibir" onclick="return confirm('¿Confirmas la entrega física del libro?');">📥 Recibir</a>
+                                    <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&renovar_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-renovar" onclick="return confirm('¿Deseas renovar este préstamo por 7 días adicionales?');">🔄 Renovar (+7d)</a>
+                                <?php endif; ?>
                                 <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&perdido_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-perdido" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
                             <?php else: ?>
                                 <span class="texto-completado">Completado</span>
@@ -367,8 +371,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
             <?php endif; ?>
         </tbody>
     </table>
-
-    <?php if ($total_paginas > 1): ?>
+        <?php if ($total_paginas > 1): ?>
         <div class="paginacion">
           <?php if ($pagina_actual > 1): ?>
             <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&pagina=<?php echo $pagina_actual - 1; ?>">« Anterior</a>

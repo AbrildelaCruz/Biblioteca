@@ -1379,6 +1379,7 @@ body.body2::-webkit-scrollbar-thumb:hover {
     font-weight: normal;
 }
 
+.btn-accion-prestar,
 .btn-accion-recibir,
 .btn-accion-renovar,
 .btn-accion-perdido {
@@ -1392,7 +1393,8 @@ body.body2::-webkit-scrollbar-thumb:hover {
     margin-right: 4px;
 }
 
+.btn-accion-prestar { background-color: #D97706; }
+.btn-accion-prestar:hover { background-color: #B45309; }
 .btn-accion-recibir { background-color: #2A9D8F; }
 .btn-accion-renovar { background-color: #0F4C81; }
 .btn-accion-perdido { background-color: #DC3545; margin-right: 0; }
-.texto-completado   { font-weight: bold; color: #475569; }
