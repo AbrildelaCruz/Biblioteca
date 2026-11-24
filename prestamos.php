@@ -8,9 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
 date_default_timezone_set('America/Mexico_City');
 $fecha_hoy = date('Y-m-d');
 
-// Filtro activo (todos, pendientes, vencidos, devueltos)
+// Filtro activo (todos, pendientes, apartados, vencidos, devueltos)
 $filtro_actual = $_GET['filtro'] ?? 'todos';
-$filtros_validos = ['todos', 'pendientes', 'vencidos', 'devueltos'];
+$filtros_validos = ['todos', 'pendientes', 'apartados', 'vencidos', 'devueltos'];
 if (!in_array($filtro_actual, $filtros_validos, true)) {
     $filtro_actual = 'todos';
 }
@@ -171,12 +171,15 @@ if (isset($_GET['convertir_prestamo_id'])) {
 // ==========================================
 $conteo_todos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos")->fetch_assoc()['total'] ?? 0;
 $conteo_pendientes = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE fecha_devolucion_real IS NULL")->fetch_assoc()['total'] ?? 0;
+$conteo_apartados = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE tipo_movimiento = 'Apartado' AND fecha_devolucion_real IS NULL")->fetch_assoc()['total'] ?? 0;
 $conteo_vencidos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE fecha_devolucion_real IS NULL AND fecha_devolucion_esperada < '$fecha_hoy'")->fetch_assoc()['total'] ?? 0;
 $conteo_devueltos = $conexion->query("SELECT COUNT(*) AS total FROM prestamos WHERE fecha_devolucion_real IS NOT NULL")->fetch_assoc()['total'] ?? 0;
 
 $condicion_where = "";
 if ($filtro_actual === 'pendientes') {
     $condicion_where = "WHERE p.fecha_devolucion_real IS NULL";
+} elseif ($filtro_actual === 'apartados') {
+    $condicion_where = "WHERE p.tipo_movimiento = 'Apartado' AND p.fecha_devolucion_real IS NULL";
 } elseif ($filtro_actual === 'vencidos') {
     $condicion_where = "WHERE p.fecha_devolucion_real IS NULL AND p.fecha_devolucion_esperada < '$fecha_hoy'";
 } elseif ($filtro_actual === 'devueltos') {
@@ -204,13 +207,13 @@ $total_paginas = ceil($total_filas / $registros_por_pagina);
 // ==========================================
 $sql_bitacora = "SELECT 
                     p.id_prestamo,
-                    l.Titulo AS Libro,
+                             l.Titulo AS Libro,
                     COALESCE(
                         NULLIF(TRIM(CONCAT_WS(' ', a.Nombre, a.Apellido_Paterno, a.Apellido_Materno)), ''),
                         NULLIF(TRIM(CONCAT_WS(' ', prof.Nombre, prof.Apellido_Paterno, prof.Apellido_Materno)), ''),
                         'Desconocido'
                     ) AS Persona,
-                     CASE WHEN a.id_Alumnos IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS TipoPersona,
+                    CASE WHEN a.id_Alumnos IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS TipoPersona,
                     p.fecha_salida,
                     p.fecha_devolucion_esperada,
                     p.fecha_devolucion_real,
@@ -259,6 +262,9 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
         </a>
         <a href="prestamos.php?filtro=pendientes" class="tab-filtro <?php echo $filtro_actual === 'pendientes' ? 'activa' : ''; ?>">
             ⏳ Pendientes <span class="badge-filtro"><?php echo $conteo_pendientes; ?></span>
+        </a>
+        <a href="prestamos.php?filtro=apartados" class="tab-filtro <?php echo $filtro_actual === 'apartados' ? 'activa-apartados' : ''; ?>">
+            🔖 Apartados <span class="badge-filtro"><?php echo $conteo_apartados; ?></span>
         </a>
         <a href="prestamos.php?filtro=vencidos" class="tab-filtro <?php echo $filtro_actual === 'vencidos' ? 'activa-vencidos' : ''; ?>">
             ⚠️ Vencidos <span class="badge-filtro"><?php echo $conteo_vencidos; ?></span>
@@ -356,7 +362,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
                                     <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&renovar_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-renovar" onclick="return confirm('¿Deseas renovar este préstamo por 7 días adicionales?');">🔄 Renovar (+7d)</a>
                                 <?php endif; ?>
                                 <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&perdido_id=<?php echo $fila['id_prestamo']; ?>" class="btn-accion-perdido" onclick="return confirm('⚠️ ¿Seguro que deseas reportar este libro como PERDIDO permanentemente? Esto afectará los totales.');">❌ Perdido</a>
-                            <?php else: ?>
+                                <?php else: ?>
                                 <span class="texto-completado">Completado</span>
                             <?php endif; ?>
                         </td>
@@ -371,7 +377,8 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
             <?php endif; ?>
         </tbody>
     </table>
-        <?php if ($total_paginas > 1): ?>
+
+    <?php if ($total_paginas > 1): ?>
         <div class="paginacion">
           <?php if ($pagina_actual > 1): ?>
             <a href="prestamos.php?filtro=<?php echo urlencode($filtro_actual); ?>&pagina=<?php echo $pagina_actual - 1; ?>">« Anterior</a>

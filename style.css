@@ -1398,3 +1398,13 @@ body.body2::-webkit-scrollbar-thumb:hover {
 .btn-accion-recibir { background-color: #2A9D8F; }
 .btn-accion-renovar { background-color: #0F4C81; }
 .btn-accion-perdido { background-color: #DC3545; margin-right: 0; }
+
+.tab-filtro.activa-apartados {
+    background-color: #D97706;
+    color: #FFFFFF;
+    border-color: #D97706;
+}
+.tab-filtro.activa-apartados .badge-filtro {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+}
