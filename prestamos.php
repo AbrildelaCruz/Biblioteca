@@ -436,6 +436,16 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
         tocarSonidoCampanita();
     });
     </script>
+    <script>
+document.getElementById('buscador-bitacora').addEventListener('input', function () {
+    const filtro = this.value.toLowerCase().trim();
+    const filas = document.querySelectorAll('.tabla-datos tbody tr');
+    filas.forEach(fila => {
+        const texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+});
+</script>
     <?php endif; ?>
 
 </body>
