@@ -437,7 +437,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
     });
     </script>
     <script>
-document.getElementById('buscador-bitacora').addEventListener('input', function () {
+document.getElementById('contenedor-busqueda').addEventListener('input', function () {
     const filtro = this.value.toLowerCase().trim();
     const filas = document.querySelectorAll('.tabla-datos tbody tr');
     filas.forEach(fila => {
