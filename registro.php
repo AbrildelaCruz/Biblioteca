@@ -12,7 +12,7 @@ require_once 'conexion.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control - Biblioteca Sullivan</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
@@ -61,16 +61,10 @@ require_once 'conexion.php';
                     <a class="bton-4" href="prestamos.php">📋 Bitácora de Préstamos</a>
                     <a class="bton-4" href="retrasados.php" style="background-color: #FEE2E2 !important; color: #991B1B !important; border-color: #FCA5A5 !important;">⚠️ Entregas Retrasadas</a>
                 </div>
-
-                <!-- BLOQUE 3: ADMINISTRACIÓN Y SEGURIDAD -->
-                <div class="seccion-menu" style="width: 100%; text-align: center;">
-                    <span class="subtitulo-menu">🛡️ Respaldo y Seguridad</span>
-                    <a class="bton-4" href="respaldar_bd.php" style="background-color: #EFF6FF !important; color: #1E40AF !important; border-color: #BFDBFE !important;">💾 Respaldar Base de Datos (.sql)</a>
-                </div>
             </div>
         </div>
 
-<!-- COLUMNA DERECHA: NOTIFICACIONES ARRIBA Y STOCK BAJO ABAJO -->
+        <!-- COLUMNA DERECHA: NOTIFICACIONES ARRIBA Y STOCK BAJO ABAJO -->
         <div class="columna-derecha-alertas">
             
             <!-- PANEL 1: NOTIFICACIONES DE DEVOLUCIÓN -->
@@ -79,61 +73,7 @@ require_once 'conexion.php';
                     🔔 Alertas de Devolución
                 </h3>
                 <div class="lista-alertas">
-                    <?php
-                    date_default_timezone_set('America/Mexico_City');
-                    $fecha_hoy = date('Y-m-d');
-                    
-                    $sql_alertas = "SELECT 
-                                        l.Titulo AS Libro,
-                                        p.Cantidad AS CantidadLibros,
-                                        p.fecha_devolucion_esperada AS FechaLimite,
-                                        COALESCE(a.Nombre, prof.Nombre, 'Desconocido') AS Persona,
-                                        CASE WHEN a.Nombre IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS TipoUsuario,
-                                        DATEDIFF(p.fecha_devolucion_esperada, '$fecha_hoy') AS DiasRestantes
-                                    FROM prestamos p
-                                    JOIN libros l ON p.id_libro = l.id_libro
-                                    LEFT JOIN alumnos a ON p.id_Alumnos = a.id_Alumnos
-                                    LEFT JOIN profesores prof ON p.id_profesores = prof.id_profesores
-                                    WHERE p.fecha_devolucion_real IS NULL 
-                                    ORDER BY p.fecha_devolucion_esperada ASC";
-
-                    $res_alertas = $conexion->query($sql_alertas);
-
-                    if ($res_alertas && $res_alertas->num_rows > 0) {
-                        while($alerta = $res_alertas->fetch_assoc()) {
-                            $dias = (int)$alerta['DiasRestantes'];
-                            
-                            if ($dias < 0) {
-                                $clase_aviso = "entrega-vencida";
-                                $texto_tiempo = "⚠️ VENCIDO POR " . abs($dias) . " DÍAS";
-                            } elseif ($dias === 0) {
-                                $clase_aviso = "entrega-hoy";
-                                $texto_tiempo = "🚨 ENTREGA HOY";
-                            } else {
-                                $clase_aviso = "entrega-proxima";
-                                $texto_tiempo = "🟢 Quedan " . $dias . " días";
-                            }
-                            ?>
-                            <div class="tarjeta-aviso <?php echo $clase_aviso; ?>" style="padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; font-size: 13px; line-height: 1.4;">
-                                <span style="display: block; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
-                                    <?php echo $texto_tiempo; ?>
-                                </span>
-                                <strong style="display: block; color: #1E293B; font-size: 14px;">
-                                    <?php echo $alerta['TipoUsuario'] . ": " . htmlspecialchars($alerta['Persona']); ?>
-                                </strong>
-                                <span style="display: block; color: #475569; margin-top: 2px;">
-                                    Libro: <i><?php echo htmlspecialchars($alerta['Libro']); ?></i>
-                                </span>
-                                <span style="display: block; color: #475569; font-size: 12px;">
-                                    Cantidad prestada: <b><?php echo (int)$alerta['CantidadLibros']; ?></b>
-                                </span>
-                            </div>
-                            <?php
-                        }
-                    } else {
-                        echo '<div class="aviso-vacio">✅ No hay libros pendientes de devolución ni retrasos en el sistema.</div>';
-                    }
-                    ?>
+                    <div class="aviso-vacio">Cargando alertas...</div>
                 </div>
             </div>
 
@@ -143,7 +83,6 @@ require_once 'conexion.php';
                     📦 Alertas de Stock Bajo
                 </h3>
                 <div class="lista-alertas" style="max-height: 260px; overflow-y: auto; padding-right: 6px;">
-
                     <?php
                     $sql_stock = "SELECT Titulo, Autor, Ejemplares_disponibles, Ejemplares_totales 
                                   FROM libros 
@@ -202,7 +141,7 @@ require_once 'conexion.php';
         }
 
         const ahora = ctx.currentTime;
-        const frecuencias = [1318.5, 1975.5]; // Timbre doble cristalino (Mi6 -> Si6)
+        const frecuencias = [1318.5, 1975.5];
 
         frecuencias.forEach((freq, i) => {
             const osc = ctx.createOscillator();
@@ -237,9 +176,8 @@ require_once 'conexion.php';
             .then(html => {
                 const panel = document.querySelector('.panel-notificaciones-derecho');
                 if (panel) {
-                    panel.innerHTML = html;
+                panel.innerHTML = html;
 
-                    // Solo suena si hay libros vencidos o a 1 día de vencer, y NO ha sonado ya en esta sesión
                     const campanaUrgente = panel.querySelector('.campanita-icono.urgente');
                     if (campanaUrgente && !sessionStorage.getItem('alerta_campana_sonada')) {
                         activarCampanita(campanaUrgente);
@@ -249,8 +187,16 @@ require_once 'conexion.php';
             })
             .catch(error => console.error('Error cargando alertas:', error));
     }
+
+    // Respaldo automático silencioso cada 5 minutos (300,000 ms)
+    function ejecutarRespaldoSilencioso() {
+        fetch('auto_respaldo.php').catch(() => {});
+    }
+
     window.onload = function() {
         cargarAlertasCampana();
+        ejecutarRespaldoSilencioso();
+        setInterval(ejecutarRespaldoSilencioso, 300000);
     };
     </script>
 
