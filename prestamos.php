@@ -409,7 +409,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 
-    <?php if ($sonar_campana): ?>
+     <?php if ($sonar_campana): ?>
     <script>
     function tocarSonidoCampanita() {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -424,7 +424,7 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, ahora + i * 0.09);
             ganancia.gain.setValueAtTime(0.18, ahora + i * 0.09);
-             ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + i * 0.09 + 0.95);
+            ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + i * 0.09 + 0.95);
             osc.connect(ganancia);
             ganancia.connect(ctx.destination);
             osc.start(ahora + i * 0.09);
@@ -436,17 +436,38 @@ $resultado_bitacora = $conexion->query($sql_bitacora);
         tocarSonidoCampanita();
     });
     </script>
-    <script>
-document.getElementById('contenedor-busqueda').addEventListener('input', function () {
-    const filtro = this.value.toLowerCase().trim();
-    const filas = document.querySelectorAll('.tabla-datos tbody tr');
-    filas.forEach(fila => {
-        const texto = fila.textContent.toLowerCase();
-        fila.style.display = texto.includes(filtro) ? '' : 'none';
-    });
-});
-</script>
     <?php endif; ?>
+
+    <script>
+    const inputBitacora = document.getElementById('buscador-bitacora');
+    const tbodyBitacora = document.querySelector('.tabla-datos tbody');
+    const paginacionBitacora = document.querySelector('.paginacion');
+    const contenidoOriginalBitacora = tbodyBitacora.innerHTML;
+    let timerBitacora = null;
+
+    inputBitacora.addEventListener('input', function () {
+        clearTimeout(timerBitacora);
+        const q = this.value.trim();
+
+        if (q === '') {
+            tbodyBitacora.innerHTML = contenidoOriginalBitacora;
+            if (paginacionBitacora) paginacionBitacora.style.display = 'flex';
+            return;
+        }
+
+        if (paginacionBitacora) paginacionBitacora.style.display = 'none';
+
+        timerBitacora = setTimeout(() => {
+            const filtro = <?php echo json_encode($filtro_actual); ?>;
+            fetch('buscar_prestamos_global.php?query=' + encodeURIComponent(q) + '&filtro=' + encodeURIComponent(filtro))
+                .then(res => res.text())
+                .then(html => {
+                    tbodyBitacora.innerHTML = html;
+                })
+                .catch(err => console.error('Error buscando en bitácora:', err));
+        }, 250);
+    });
+    </script>
 
 </body>
 </html>
