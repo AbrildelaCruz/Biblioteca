@@ -5,7 +5,6 @@ if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !==
     exit();
 }
 require_once 'conexion.php';
-?>
 
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $categoria = isset($_GET['categoria']) ? trim($_GET['categoria']) : '';

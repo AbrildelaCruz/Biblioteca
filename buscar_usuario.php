@@ -5,7 +5,7 @@ if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !==
     exit();
 }
 require_once 'conexion.php';
-?>
+
 header('Content-Type: application/json; charset=utf-8');
 
 $tipo = trim($_GET['tipo'] ?? '');

@@ -5,7 +5,6 @@ if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !==
     exit();
 }
 require_once 'conexion.php';
-?>
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

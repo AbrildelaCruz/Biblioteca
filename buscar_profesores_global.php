@@ -5,7 +5,7 @@ if (!isset($_SESSION['admin_autenticado']) || $_SESSION['admin_autenticado'] !==
     exit();
 }
 require_once 'conexion.php';
-?>
+
 $filtro = isset($_GET['query']) ? trim($_GET['query']) : '';
 
 if ($filtro !== '') {
