@@ -60,8 +60,8 @@ if ($resultado && $resultado->num_rows > 0) {
         echo "<td style='text-align: center; color: #16A34A; font-weight: bold;'>" . $disp . "</td>";
         echo "<td style='text-align: center; color: #DC3545; font-weight: 600;'>" . $prest . "</td>";
         echo "<td style='text-align: center;'>";
-        echo '<a href="registrar_usuario.php?editar_rol=alumno&editar_id=' .$id_actual. '" class="btn-editar">✏️ Editar</a>';
-        echo '<a href="registrar_usuario.php?eliminar_rol=alumno&eliminar_id=' . $id_actual . '" class="btn-eliminar" onclick="return confirm(\'¿Seguro que deseas eliminar este alumno?\');">🗑️ Eliminar</a>';
+        echo '<a href="catalogo.php?editar_id=' . $id_libro . '" class="btn-editar">✏️ Editar</a>';
+        echo '<a href="catalogo.php?eliminar_id=' . $id_libro . '" class="btn-eliminar" onclick="return confirm(\'¿Seguro que deseas eliminar este libro?\');">🗑️ Eliminar</a>';
         echo "</td>";
         echo "</tr>";
         $num++;
