@@ -9,17 +9,24 @@ require_once 'conexion.php';
 date_default_timezone_set('America/Mexico_City');
 
 $vista = ($_GET['vista'] ?? 'general') === 'grupos' ? 'grupos' : 'general';
-$periodo = $_GET['periodo'] ?? 'todo';
+$anio_actual = (int)date('Y');
+
+$anio_filtro = filter_input(INPUT_GET, 'anio', FILTER_VALIDATE_INT);
+if (!$anio_filtro || $anio_filtro < 2000 || $anio_filtro > 2100) {
+    $anio_filtro = 0;
+}
+
 $mes_filtro = filter_input(INPUT_GET, 'mes', FILTER_VALIDATE_INT);
 if (!$mes_filtro || $mes_filtro < 1 || $mes_filtro > 12) {
     $mes_filtro = 0;
 }
 
-if ($mes_filtro > 0) {
-    $periodo = 'mes';
-} elseif (!in_array($periodo, ['todo', 'anio'], true)) {
-    $periodo = 'todo';
+// Si eligió un mes pero no había elegido año, asumimos el año actual
+if ($mes_filtro > 0 && $anio_filtro === 0) {
+    $anio_filtro = $anio_actual;
 }
+
+$periodo = ($anio_filtro > 0 || $mes_filtro > 0) ? 'filtrado' : 'todo';
 
 $grupo_filtro = trim($_GET['grupo'] ?? '');
 $grado_filtro = trim($_GET['grado'] ?? '');
@@ -33,15 +40,28 @@ $meses_nombres = [
     9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
 ];
 
+// Obtener automáticamente todos los años que tienen préstamos registrados + el año actual
+$anios_disponibles = [$anio_actual];
+$res_anios = $conexion->query("SELECT DISTINCT YEAR(fecha_salida) AS anio FROM prestamos WHERE fecha_salida IS NOT NULL ORDER BY anio DESC");
+if ($res_anios) {
+    while ($row_a = $res_anios->fetch_assoc()) {
+        $a_val = (int)$row_a['anio'];
+        if ($a_val > 0 && !in_array($a_val, $anios_disponibles, true)) {
+            $anios_disponibles[] = $a_val;
+        }
+    }
+}
+rsort($anios_disponibles);
+
 $filtro_where = "";
 $titulo_periodo = "Histórico Completo";
 
-if ($periodo === 'mes' && $mes_filtro > 0) {
-    $filtro_where = " AND MONTH(p.fecha_salida) = $mes_filtro AND YEAR(p.fecha_salida) = YEAR(CURDATE())";
-    $titulo_periodo = $meses_nombres[$mes_filtro] . " " . date('Y');
-} elseif ($periodo === 'anio') {
-    $filtro_where = " AND YEAR(p.fecha_salida) = YEAR(CURDATE())";
-    $titulo_periodo = "Año " . date('Y');
+if ($anio_filtro > 0 && $mes_filtro > 0) {
+    $filtro_where = " AND YEAR(p.fecha_salida) = $anio_filtro AND MONTH(p.fecha_salida) = $mes_filtro";
+    $titulo_periodo = $meses_nombres[$mes_filtro] . " " . $anio_filtro;
+} elseif ($anio_filtro > 0) {
+    $filtro_where = " AND YEAR(p.fecha_salida) = $anio_filtro";
+    $titulo_periodo = "Ciclo / Año " . $anio_filtro;
 }
 
 if ($vista === 'general') {
@@ -145,21 +165,29 @@ if ($vista === 'general') {
             </div>
 
             <div class="tabs-vista-est">
-                <a href="estadisticas.php?vista=general&periodo=<?php echo urlencode($periodo); ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'general' ? 'activo' : ''; ?>">📊 General</a>
-                <a href="estadisticas.php?vista=grupos&periodo=<?php echo urlencode($periodo); ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'grupos' ? 'activo' : ''; ?>">🏫 Grupos</a>
+                <a href="estadisticas.php?vista=general&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'general' ? 'activo' : ''; ?>">📊 General</a>
+                <a href="estadisticas.php?vista=grupos&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'grupos' ? 'activo' : ''; ?>">🏫 Grupos</a>
             </div>
 
             <div class="filtros-periodo">
-                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=todo&grado=<?php echo urlencode($grado_filtro); ?>&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'todo' ? 'activo' : ''; ?>">📂 Todo</a>
-                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=anio&grado=<?php echo urlencode($grado_filtro); ?>&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'anio' ? 'activo' : ''; ?>">📆 <?php echo date('Y'); ?></a>
+                <a href="estadisticas.php?vista=<?php echo $vista; ?>&grado=<?php echo urlencode($grado_filtro); ?>&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'todo' ? 'activo' : ''; ?>">📂 Todo</a>
 
-                <form method="GET" action="estadisticas.php">
+                <form method="GET" action="estadisticas.php" class="filtros-periodo">
                     <input type="hidden" name="vista" value="<?php echo htmlspecialchars($vista); ?>">
-                    <input type="hidden" name="periodo" value="mes">
                     <input type="hidden" name="grado" value="<?php echo htmlspecialchars($grado_filtro); ?>">
                     <input type="hidden" name="grupo" value="<?php echo htmlspecialchars($grupo_filtro); ?>">
+
+                    <select name="anio" class="select-grupo-est" onchange="this.form.submit()">
+                        <option value="0">📆 Todos los años</option>
+                        <?php foreach ($anios_disponibles as $a_op): ?>
+                            <option value="<?php echo $a_op; ?>" <?php echo ($anio_filtro === $a_op) ? 'selected' : ''; ?>>
+                                Año <?php echo $a_op; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
                     <select name="mes" class="select-grupo-est" onchange="this.form.submit()">
-                        <option value="0">📅 Elegir mes...</option>
+                        <option value="0">📅 Todos los meses</option>
                         <?php foreach ($meses_nombres as $num_m => $nombre_m): ?>
                             <option value="<?php echo $num_m; ?>" <?php echo ($mes_filtro === $num_m) ? 'selected' : ''; ?>>
                                 <?php echo $nombre_m; ?>
@@ -171,8 +199,7 @@ if ($vista === 'general') {
 
             <button type="button" class="btn-imprimir" onclick="window.print()">🖨️ Imprimir</button>
         </div>
-
-        <?php if ($vista === 'general'): ?>
+           <?php if ($vista === 'general'): ?>
 
             <div class="grid-rankings">
                 <div class="panel-ranking">
@@ -202,7 +229,7 @@ if ($vista === 'general') {
 
                 <div class="panel-ranking">
                     <h3>📚 Libros Más Leídos</h3>
-                     <table class="tabla-mini">
+                    <table class="tabla-mini">
                         <thead>
                             <tr><th class="centrado">#</th><th>Título del Libro</th><th>Autor</th><th class="centrado">Lecturas</th></tr>
                         </thead>
@@ -262,12 +289,12 @@ if ($vista === 'general') {
             ?>
 
             <div class="barra-grados-est">
-                <a href="estadisticas.php?vista=grupos&periodo=<?php echo urlencode($periodo); ?>&mes=<?php echo $mes_filtro; ?>"
+                <a href="estadisticas.php?vista=grupos&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>"
                    class="ficha-grado-est <?php echo $grado_filtro === '' ? 'activa' : ''; ?>">
                     🏫 Todos los Grados
                 </a>
                 <?php foreach ($grados_villa as $num_g => $datos_g): ?>
-                    <a href="estadisticas.php?vista=grupos&periodo=<?php echo urlencode($periodo); ?>&mes=<?php echo $mes_filtro; ?>&grado=<?php echo $num_g; ?>"
+                    <a href="estadisticas.php?vista=grupos&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>&grado=<?php echo $num_g; ?>"
                        class="ficha-grado-est <?php echo $grado_filtro === $num_g ? 'activa' : ''; ?>">
                         🎓 <?php echo $datos_g['titulo']; ?>
                         <span class="nivel-grado-tag">(<?php echo $datos_g['nivel']; ?>)</span>
@@ -281,7 +308,7 @@ if ($vista === 'general') {
                 </span>
                 <form method="GET" action="estadisticas.php">
                     <input type="hidden" name="vista" value="grupos">
-                    <input type="hidden" name="periodo" value="<?php echo htmlspecialchars($periodo); ?>">
+                    <input type="hidden" name="anio" value="<?php echo $anio_filtro; ?>">
                     <input type="hidden" name="mes" value="<?php echo $mes_filtro; ?>">
                     <input type="hidden" name="grado" value="<?php echo htmlspecialchars($grado_filtro); ?>">
                     <select name="grupo" class="select-grupo-est" onchange="this.form.submit()">
