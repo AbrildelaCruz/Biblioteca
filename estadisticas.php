@@ -99,13 +99,28 @@ if ($vista === 'general') {
     $cant_alumnos = (int)($roles_data['alumnos'] ?? 0);
     $cant_profesores = (int)($roles_data['profesores'] ?? 0);
 } else {
+    // Clasificador exacto según la estructura de Villa de los Niños
+    function obtenerGradoVilla($grupo) {
+        $g = trim($grupo);
+        // Si es número de 3 dígitos (100 - 699) = Bachillerato
+        if (preg_match('/^([1-6])\d{2}/', $g, $m)) {
+            $centena = (int)$m[1];
+            // Los más elevados (500s y 600s) son 5° Grado; los demás (100s-400s) son 4° Grado
+            return ($centena >= 5) ? '5' : '4';
+        }
+        // Si empieza con 1°, 2° o 3° (ej. 1°Q, 2°A, 3°B) = Secundaria
+        if (preg_match('/^([1-3])/', $g, $m)) {
+            return $m[1];
+        }
+        return '';
+    }
+
     $lista_grupos = [];
     $res_lg = $conexion->query("SELECT DISTINCT COALESCE(NULLIF(TRIM(Grupo), ''), 'Sin Grupo') AS grupo FROM alumnos ORDER BY grupo ASC");
     if ($res_lg) {
         while ($g = $res_lg->fetch_assoc()) {
             $ng_lista = $g['grupo'];
-            preg_match('/^([1-5])/', $ng_lista, $m_lista);
-            $grado_lista = $m_lista[1] ?? '';
+            $grado_lista = obtenerGradoVilla($ng_lista);
             if ($grado_filtro === '' || $grado_lista === $grado_filtro) {
                 $lista_grupos[] = $ng_lista;
             }
@@ -130,8 +145,7 @@ if ($vista === 'general') {
     if ($res_gr) {
         while ($f = $res_gr->fetch_assoc()) {
             $ng = $f['grupo'];
-            preg_match('/^([1-5])/', $ng, $m_grado);
-            $grado_actual = $m_grado[1] ?? '';
+            $grado_actual = obtenerGradoVilla($ng);
 
             if ($grado_filtro !== '' && $grado_actual !== $grado_filtro) continue;
             if ($grupo_filtro !== '' && $ng !== $grupo_filtro) continue;
