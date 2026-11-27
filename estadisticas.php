@@ -100,12 +100,11 @@ if ($vista === 'general') {
     $cant_profesores = (int)($roles_data['profesores'] ?? 0);
 } else {
     // Clasificador exacto según la estructura de Villa de los Niños
-    function obtenerGradoVilla($grupo) {
+     function obtenerGradoVilla($grupo) {
         $g = trim($grupo);
         // Si es número de 3 dígitos (100 - 699) = Bachillerato
         if (preg_match('/^([1-6])\d{2}/', $g, $m)) {
             $centena = (int)$m[1];
-            // Los más elevados (500s y 600s) son 5° Grado; los demás (100s-400s) son 4° Grado
             return ($centena >= 5) ? '5' : '4';
         }
         // Si empieza con 1°, 2° o 3° (ej. 1°Q, 2°A, 3°B) = Secundaria

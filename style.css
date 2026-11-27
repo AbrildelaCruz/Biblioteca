@@ -1183,6 +1183,22 @@ body.body2::-webkit-scrollbar-thumb:hover {
     font-weight: 600;
     white-space: nowrap;
 }
+
+/* ==========================================================================
+   🖼️ PORTADA AL COSTADO EN TARJETAS DEL CATÁLOGO
+   ========================================================================== */
+.grid-catalogo {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)) !important;
+}
+
+.tarjeta-libro {
+    max-width: 400px !important;
+}
+.info-libro {
+    flex: 1;
+    min-width: 0;
+}
+
 /* ==========================================================================
    🔍 CATEGORÍAS Y BUSCADOR DE USUARIOS EN CATÁLOGO INTERACTIVO
    ========================================================================== */
@@ -1891,4 +1907,3 @@ body.body2::-webkit-scrollbar-thumb:hover {
     font-weight: 600;
     opacity: 0.85;
 }
-
