@@ -1882,3 +1882,182 @@ body.body2::-webkit-scrollbar-thumb:hover {
     }
 }
 
+/* ==========================================================================
+   🎓 FICHAS DE GRADOS (1° A 5°) EN ESTADÍSTICAS POR GRUPO
+   ========================================================================== */
+.barra-grados-est {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.ficha-grado-est {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    color: #0F4C81;
+    border: 1.5px solid #CBD5E1;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(15, 76, 129, 0.05);
+    transition: all 0.2s ease;
+}
+
+.ficha-grado-est:hover {
+    background-color: #EFF6FF;
+    border-color: #0F4C81;
+    transform: translateY(-1px);
+}
+
+.ficha-grado-est.activa {
+    background-color: #0F4C81;
+    color: #FFFFFF;
+    border-color: #0F4C81;
+}
+
+.nivel-grado-tag {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.85;
+}
+
+/* ==========================================================================
+   📚 CATÁLOGO INTERACTIVO SIN PORTADA (TARJETAS LIMPIAS)
+   ========================================================================== */
+.alerta-catalogo {
+    padding: 12px;
+    margin: 15px auto;
+    max-width: 850px;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.alerta-catalogo.exito {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alerta-catalogo.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.titulo-tendencias {
+    margin: 0;
+    color: #0F4C81;
+    text-align: center;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.texto-sin-movimientos {
+    font-style: italic;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.badge-conteo.azul {
+    background-color: #0F4C81;
+}
+
+.badge-conteo.morado {
+    background-color: #4a148c;
+}
+
+.titulo-seccion-catalogo {
+    color: #0F4C81;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.subtitulo-seccion-catalogo {
+    text-align: center;
+    color: #475569;
+    margin-bottom: 15px;
+}
+
+.mensaje-vacio-catalogo {
+    display: none;
+    color: #991B1B;
+    background-color: #FEE2E2;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.etiqueta-cat-tarjeta {
+    display: inline-block;
+    padding: 3px 10px;
+    background: #EFF6FF;
+    color: #1E40AF;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.info-libro-completa {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 14px;
+}
+
+.info-libro-completa h3.titulo-libro {
+    margin: 4px 0 8px 0;
+    color: #0F4C81;
+    font-size: 16px;
+}
+
+.info-libro-completa p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #334155;
+}
+
+.semaforo {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.semaforo.disponible {
+    background-color: #DCFCE7;
+    color: #166534;
+}
+
+.semaforo.agotado {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
+.oculto-inicio {
+    display: none;
+}
+
+.texto-inventario-vacio {
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+.paginador-catalogo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+    padding: 0 20px;
+}
+

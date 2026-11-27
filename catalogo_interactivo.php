@@ -10,7 +10,7 @@ $mensaje = $_SESSION['mensaje'] ?? '';
 $tipoMensaje = $_SESSION['tipoMensaje'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['tipoMensaje']);
 
-$libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Categoria, Editorial, ISBN, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY Titulo ASC");
+$libros_res = $conexion->query("SELECT id_libro, Titulo, Autor, Categoria, Editorial, Ejemplares_disponibles, Ejemplares_prestados FROM libros ORDER BY Titulo ASC");
 
 $categorias_disponibles = [
     'Novela y Narrativa',
@@ -35,17 +35,14 @@ $categorias_disponibles = [
 <body class="body2 scroll-catalogo">
 
     <?php if ($mensaje !== ''): ?>
-        <div class="alerta <?php echo $tipoMensaje; ?>"
-            style="padding: 12px; margin: 15px auto; max-width: 850px; text-align: center; border-radius: 5px; font-weight: bold; background-color: <?php echo $tipoMensaje === 'exito' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $tipoMensaje === 'exito' ? '#155724' : '#721c24'; ?>;">
-            <?php echo $mensaje; ?>
+        <div class="alerta-catalogo <?php echo htmlspecialchars($tipoMensaje); ?>">
+            <?php echo htmlspecialchars($mensaje); ?>
         </div>
     <?php endif; ?>
 
     <!-- PANEL DE ANALÍTICA Y TENDENCIAS -->
     <div class="contenedor-tendencias">
-        <h3 style="margin: 0; color: #0F4C81; text-align: center; font-size: 18px; text-transform: uppercase; letter-spacing: 0.5px;">
-            📈 Libros Más Leídos 
-        </h3>
+        <h3 class="titulo-tendencias">📈 Libros Más Leídos</h3>
         
         <div class="seccion-bloques-tendencias">
             <div class="bloque-tiempo">
@@ -63,7 +60,7 @@ $categorias_disponibles = [
                         echo "<div class='item-tendencia'><span>📚 ".htmlspecialchars($row['Titulo'])."</span><span class='badge-conteo'>".$row['Total']." préstamos</span></div>";
                     }
                 } else {
-                    echo "<p style='font-style:italic; font-size:12px; color:#64748b;'>Sin movimientos esta semana.</p>";
+                    echo "<p class='texto-sin-movimientos'>Sin movimientos esta semana.</p>";
                 }
                 ?>
             </div>
@@ -80,10 +77,10 @@ $categorias_disponibles = [
                 $res_quincena = $conexion->query($sql_quincena);
                 if ($res_quincena && $res_quincena->num_rows > 0) {
                     while($row = $res_quincena->fetch_assoc()) {
-                        echo "<div class='item-tendencia'><span>📖 ".htmlspecialchars($row['Titulo'])."</span><span class='badge-conteo' style='background-color:#0F4C81;'>".$row['Total']." préstamos</span></div>";
+                        echo "<div class='item-tendencia'><span>📖 ".htmlspecialchars($row['Titulo'])."</span><span class='badge-conteo azul'>".$row['Total']." préstamos</span></div>";
                     }
                 } else {
-                    echo "<p style='font-style:italic; font-size:12px; color:#64748b;'>Sin lecturas registradas.</p>";
+                    echo "<p class='texto-sin-movimientos'>Sin lecturas registradas.</p>";
                 }
                 ?>
             </div>
@@ -100,18 +97,18 @@ $categorias_disponibles = [
                 $res_mes = $conexion->query($sql_mes);
                 if ($res_mes && $res_mes->num_rows > 0) {
                     while($row = $res_mes->fetch_assoc()) {
-                        echo "<div class='item-tendencia'><span>👑 <b>".htmlspecialchars($row['Titulo'])."</b></span><span class='badge-conteo' style='background-color:#4a148c;'>".$row['Total']." préstamos</span></div>";
+                        echo "<div class='item-tendencia'><span>👑 <b>".htmlspecialchars($row['Titulo'])."</b></span><span class='badge-conteo morado'>".$row['Total']." préstamos</span></div>";
                     }
                 } else {
-                    echo "<p style='font-style:italic; font-size:12px; color:#64748b;'>Sin registros este mes.</p>";
+                    echo "<p class='texto-sin-movimientos'>Sin registros este mes.</p>";
                 }
                 ?>
             </div>
         </div>
     </div>
 
-    <h2 style="color: #0F4C81; text-align: center; margin-top: 20px;">📚 Catálogo </h2>
-    <p style="text-align: center; color: #475569; margin-bottom: 15px;"> Busca por categoría o por libro, título o/y autor.</p>
+    <h2 class="titulo-seccion-catalogo">📚 Catálogo</h2>
+    <p class="subtitulo-seccion-catalogo">Busca por categoría o por libro, título o/y autor.</p>
 
     <!-- BOTONES DE CATEGORÍAS -->
     <div class="barra-categorias">
@@ -125,7 +122,7 @@ $categorias_disponibles = [
 
     <div class="contenedor-busqueda">
         <input type="text" id="buscar-libro" class="input-busqueda" placeholder="Buscar por título o autor..." onkeyup="filtrarCatalogo()">
-        <div id="mensaje-vacio" style="display: none; color: #991B1B; background-color: #FEE2E2; padding: 10px; margin-top: 10px; border-radius: 8px; font-weight: bold; font-size: 14px;">
+        <div id="mensaje-vacio" class="mensaje-vacio-catalogo">
             ❌ No se encontraron libros que coincidan con la búsqueda.
         </div>
     </div>
@@ -137,37 +134,22 @@ $categorias_disponibles = [
                 $idL = $libro['id_libro'];
                 $es_disponible = ($libro['Ejemplares_disponibles'] > 0);
                 $cat_libro = $libro['Categoria'] ?? 'Novela y Narrativa';
-                $isbn_limpio = preg_replace('/[^0-9X]/i', '', $libro['ISBN'] ?? '');
-                $url_portada = !empty($isbn_limpio) 
-                    ? "https://openlibrary.org{$isbn_limpio}-M.jpg?default=false" 
-                    : "";
             ?>
             <div class="tarjeta-libro" data-categoria="<?php echo htmlspecialchars($cat_libro); ?>">
-                <div class="fila-tarjeta-contenido">
-                    <img 
-                        src="<?php echo $url_portada; ?>" 
-                        alt="Portada" 
-                        class="portada-libro"
-                        data-titulo="<?php echo htmlspecialchars($libro['Titulo']); ?>"
-                        data-autor="<?php echo htmlspecialchars($libro['Autor']); ?>"
-                        onerror="buscarEnGoogleBooks(this)"
-                    >
+                <div class="info-libro-completa">
+                    <span class="etiqueta-cat-tarjeta">
+                        <?php echo htmlspecialchars($cat_libro); ?>
+                    </span>
+                    <h3 class="titulo-libro"><?php echo htmlspecialchars($libro['Titulo']); ?></h3>
+                    <p class="autor-libro"><b>Autor:</b> <?php echo htmlspecialchars($libro['Autor']); ?></p>
+                    <p><b>Editorial:</b> <?php echo htmlspecialchars($libro['Editorial']); ?></p>
+                    <p><b>En Estantería:</b> <?php echo $libro['Ejemplares_disponibles'] ?? 0; ?> copias</p>
 
-                    <div class="info-libro">
-                        <span style="display: inline-block; padding: 2px 8px; background: #EFF6FF; color: #1E40AF; border-radius: 10px; font-size: 11px; font-weight: bold; margin-bottom: 6px;">
-                            <?php echo htmlspecialchars($cat_libro); ?>
-                        </span>
-                        <h3 class="titulo-libro"><?php echo htmlspecialchars($libro['Titulo']); ?></h3>
-                        <p class="autor-libro"><b>Autor:</b> <?php echo htmlspecialchars($libro['Autor']); ?></p>
-                        <p><b>Editorial:</b> <?php echo htmlspecialchars($libro['Editorial']); ?></p>
-                        <p><b>En Estantería:</b> <?php echo $libro['Ejemplares_disponibles'] ?? 0; ?> copias</p>
-
-                        <?php if ($es_disponible): ?>
-                            <span class="semaforo disponible">🟢 Disponible</span>
-                        <?php else: ?>
-                            <span class="semaforo agotado">🔴 Todo Prestado / Apartado</span>
-                        <?php endif; ?>
-                    </div>
+                    <?php if ($es_disponible): ?>
+                        <span class="semaforo disponible">🟢 Disponible</span>
+                    <?php else: ?>
+                        <span class="semaforo agotado">🔴 Todo Prestado / Apartado</span>
+                    <?php endif; ?>
                 </div>
 
                <?php if ($es_disponible): ?>
@@ -183,14 +165,12 @@ $categorias_disponibles = [
                                 <option value="profesor">Profesor</option>
                             </select>
 
-                            <!-- Barra de búsqueda rápida (aparece solo al elegir rol) -->
-                             <!-- Barra de búsqueda rápida (aparece solo al elegir rol) -->
-                            <div class="buscador-usuario-tarjeta" id="wrap_user_<?php echo $idL; ?>" style="display: none;">
+                            <div class="buscador-usuario-tarjeta oculto-inicio" id="wrap_user_<?php echo $idL; ?>">
                                 <div class="fila-input-busqueda">
                                     <input type="text" id="input_user_<?php echo $idL; ?>" class="input-user-catalogo"
                                            placeholder="Escribe nombre o matrícula..." autocomplete="off"
                                            oninput="buscarUsuarioTarjeta(<?php echo $idL; ?>)">
-                                    <button type="button" id="btn_limpiar_<?php echo $idL; ?>" class="btn-limpiar-user" onclick="limpiarUsuarioTarjeta(<?php echo $idL; ?>)" style="display: none;" title="Cambiar usuario">✕</button>
+                                    <button type="button" id="btn_limpiar_<?php echo $idL; ?>" class="btn-limpiar-user oculto-inicio" onclick="limpiarUsuarioTarjeta(<?php echo $idL; ?>)" title="Cambiar usuario">✕</button>
                                 </div>
                                 <div class="sugerencias-user-catalogo" id="sug_user_<?php echo $idL; ?>"></div>
                             </div>
@@ -205,12 +185,12 @@ $categorias_disponibles = [
             </div>
             <?php endwhile; ?>
         <?php else: ?>
-            <p style="text-align: center; grid-column: 1/-1;">No hay libros registrados en el inventario.</p>
+            <p class="texto-inventario-vacio">No hay libros registrados en el inventario.</p>
         <?php endif; ?>
     </div>
 
     <!-- CONTENEDOR DEL PAGINADOR -->
-    <div class="paginador" id="paginador-interactivo" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 30px; padding: 0 20px;"></div>
+    <div class="paginador paginador-catalogo" id="paginador-interactivo"></div>
 
     <div class="z1">
         <a class="z2" href="registro.php">REGRESAR</a>
@@ -223,9 +203,6 @@ $categorias_disponibles = [
         let tarjetasFiltradas = [];
         const temporizadoresBusqueda = {};
 
-        // ==========================================
-        // 1. BUSCADOR DE USUARIOS POR TARJETA
-        // ==========================================
         function prepararBuscadorTarjeta(idLibro) {
             const rol = document.getElementById('rol_' + idLibro).value;
             const wrap = document.getElementById('wrap_user_' + idLibro);
@@ -266,7 +243,7 @@ $categorias_disponibles = [
                                 const div = document.createElement('div');
                                 div.className = 'item-sug-user';
                                 const extra = (rol === 'alumno') ? ` • Grupo: ${item.grupo}` : '';
-                                div.innerHTML = `<strong>[${item.matricula}]</strong> ${item.nombre}<small style="color:#64748B;">${extra}</small>`;
+                                div.innerHTML = `<strong>[${item.matricula}]</strong> ${item.nombre} <small>(${extra})</small>`;
                                 div.onclick = () => seleccionarUsuarioTarjeta(idLibro, rol, item);
                                 cajaSug.appendChild(div);
                             });
@@ -323,37 +300,6 @@ $categorias_disponibles = [
             return true;
         }
 
-        // ==========================================
-        // 2. RESPALDO DE PORTADAS (GOOGLE BOOKS / SVG)
-        // ==========================================
-        function buscarEnGoogleBooks(img) {
-            img.onerror = null;
-            const titulo = img.getAttribute('data-titulo') || '';
-            const autor = img.getAttribute('data-autor') || '';
-            const svgFallback = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-                '<svg xmlns="http://w3.org" width="85" height="125" viewBox="0 0 85 125">' +
-                '<rect width="85" height="125" fill="#EFF6FF"/>' +
-                '<text x="42" y="65" font-size="28" text-anchor="middle">📘</text>' +
-                '</svg>'
-            );
-
-            if (!titulo) {
-                img.src = svgFallback;
-                return;
-            }
-
-            fetch('https://googleapis.com' + encodeURIComponent('intitle:' + titulo + ' inauthor:' + autor) + '&maxResults=1')
-                .then(r => r.json())
-                .then(data => {
-                    const thumb = data.items?.[0]?.volumeInfo?.imageLinks?.thumbnail;
-                    img.src = thumb ? thumb.replace('http://', 'https://') : svgFallback;
-                })
-                .catch(() => { img.src = svgFallback; });
-        }
-
-        // ==========================================
-        // 3. FILTRADO POR CATEGORÍA, TEXTO Y PAGINADOR
-        // ==========================================
         function seleccionarCategoria(categoria, boton) {
             categoriaSeleccionada = categoria;
             document.querySelectorAll('.btn-cat').forEach(btn => btn.classList.remove('activa'));
@@ -383,7 +329,7 @@ $categorias_disponibles = [
                     tarjetasFiltradas.push(tarjeta);
                 }
                 tarjeta.style.setProperty('display', 'none', 'important');
-                 });
+            });
 
             if (tarjetasFiltradas.length === 0) {
                 mensajeVacio.style.setProperty('display', 'block', 'important');
