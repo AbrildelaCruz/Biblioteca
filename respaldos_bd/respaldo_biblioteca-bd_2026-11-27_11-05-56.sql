@@ -1,5 +1,5 @@
 -- Respaldo Automatico de Base de Datos: biblioteca-bd
--- Fecha de generacion: 27/11/2026 09:50:44
+-- Fecha de generacion: 27/11/2026 11:05:56
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `alumnos`;

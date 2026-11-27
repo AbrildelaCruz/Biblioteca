@@ -1,5 +1,5 @@
 -- Respaldo Automatico de Base de Datos: biblioteca-bd
--- Fecha de generacion: 27/11/2026 09:20:00
+-- Fecha de generacion: 27/11/2026 11:10:56
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `alumnos`;
@@ -16,7 +16,7 @@ CREATE TABLE `alumnos` (
   `Renovación` date DEFAULT NULL,
   PRIMARY KEY (`id_Alumnos`),
   UNIQUE KEY `Matricula` (`Matricula`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `alumnos` VALUES("1", "SUL-26-001", "Itzel", "Matínez", "López", "Hna. Rosario", "Sta. Adela", "3", "502", NULL);
 INSERT INTO `alumnos` VALUES("2", "SUL-26-002", "Abril de la Cruz", "", "", "Hna. Griseida", "Sta. Bernardita", "2", "501", NULL);
@@ -28,6 +28,7 @@ INSERT INTO `alumnos` VALUES("8", "SUL-26-008", "Aslinn", "Alejo", "Santos", "Hn
 INSERT INTO `alumnos` VALUES("9", "SUL-26-009", "Rubi", "Cocotle", "Rodriguez", "Hna. Griseida", "Sta. Bernardita", "2", "501", NULL);
 INSERT INTO `alumnos` VALUES("10", "SUL-26-010", "Abigailda", "Juárez", "", "Hna. Roberta", "Sta. Irene", "4", "3°N", NULL);
 INSERT INTO `alumnos` VALUES("11", "SUL-26-011", "Guadalupe", "Ramírez", "Sánchez", "Hna. Gabriela", "Sta. Rita", "3", "602", NULL);
+INSERT INTO `alumnos` VALUES("12", "SUL-26-012", "Abril", "de la Cruz", "Galindo", "Hna. Griseida", "Sta.Bernardita", "2", "501", NULL);
 
 DROP TABLE IF EXISTS `inventario`;
 CREATE TABLE `inventario` (
