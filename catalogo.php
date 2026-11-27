@@ -86,23 +86,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($titulo === '' || $autor === '' || $nuevos_totales < 1) {
         $_SESSION['mensaje'] = '⚠️ Título, Autor y Ejemplares Totales (mínimo 1) son obligatorios.';
         $_SESSION['tipoMensaje'] = 'error';
-    } else {
-        if ($id_libro_post) {
-            // MODO ACTUALIZAR: Consultamos cuántos están prestados actualmente para no perder la cuenta
-            $stmt_act = $conexion->prepare("SELECT Ejemplares_prestados FROM libros WHERE id_libro = ?");
-            $stmt_act->bind_param("i", $id_libro_post);
-            $stmt_act->execute();
-            $datos_act = $stmt_act->get_result()->fetch_assoc();
-            $stmt_act->close();
+        header("Location: " . ($id_libro_post ? "catalogo.php?editar_id=$id_libro_post" : "catalogo.php"));
+        exit();
+    }
 
-            $prestados_actuales = intval($datos_act['Ejemplares_prestados'] ?? 0);
+    if ($id_libro_post) {
+        // VALIDACIÓN EN MODO ACTUALIZAR: Evitar duplicar otro libro existente
+        $stmt_dup = $conexion->prepare("SELECT id_libro FROM libros WHERE TRIM(Titulo) = ? AND TRIM(Autor) = ? AND id_libro != ?");
+        $stmt_dup->bind_param("ssi", $titulo, $autor, $id_libro_post);
+        $stmt_dup->execute();
+        if ($stmt_dup->get_result()->num_rows > 0) {
+            $stmt_dup->close();
+            $_SESSION['mensaje'] = "⚠️ Ya existe otro libro registrado con el título '$titulo' y autor '$autor'.";
+            $_SESSION['tipoMensaje'] = 'error';
+            header("Location: catalogo.php?editar_id=$id_libro_post");
+            exit();
+        }
+        $stmt_dup->close();
 
-            if ($nuevos_totales < $prestados_actuales) {
-                $_SESSION['mensaje'] = "❌ Error: No puedes poner $nuevos_totales ejemplares totales porque actualmente hay $prestados_actuales prestados.";
-                $_SESSION['tipoMensaje'] = 'error';
-            } else {
-                $nuevos_disponibles = $nuevos_totales - $prestados_actuales;
+        // Consultamos cuántos están prestados actualmente para no perder la cuenta
+        $stmt_act = $conexion->prepare("SELECT Ejemplares_prestados FROM libros WHERE id_libro = ?");
+        $stmt_act->bind_param("i", $id_libro_post);
+        $stmt_act->execute();
+        $datos_act = $stmt_act->get_result()->fetch_assoc();
+        $stmt_act->close();
 
+        $prestados_actuales = intval($datos_act['Ejemplares_prestados'] ?? 0);
+
+        if ($nuevos_totales < $prestados_actuales) {
+            $_SESSION['mensaje'] = "❌ Error: No puedes poner $nuevos_totales ejemplares totales porque actualmente hay $prestados_actuales prestados.";
+            $_SESSION['tipoMensaje'] = 'error';
+        } else {
+            $nuevos_disponibles = $nuevos_totales - $prestados_actuales;
+
+            try {
                 $sql_upd = "UPDATE libros SET 
                             Titulo = ?, Autor = ?, Categoria = ?, Editorial = ?, ISBN = ?, 
                             ano = ?, `País` = ?, Idioma = ?, `Descripción` = ?, 
@@ -126,9 +143,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['mensaje'] = 'Error al actualizar: ' . $conexion->error;
                     $_SESSION['tipoMensaje'] = 'error';
                 }
+            } catch (mysqli_sql_exception $e) {
+                $_SESSION['mensaje'] = ($e->getCode() == 1062)
+                    ? "⚠️ Ya existe otro libro con ese mismo título y autor."
+                    : "Error al actualizar: " . $e->getMessage();
+                $_SESSION['tipoMensaje'] = 'error';
             }
-        } else {
-            // MODO INSERTAR NUEVO LIBRO
+        }
+        header("Location: ver_catalogo.php");
+        exit();
+
+    } else {
+        // MODO INSERTAR NUEVO LIBRO: Verificar primero si ya existe
+        $stmt_verificar = $conexion->prepare("SELECT id_libro, Titulo, Ejemplares_totales FROM libros WHERE TRIM(Titulo) = ? AND TRIM(Autor) = ?");
+        $stmt_verificar->bind_param("ss", $titulo, $autor);
+        $stmt_verificar->execute();
+        $res_verificar = $stmt_verificar->get_result();
+
+        if ($libro_existente = $res_verificar->fetch_assoc()) {
+            $stmt_verificar->close();
+            $id_existente = $libro_existente['id_libro'];
+            $totales_actuales = $libro_existente['Ejemplares_totales'];
+
+            $_SESSION['mensaje'] = "⚠️ El libro «{$libro_existente['Titulo']}» de $autor ya está registrado (actualmente tiene $totales_actuales ejemplares). Puedes aumentar su cantidad aquí.";
+            $_SESSION['tipoMensaje'] = 'error';
+            header("Location: catalogo.php?editar_id=" . $id_existente);
+            exit();
+        }
+        $stmt_verificar->close();
+
+        // Si no existe, procedemos a insertar
+        try {
             $sql_ins = "INSERT INTO libros 
                         (Titulo, Autor, Categoria, Editorial, ISBN, ano, `País`, Idioma, `Descripción`, `Encabezamiento de Materia`, `Clasificación`, Ejemplares_totales, Ejemplares_disponibles, Ejemplares_prestados) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
@@ -149,12 +194,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['mensaje'] = 'Error al registrar en la base de datos: ' . $conexion->error;
                 $_SESSION['tipoMensaje'] = 'error';
             }
+        } catch (mysqli_sql_exception $e) {
+            $_SESSION['mensaje'] = ($e->getCode() == 1062)
+                ? "⚠️ Este libro ya se encuentra registrado en el catálogo."
+                : "Error al registrar en la base de datos: " . $e->getMessage();
+            $_SESSION['tipoMensaje'] = 'error';
         }
-    }
-    header("Location: ver_catalogo.php");
-    exit();
-}
 
+        header("Location: ver_catalogo.php");
+        exit();
+    }
+}
 // 3. PROCESAR BORRADO
 if (isset($_GET['eliminar_id'])) {
     $id_a_borrar = filter_input(INPUT_GET, 'eliminar_id', FILTER_VALIDATE_INT);

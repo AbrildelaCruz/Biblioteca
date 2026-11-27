@@ -1620,8 +1620,7 @@ body.body2::-webkit-scrollbar-thumb:hover {
     margin-bottom: 25px;
 }
 
-.panel-grafica,
-.panel-ranking {
+.panel-grafica{
     background: #FFFFFF;
     padding: 22px;
     border-radius: 12px;

@@ -174,41 +174,6 @@ $cant_profesores = (int)($roles_data['profesores'] ?? 0);
             <button type="button" class="btn-imprimir" onclick="window.print()">🖨️ Imprimir Reporte</button>
         </div>
 
-        <div class="grid-kpis-est">
-            <div class="card-kpi-est">
-                <span class="numero"><?php echo $total_mov; ?></span>
-                <span class="etiqueta">Total Movimientos</span>
-            </div>
-            <div class="card-kpi-est kpi-verde">
-                <span class="numero"><?php echo $total_dev; ?></span>
-                <span class="etiqueta">Libros Devueltos</span>
-            </div>
-            <div class="card-kpi-est kpi-naranja">
-                <span class="numero"><?php echo $total_act; ?></span>
-                <span class="etiqueta">En Préstamo / Apartado</span>
-            </div>
-            <div class="card-kpi-est kpi-morado">
-                <span class="numero"><?php echo $tasa_devolucion; ?>%</span>
-                <span class="etiqueta">Tasa de Devolución</span>
-            </div>
-        </div>
-
-        <div class="grid-graficas">
-            <div class="panel-grafica">
-                <h3>🏷️ Préstamos por Categoría Literaria</h3>
-                <div class="caja-canvas-grafica">
-                    <canvas id="graficaCategorias"></canvas>
-                </div>
-            </div>
-
-            <div class="panel-grafica">
-                <h3>👥 Participación: Alumnas vs. Profesores</h3>
-                <div class="caja-canvas-grafica">
-                    <canvas id="graficaUsuarios"></canvas>
-                </div>
-            </div>
-        </div>
-
         <div class="grid-rankings">
             <div class="panel-ranking">
                 <h3>🏅 Top 5 Alumnas Más Lectoras</h3>
@@ -302,34 +267,6 @@ $cant_profesores = (int)($roles_data['profesores'] ?? 0);
                 </table>
             </div>
 
-            <div class="panel-ranking">
-                <h3>🏫 Grupos y Pisos con Mayor Lectura</h3>
-                <table class="tabla-mini">
-                    <thead>
-                        <tr>
-                            <th class="centrado">#</th>
-                            <th>Grupo</th>
-                            <th class="centrado">Piso</th>
-                            <th class="centrado">Préstamos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($res_grupos && $res_grupos->num_rows > 0):
-                            $pos = 1;
-                            while ($gr = $res_grupos->fetch_assoc()): ?>
-                                <tr>
-                                    <td class="medalla"><?php echo $pos; ?></td>
-                                    <td><strong>Grupo <?php echo htmlspecialchars($gr['grupo']); ?></strong></td>
-                                    <td class="centrado">Piso <?php echo htmlspecialchars($gr['piso']); ?></td>
-                                    <td class="centrado"><span class="badge-total-lecturas"><?php echo $gr['total_prestamos']; ?> préstamos</span></td>
-                                </tr>
-                            <?php $pos++; endwhile;
-                        else: ?>
-                            <tr><td colspan="4" class="texto-vacio-est">Sin datos por grupo en este periodo.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 
