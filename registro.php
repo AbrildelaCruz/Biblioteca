@@ -60,7 +60,7 @@ require_once 'conexion.php';
                     <a class="bton-3" href="catalogo_interactivo.php">🟢 Catálogo Interactivo</a>
                     <a class="bton-4" href="prestamos.php">📋 Bitácora de Préstamos</a>
                     <a class="bton-4" href="retrasados.php" style="background-color: #FEE2E2 !important; color: #991B1B !important; border-color: #FCA5A5 !important;">⚠️ Entregas Retrasadas</a>
-                </div>
+                    <a class="bton-4 bton-estadisticas" href="estadisticas.php">📊 Estadísticas</a>
             </div>
         </div>
 
