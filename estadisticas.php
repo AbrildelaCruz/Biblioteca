@@ -158,7 +158,7 @@ $cant_profesores = (int)($roles_data['profesores'] ?? 0);
 
         <div class="barra-superior-est">
             <div>
-                <h2 class="titulo-estadisticas">📊 Estadísticas e Indicadores de Lectura</h2>
+                <h2 class="titulo-estadisticas">📊 Estadísticas</h2>
                 <p class="subtitulo-estadisticas">
                     Periodo analizado: <strong><?php echo $titulo_periodo; ?></strong> • Biblioteca Sullivan
                 </p>
@@ -176,7 +176,7 @@ $cant_profesores = (int)($roles_data['profesores'] ?? 0);
 
         <div class="grid-rankings">
             <div class="panel-ranking">
-                <h3>🏅 Top 5 Alumnas Más Lectoras</h3>
+                <h3>🏅Alumnas Más Lectoras</h3>
                 <table class="tabla-mini">
                     <thead>
                         <tr>
@@ -208,7 +208,7 @@ $cant_profesores = (int)($roles_data['profesores'] ?? 0);
             </div>
 
             <div class="panel-ranking">
-                <h3>📚 Top 5 Libros Más Leídos</h3>
+                <h3>📚Libros Más Leídos</h3>
                 <table class="tabla-mini">
                     <thead>
                         <tr>
@@ -238,7 +238,7 @@ $cant_profesores = (int)($roles_data['profesores'] ?? 0);
             </div>
 
             <div class="panel-ranking">
-                <h3>👩‍🏫 Top 5 Profesores Más Lectores</h3>
+                <h3>👩‍🏫 Profesores Más Lectores</h3>
                 <table class="tabla-mini">
                     <thead>
                         <tr>
