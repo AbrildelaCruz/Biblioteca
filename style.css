@@ -1486,3 +1486,244 @@ body.body2::-webkit-scrollbar-thumb:hover {
         min-width: 950px;
     }
 }
+/* ==========================================================================
+   📊 MÓDULO DE ESTADÍSTICAS E INDICADORES DE LECTURA (estadisticas.php)
+   ========================================================================== */
+.bton-estadisticas {
+    background-color: #EFF6FF !important;
+    color: #0F4C81 !important;
+    border-color: #BFDBFE !important;
+}
+
+.bton-estadisticas:hover {
+    background-color: #0F4C81 !important;
+    color: #FFFFFF !important;
+}
+
+.contenedor-estadisticas {
+    width: 95%;
+    max-width: 1280px;
+    margin: 25px auto 80px auto;
+    text-align: left;
+}
+
+.barra-superior-est {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 18px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.06);
+    border: 1px solid #DDE6ED;
+    margin-bottom: 22px;
+}
+
+.titulo-estadisticas {
+    margin: 0;
+    color: #0F4C81;
+    font-size: 22px;
+}
+
+.subtitulo-estadisticas {
+    margin: 4px 0 0 0;
+    color: #64748B;
+    font-size: 13px;
+}
+
+.filtros-periodo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.btn-periodo {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1.5px solid #CBD5E1;
+    background: #FFFFFF;
+    color: #0F4C81;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-periodo:hover,
+.btn-periodo.activo {
+    background: #0F4C81;
+    color: #FFFFFF;
+    border-color: #0F4C81;
+}
+
+.btn-imprimir {
+    padding: 9px 18px;
+    background: #2A9D8F;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-imprimir:hover {
+    background: #218074;
+}
+
+.grid-kpis-est {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.card-kpi-est {
+    background: #FFFFFF;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.06);
+    border-left: 5px solid #0F4C81;
+}
+
+.card-kpi-est span.numero {
+    display: block;
+    font-size: 28px;
+    font-weight: 800;
+    color: #0F4C81;
+    margin-bottom: 4px;
+}
+
+.card-kpi-est.kpi-verde { border-left-color: #2A9D8F; }
+.card-kpi-est.kpi-verde span.numero { color: #2A9D8F; }
+
+.card-kpi-est.kpi-naranja { border-left-color: #D97706; }
+.card-kpi-est.kpi-naranja span.numero { color: #D97706; }
+
+.card-kpi-est.kpi-morado { border-left-color: #4A148C; }
+.card-kpi-est.kpi-morado span.numero { color: #4A148C; }
+
+.card-kpi-est span.etiqueta {
+    font-size: 13px;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.grid-graficas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.panel-grafica,
+.panel-ranking {
+    background: #FFFFFF;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(15, 76, 129, 0.06);
+    border: 1px solid #DDE6ED;
+}
+
+.panel-grafica h3,
+.panel-ranking h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #0F4C81;
+    font-size: 16px;
+    border-bottom: 2px solid #E8EEF5;
+    padding-bottom: 8px;
+}
+
+.caja-canvas-grafica {
+    position: relative;
+    height: 250px;
+}
+
+.grid-rankings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+    gap: 20px;
+}
+
+.tabla-mini {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.tabla-mini th {
+    background: #F1F5F9;
+    color: #0F4C81;
+    padding: 9px 10px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.tabla-mini td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #E2E8F0;
+    color: #1E293B;
+}
+
+.tabla-mini .centrado {
+    text-align: center;
+}
+
+.medalla {
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    width: 36px;
+}
+
+.matricula-est {
+    font-weight: bold;
+    color: #065F46;
+}
+
+.texto-vacio-est {
+    text-align: center;
+    color: #64748B;
+    font-style: italic;
+}
+
+.badge-total-lecturas {
+    background: #EFF6FF;
+    color: #0F4C81;
+    font-weight: bold;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 600px) {
+    .grid-graficas,
+    .grid-rankings {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .z1,
+    .filtros-periodo,
+    .btn-imprimir {
+        display: none !important;
+    }
+
+    body.body2 {
+        padding: 0 !important;
+        background: #FFFFFF !important;
+    }
+
+    .contenedor-estadisticas {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
