@@ -20,35 +20,20 @@ if (!in_array($grado_filtro, ['', '1', '2', '3', '4', '5'], true)) {
 }
 
 $filtro_where = "";
-$filtro_on = "";
 $titulo_periodo = "Histórico Completo";
 
 if ($periodo === 'mes') {
     $filtro_where = " AND p.fecha_salida >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
-    $filtro_on = $filtro_where;
     $titulo_periodo = "Últimos 30 Días";
 } elseif ($periodo === 'trimestre') {
     $filtro_where = " AND p.fecha_salida >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)";
-    $filtro_on = $filtro_where;
     $titulo_periodo = "Últimos 3 Meses";
 } elseif ($periodo === 'anio') {
     $filtro_where = " AND YEAR(p.fecha_salida) = YEAR(CURDATE())";
-    $filtro_on = $filtro_where;
     $titulo_periodo = "Año " . date('Y');
 }
 
 if ($vista === 'general') {
-    $kpis = $conexion->query("SELECT 
-        COUNT(*) AS total_mov,
-        SUM(CASE WHEN p.fecha_devolucion_real IS NOT NULL AND IFNULL(p.estado_libro, '') != 'Perdido' THEN 1 ELSE 0 END) AS total_dev,
-        SUM(CASE WHEN p.fecha_devolucion_real IS NULL THEN 1 ELSE 0 END) AS total_act
-        FROM prestamos p WHERE 1=1 $filtro_where")->fetch_assoc();
-
-    $total_mov = (int)($kpis['total_mov'] ?? 0);
-    $total_dev = (int)($kpis['total_dev'] ?? 0);
-    $total_act = (int)($kpis['total_act'] ?? 0);
-    $tasa_dev = ($total_mov > 0) ? round(($total_dev / $total_mov) * 100, 1) : 0;
-
     $res_top_alumnas = $conexion->query("SELECT 
         IFNULL(a.Matricula, 'S/M') AS matricula,
         TRIM(CONCAT_WS(' ', a.Nombre, a.Apellido_Paterno, a.Apellido_Materno)) AS nombre,
@@ -71,43 +56,13 @@ if ($vista === 'general') {
         FROM prestamos p INNER JOIN libros l ON p.id_libro = l.id_libro
         WHERE 1=1 $filtro_where
         GROUP BY l.id_libro ORDER BY veces_leido DESC, l.Titulo ASC LIMIT 5");
-
-    $res_grupos_top = $conexion->query("SELECT 
-        IFNULL(NULLIF(a.Grupo, ''), 'Sin grupo') AS grupo,
-        IFNULL(NULLIF(a.Piso, ''), '-') AS piso,
-        COUNT(p.id_prestamo) AS total_prestamos
-        FROM prestamos p INNER JOIN alumnos a ON p.id_alumnos = a.id_Alumnos
-        WHERE p.id_alumnos IS NOT NULL $filtro_where
-        GROUP BY a.Grupo, a.Piso ORDER BY total_prestamos DESC LIMIT 5");
-
-    $res_cat = $conexion->query("SELECT IFNULL(l.Categoria, 'Novela y Narrativa') AS categoria, COUNT(p.id_prestamo) AS total
-        FROM prestamos p INNER JOIN libros l ON p.id_libro = l.id_libro
-        WHERE 1=1 $filtro_where GROUP BY categoria ORDER BY total DESC");
-    $labels_cat = [];
-    $datos_cat = [];
-    if ($res_cat) {
-        while ($r = $res_cat->fetch_assoc()) {
-            $labels_cat[] = $r['categoria'];
-            $datos_cat[] = (int)$r['total'];
-        }
-    }
-
-    $roles_data = $conexion->query("SELECT 
-        SUM(CASE WHEN p.id_alumnos IS NOT NULL THEN 1 ELSE 0 END) AS alumnos,
-        SUM(CASE WHEN p.id_profesores IS NOT NULL THEN 1 ELSE 0 END) AS profesores
-        FROM prestamos p WHERE 1=1 $filtro_where")->fetch_assoc();
-    $cant_alumnos = (int)($roles_data['alumnos'] ?? 0);
-    $cant_profesores = (int)($roles_data['profesores'] ?? 0);
 } else {
-    // Clasificador exacto según la estructura de Villa de los Niños
-     function obtenerGradoVilla($grupo) {
+    function obtenerGradoVilla($grupo) {
         $g = trim($grupo);
-        // Si es número de 3 dígitos (100 - 699) = Bachillerato
         if (preg_match('/^([1-6])\d{2}/', $g, $m)) {
             $centena = (int)$m[1];
             return ($centena >= 5) ? '5' : '4';
         }
-        // Si empieza con 1°, 2° o 3° (ej. 1°Q, 2°A, 3°B) = Secundaria
         if (preg_match('/^([1-3])/', $g, $m)) {
             return $m[1];
         }
@@ -167,9 +122,6 @@ if ($vista === 'general') {
     <title>Estadísticas de Lectura - Biblioteca Sullivan</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="icon" type="image/png" href="logobiblioteca.png">
-    <?php if ($vista === 'general'): ?>
-        <script src="https://jsdelivr.net"></script>
-    <?php endif; ?>
 </head>
 <body class="body2">
 
@@ -187,17 +139,16 @@ if ($vista === 'general') {
             </div>
 
             <div class="filtros-periodo">
-                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=todo&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'todo' ? 'activo' : ''; ?>">📂 Todo</a>
-                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=mes&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'mes' ? 'activo' : ''; ?>">📅 30 días</a>
-                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=trimestre&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'trimestre' ? 'activo' : ''; ?>">🗓️ 3 Meses</a>
-                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=anio&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'anio' ? 'activo' : ''; ?>">📆 <?php echo date('Y'); ?></a>
+                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=todo&grado=<?php echo urlencode($grado_filtro); ?>&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'todo' ? 'activo' : ''; ?>">📂 Todo</a>
+                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=mes&grado=<?php echo urlencode($grado_filtro); ?>&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'mes' ? 'activo' : ''; ?>">📅 30 días</a>
+                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=trimestre&grado=<?php echo urlencode($grado_filtro); ?>&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'trimestre' ? 'activo' : ''; ?>">🗓️ 3 Meses</a>
+                <a href="estadisticas.php?vista=<?php echo $vista; ?>&periodo=anio&grado=<?php echo urlencode($grado_filtro); ?>&grupo=<?php echo urlencode($grupo_filtro); ?>" class="btn-periodo <?php echo $periodo === 'anio' ? 'activo' : ''; ?>">📆 <?php echo date('Y'); ?></a>
             </div>
 
             <button type="button" class="btn-imprimir" onclick="window.print()">🖨️ Imprimir</button>
         </div>
 
         <?php if ($vista === 'general'): ?>
-
 
             <div class="grid-rankings">
                 <div class="panel-ranking">
@@ -250,7 +201,7 @@ if ($vista === 'general') {
                 </div>
 
                 <div class="panel-ranking">
-                    <h3>👩‍🏫Profesores Más Lectores</h3>
+                    <h3>👩‍🏫 Profesores Más Lectores</h3>
                     <table class="tabla-mini">
                         <thead>
                             <tr><th class="centrado">#</th><th>Docente</th><th>Materia</th><th class="centrado">Libros</th></tr>
@@ -353,7 +304,7 @@ if ($vista === 'general') {
                                         $medallas = [1 => '🥇', 2 => '🥈', 3 => '🥉'];
                                         foreach ($info_grupo['alumnas'] as $al):
                                             $total_al = (int)$al['total_libros'];
-                                            $icono_pos = ($total_al > 0 && isset($medallas[$pos])) ? $medallas[$pos] : $pos;
+                                            $icono_pos = $medallas[$pos] ?? $pos;
                                         ?>
                                             <tr>
                                                 <td class="medalla"><?php echo $icono_pos; ?></td>
@@ -361,13 +312,7 @@ if ($vista === 'general') {
                                                 <td><strong><?php echo htmlspecialchars($al['nombre']); ?></strong></td>
                                                 <td><?php echo htmlspecialchars($al['familia']); ?></td>
                                                 <td class="centrado"><?php echo htmlspecialchars($al['piso']); ?></td>
-                                                <td class="centrado">
-                                                    <?php if ($total_al > 0): ?>
-                                                        <span class="badge-total-lecturas"><?php echo $total_al; ?></span>
-                                                    <?php else: ?>
-                                                        <span class="texto-cero-est">0</span>
-                                                    <?php endif; ?>
-                                                </td>
+                                                <td class="centrado"><span class="badge-total-lecturas"><?php echo $total_al; ?></span></td>
                                                 <td class="centrado texto-devuelto-est"><?php echo (int)$al['devueltos']; ?></td>
                                                 <td class="centrado texto-activo-est"><?php echo (int)$al['activos']; ?></td>
                                             </tr>
@@ -379,7 +324,7 @@ if ($vista === 'general') {
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
-                <div class="panel-ranking"><p class="texto-vacio-est">No hay grupos registrados en este grado todavía.</p></div>
+                <div class="panel-ranking"><p class="texto-vacio-est">No hay lecturas registradas en este grado o periodo.</p></div>
             <?php endif; ?>
 
         <?php endif; ?>
@@ -390,26 +335,5 @@ if ($vista === 'general') {
         <a class="z2" href="registro.php">REGRESAR</a>
     </div>
 
-    <?php if ($vista === 'general'): ?>
-    <script>
-        new Chart(document.getElementById('graficaCategorias').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: <?php echo json_encode($labels_cat); ?>,
-                datasets: [{ label: 'Libros prestados', data: <?php echo json_encode($datos_cat); ?>, backgroundColor: '#0F4C81', borderRadius: 6 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-        });
-
-        new Chart(document.getElementById('graficaUsuarios').getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Alumnas', 'Profesores'],
-                datasets: [{ data: [<?php echo $cant_alumnos; ?>, <?php echo $cant_profesores; ?>], backgroundColor: ['#2A9D8F', '#0F4C81'], borderWidth: 2 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-        });
-    </script>
-    <?php endif; ?>
 </body>
 </html>

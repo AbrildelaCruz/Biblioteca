@@ -1194,6 +1194,25 @@ body.body2::-webkit-scrollbar-thumb:hover {
 .tarjeta-libro {
     max-width: 400px !important;
 }
+
+.fila-tarjeta-contenido {
+    display: flex;
+    flex-direction: row; /* Coloca la portada a la izquierda y los datos a la derecha */
+    gap: 15px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.portada-libro {
+    width: 85px;
+    height: 125px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0; /* Evita que la imagen se aplaste si el título es muy largo */
+    background-color: #EFF6FF;
+    border: 1px solid #CBD5E1;
+}
+
 .info-libro {
     flex: 1;
     min-width: 0;
@@ -1863,47 +1882,3 @@ body.body2::-webkit-scrollbar-thumb:hover {
     }
 }
 
-/* ==========================================================================
-   🎓 FICHAS DE GRADOS (1° A 5°) EN ESTADÍSTICAS POR GRUPO
-   ========================================================================== */
-.barra-grados-est {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-
-.ficha-grado-est {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 18px;
-    border-radius: 25px;
-    background-color: #FFFFFF;
-    color: #0F4C81;
-    border: 1.5px solid #CBD5E1;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-    box-shadow: 0 2px 6px rgba(15, 76, 129, 0.05);
-    transition: all 0.2s ease;
-}
-
-.ficha-grado-est:hover {
-    background-color: #EFF6FF;
-    border-color: #0F4C81;
-    transform: translateY(-1px);
-}
-
-.ficha-grado-est.activa {
-    background-color: #0F4C81;
-    color: #FFFFFF;
-    border-color: #0F4C81;
-}
-
-.nivel-grado-tag {
-    font-size: 11px;
-    font-weight: 600;
-    opacity: 0.85;
-}
