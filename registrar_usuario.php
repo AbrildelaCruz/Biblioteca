@@ -117,47 +117,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $piso = trim($_POST['Piso'] ?? '');
         $grupo = trim($_POST['Grupo'] ?? '');
 
-        // Verificar si ya está registrado (Nombre + Apellido Paterno + Apellido Materno)
+        // Verificar si ya está registrado (ignorando espacios extra y mayúsculas/minúsculas)
         if ($id_post) {
-            $stmt_dup = $conexion->prepare("SELECT id_Alumnos FROM alumnos WHERE Nombre = ? AND Apellido_Paterno = ? AND Apellido_Materno = ? AND id_Alumnos != ?");
+            $stmt_dup = $conexion->prepare("SELECT id_Alumnos, Matricula FROM alumnos WHERE TRIM(Nombre) = ? AND TRIM(Apellido_Paterno) = ? AND TRIM(Apellido_Materno) = ? AND id_Alumnos != ?");
             $stmt_dup->bind_param("sssi", $nombre, $apellido_paterno, $apellido_materno, $id_post);
         } else {
-            $stmt_dup = $conexion->prepare("SELECT id_Alumnos FROM alumnos WHERE Nombre = ? AND Apellido_Paterno = ? AND Apellido_Materno = ?");
+            $stmt_dup = $conexion->prepare("SELECT id_Alumnos, Matricula FROM alumnos WHERE TRIM(Nombre) = ? AND TRIM(Apellido_Paterno) = ? AND TRIM(Apellido_Materno) = ?");
             $stmt_dup->bind_param("sss", $nombre, $apellido_paterno, $apellido_materno);
         }
         $stmt_dup->execute();
-        $ya_existe = $stmt_dup->get_result()->num_rows > 0;
-        $stmt_dup->close();
+        $res_dup = $stmt_dup->get_result();
 
-        if ($ya_existe) {
-            $_SESSION['mensaje'] = "⚠️ El alumno '$nombre $apellido_paterno $apellido_materno' ya se encuentra registrado en el sistema.";
+        if ($fila_dup = $res_dup->fetch_assoc()) {
+            $stmt_dup->close();
+            $_SESSION['mensaje'] = "⚠️ El alumno '$nombre $apellido_paterno $apellido_materno' ya está registrado (Matrícula: {$fila_dup['Matricula']}).";
             $_SESSION['tipoMensaje'] = "error";
             header("Location: registrar_usuario.php" . ($id_post ? "?editar_rol=alumno&editar_id=$id_post" : ""));
             exit();
         }
+        $stmt_dup->close();
 
-        if ($id_post) {
-            $stmt = $conexion->prepare("UPDATE alumnos SET Nombre = ?, Apellido_Paterno = ?, Apellido_Materno = ?, Madre_encargada = ?, Familia = ?, Piso = ?, Grupo = ? WHERE id_Alumnos = ?");
-            $stmt->bind_param("sssssssi", $nombre, $apellido_paterno, $apellido_materno, $madre_encargada, $familia, $piso, $grupo, $id_post);
-            $msg_ok = "✅ Alumno actualizado correctamente.";
-        } else {
-            $res_max = $conexion->query("SELECT IFNULL(MAX(id_Alumnos), 0) + 1 AS sig FROM alumnos");
-            $sig = $res_max->fetch_assoc()['sig'];
-            $matricula = 'SUL-26-' . str_pad($sig, 3, '0', STR_PAD_LEFT);
+        try {
+            if ($id_post) {
+                $stmt = $conexion->prepare("UPDATE alumnos SET Nombre = ?, Apellido_Paterno = ?, Apellido_Materno = ?, Madre_encargada = ?, Familia = ?, Piso = ?, Grupo = ? WHERE id_Alumnos = ?");
+                $stmt->bind_param("sssssssi", $nombre, $apellido_paterno, $apellido_materno, $madre_encargada, $familia, $piso, $grupo, $id_post);
+                $msg_ok = "✅ Alumno actualizado correctamente.";
+            } else {
+                // Generar matrícula única verificando que no exista previamente
+                $res_max = $conexion->query("SELECT IFNULL(MAX(id_Alumnos), 0) + 1 AS sig FROM alumnos");
+                $sig = intval($res_max->fetch_assoc()['sig']);
+                do {
+                    $matricula = 'SUL-26-' . str_pad($sig, 3, '0', STR_PAD_LEFT);
+                    $chk = $conexion->prepare("SELECT id_Alumnos FROM alumnos WHERE Matricula = ?");
+                    $chk->bind_param("s", $matricula);
+                    $chk->execute();
+                    $existe_mat = $chk->get_result()->num_rows > 0;
+                    $chk->close();
+                    if ($existe_mat) $sig++;
+                } while ($existe_mat);
 
-            $stmt = $conexion->prepare("INSERT INTO alumnos (Matricula, Nombre, Apellido_Paterno, Apellido_Materno, Madre_encargada, Familia, Piso, Grupo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssssss", $matricula, $nombre, $apellido_paterno, $apellido_materno, $madre_encargada, $familia, $piso, $grupo);
-            $msg_ok = "✅ Alumno registrado correctamente con matrícula $matricula.";
-        }
+                $stmt = $conexion->prepare("INSERT INTO alumnos (Matricula, Nombre, Apellido_Paterno, Apellido_Materno, Madre_encargada, Familia, Piso, Grupo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param("ssssssss", $matricula, $nombre, $apellido_paterno, $apellido_materno, $madre_encargada, $familia, $piso, $grupo);
+                $msg_ok = "✅ Alumno registrado correctamente con matrícula $matricula.";
+            }
 
-        if ($stmt && $stmt->execute()) {
-            $_SESSION['mensaje'] = $msg_ok;
-            $_SESSION['tipoMensaje'] = "exito";
-            $stmt->close();
-            header("Location: ver_alumnos.php");
-            exit();
-        } else {
-            $_SESSION['mensaje'] = "❌ Error al guardar alumno: " . $conexion->error;
+            if ($stmt && $stmt->execute()) {
+                $_SESSION['mensaje'] = $msg_ok;
+                $_SESSION['tipoMensaje'] = "exito";
+                $stmt->close();
+                header("Location: ver_alumnos.php");
+                exit();
+            } else {
+                throw new Exception($conexion->error);
+            }
+        } catch (Throwable $e) {
+            $_SESSION['mensaje'] = ($e->getCode() == 1062)
+                ? "⚠️ Ya existe un alumno con esa matrícula o nombre completo."
+                : "❌ Error al guardar alumno: " . $e->getMessage();
             $_SESSION['tipoMensaje'] = "error";
             header("Location: registrar_usuario.php");
             exit();
@@ -174,47 +190,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        // Verificar si ya está registrado (Nombre + Apellido Paterno + Apellido Materno)
+        // Verificar si ya está registrado (ignorando espacios extra y mayúsculas/minúsculas)
         if ($id_post) {
-            $stmt_dup = $conexion->prepare("SELECT id_profesores FROM profesores WHERE Nombre = ? AND Apellido_Paterno = ? AND Apellido_Materno = ? AND id_profesores != ?");
+            $stmt_dup = $conexion->prepare("SELECT id_profesores, Matricula FROM profesores WHERE TRIM(Nombre) = ? AND TRIM(Apellido_Paterno) = ? AND TRIM(Apellido_Materno) = ? AND id_profesores != ?");
             $stmt_dup->bind_param("sssi", $nombre, $apellido_paterno, $apellido_materno, $id_post);
         } else {
-            $stmt_dup = $conexion->prepare("SELECT id_profesores FROM profesores WHERE Nombre = ? AND Apellido_Paterno = ? AND Apellido_Materno = ?");
+            $stmt_dup = $conexion->prepare("SELECT id_profesores, Matricula FROM profesores WHERE TRIM(Nombre) = ? AND TRIM(Apellido_Paterno) = ? AND TRIM(Apellido_Materno) = ?");
             $stmt_dup->bind_param("sss", $nombre, $apellido_paterno, $apellido_materno);
         }
         $stmt_dup->execute();
-        $ya_existe = $stmt_dup->get_result()->num_rows > 0;
-        $stmt_dup->close();
+        $res_dup = $stmt_dup->get_result();
 
-        if ($ya_existe) {
-            $_SESSION['mensaje'] = "⚠️ El docente '$nombre $apellido_paterno $apellido_materno' ya se encuentra registrado en el sistema.";
+        if ($fila_dup = $res_dup->fetch_assoc()) {
+            $stmt_dup->close();
+            $_SESSION['mensaje'] = "⚠️ El docente '$nombre $apellido_paterno $apellido_materno' ya está registrado (Matrícula: {$fila_dup['Matricula']}).";
             $_SESSION['tipoMensaje'] = "error";
             header("Location: registrar_usuario.php" . ($id_post ? "?editar_rol=profesor&editar_id=$id_post" : ""));
             exit();
         }
+        $stmt_dup->close();
 
-        if ($id_post) {
-            $stmt = $conexion->prepare("UPDATE profesores SET Nombre = ?, Apellido_Paterno = ?, Apellido_Materno = ?, Materia = ? WHERE id_profesores = ?");
-            $stmt->bind_param("ssssi", $nombre, $apellido_paterno, $apellido_materno, $materia, $id_post);
-            $msg_ok = "✅ Profesor actualizado correctamente.";
-        } else {
-            $res_max = $conexion->query("SELECT IFNULL(MAX(id_profesores), 0) + 1 AS sig FROM profesores");
-            $sig = $res_max->fetch_assoc()['sig'];
-            $matricula = 'DOC-26-' . str_pad($sig, 3, '0', STR_PAD_LEFT);
+        try {
+            if ($id_post) {
+                $stmt = $conexion->prepare("UPDATE profesores SET Nombre = ?, Apellido_Paterno = ?, Apellido_Materno = ?, Materia = ? WHERE id_profesores = ?");
+                $stmt->bind_param("ssssi", $nombre, $apellido_paterno, $apellido_materno, $materia, $id_post);
+                $msg_ok = "✅ Profesor actualizado correctamente.";
+            } else {
+                // Generar matrícula única verificando que no exista previamente
+                $res_max = $conexion->query("SELECT IFNULL(MAX(id_profesores), 0) + 1 AS sig FROM profesores");
+                $sig = intval($res_max->fetch_assoc()['sig']);
+                do {
+                    $matricula = 'DOC-26-' . str_pad($sig, 3, '0', STR_PAD_LEFT);
+                    $chk = $conexion->prepare("SELECT id_profesores FROM profesores WHERE Matricula = ?");
+                    $chk->bind_param("s", $matricula);
+                    $chk->execute();
+                    $existe_mat = $chk->get_result()->num_rows > 0;
+                    $chk->close();
+                    if ($existe_mat) $sig++;
+                } while ($existe_mat);
 
-            $stmt = $conexion->prepare("INSERT INTO profesores (Matricula, Nombre, Apellido_Paterno, Apellido_Materno, Materia) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $matricula, $nombre, $apellido_paterno, $apellido_materno, $materia);
-            $msg_ok = "✅ Profesor registrado correctamente con matrícula $matricula.";
-        }
+                $stmt = $conexion->prepare("INSERT INTO profesores (Matricula, Nombre, Apellido_Paterno, Apellido_Materno, Materia) VALUES (?, ?, ?, ?, ?)");
+                $stmt->bind_param("sssss", $matricula, $nombre, $apellido_paterno, $apellido_materno, $materia);
+                $msg_ok = "✅ Profesor registrado correctamente con matrícula $matricula.";
+            }
 
-        if ($stmt && $stmt->execute()) {
-            $_SESSION['mensaje'] = $msg_ok;
-            $_SESSION['tipoMensaje'] = "exito";
-            $stmt->close();
-            header("Location: ver_profesores.php");
-            exit();
-        } else {
-            $_SESSION['mensaje'] = "❌ Error al guardar profesor: " . $conexion->error;
+            if ($stmt && $stmt->execute()) {
+                $_SESSION['mensaje'] = $msg_ok;
+                $_SESSION['tipoMensaje'] = "exito";
+                $stmt->close();
+                header("Location: ver_profesores.php");
+                exit();
+            } else {
+                throw new Exception($conexion->error);
+            }
+        } catch (Throwable $e) {
+            $_SESSION['mensaje'] = ($e->getCode() == 1062)
+                ? "⚠️ Ya existe un docente con esa matrícula o nombre completo."
+                : "❌ Error al guardar profesor: " . $e->getMessage();
             $_SESSION['tipoMensaje'] = "error";
             header("Location: registrar_usuario.php");
             exit();

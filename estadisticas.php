@@ -170,39 +170,10 @@ if ($vista === 'general') {
 
         <?php if ($vista === 'general'): ?>
 
-            <div class="grid-kpis-est">
-                <div class="card-kpi-est">
-                    <span class="numero"><?php echo $total_mov; ?></span>
-                    <span class="etiqueta">Total Movimientos</span>
-                </div>
-                <div class="card-kpi-est kpi-verde">
-                    <span class="numero"><?php echo $total_dev; ?></span>
-                    <span class="etiqueta">Libros Devueltos</span>
-                </div>
-                <div class="card-kpi-est kpi-naranja">
-                    <span class="numero"><?php echo $total_act; ?></span>
-                    <span class="etiqueta">En Préstamo / Apartado</span>
-                </div>
-                <div class="card-kpi-est kpi-morado">
-                    <span class="numero"><?php echo $tasa_dev; ?>%</span>
-                    <span class="etiqueta">Tasa de Devolución</span>
-                </div>
-            </div>
-
-            <div class="grid-graficas">
-                <div class="panel-grafica">
-                    <h3>🏷️ Préstamos por Categoría Literaria</h3>
-                    <div class="caja-canvas-grafica"><canvas id="graficaCategorias"></canvas></div>
-                </div>
-                <div class="panel-grafica">
-                    <h3>👥 Participación: Alumnas vs. Profesores</h3>
-                    <div class="caja-canvas-grafica"><canvas id="graficaUsuarios"></canvas></div>
-                </div>
-            </div>
 
             <div class="grid-rankings">
                 <div class="panel-ranking">
-                    <h3>🏅 Top 5 Alumnas Más Lectoras</h3>
+                    <h3>🏅 Alumnas Más Lectoras</h3>
                     <table class="tabla-mini">
                         <thead>
                             <tr><th class="centrado">#</th><th>Matrícula</th><th>Alumna</th><th>Grupo</th><th class="centrado">Libros</th></tr>
@@ -227,7 +198,7 @@ if ($vista === 'general') {
                 </div>
 
                 <div class="panel-ranking">
-                    <h3>📚 Top 5 Libros Más Leídos</h3>
+                    <h3>📚 Libros Más Leídos</h3>
                     <table class="tabla-mini">
                         <thead>
                             <tr><th class="centrado">#</th><th>Título del Libro</th><th>Autor</th><th class="centrado">Lecturas</th></tr>
@@ -251,7 +222,7 @@ if ($vista === 'general') {
                 </div>
 
                 <div class="panel-ranking">
-                    <h3>👩‍🏫 Top 5 Profesores Más Lectores</h3>
+                    <h3>👩‍🏫Profesores Más Lectores</h3>
                     <table class="tabla-mini">
                         <thead>
                             <tr><th class="centrado">#</th><th>Docente</th><th>Materia</th><th class="centrado">Libros</th></tr>
@@ -269,30 +240,6 @@ if ($vista === 'general') {
                                 <?php $pos++; endwhile;
                             else: ?>
                                 <tr><td colspan="4" class="texto-vacio-est">Sin préstamos de docentes en este periodo.</td></tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="panel-ranking">
-                    <h3>🏫 Grupos y Pisos con Mayor Lectura</h3>
-                    <table class="tabla-mini">
-                        <thead>
-                            <tr><th class="centrado">#</th><th>Grupo</th><th class="centrado">Piso</th><th class="centrado">Préstamos</th></tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($res_grupos_top && $res_grupos_top->num_rows > 0):
-                                $pos = 1;
-                                while ($gr = $res_grupos_top->fetch_assoc()): ?>
-                                    <tr>
-                                        <td class="medalla"><?php echo $pos; ?></td>
-                                        <td><strong>Grupo <?php echo htmlspecialchars($gr['grupo']); ?></strong></td>
-                                        <td class="centrado">Piso <?php echo htmlspecialchars($gr['piso']); ?></td>
-                                        <td class="centrado"><span class="badge-total-lecturas"><?php echo $gr['total_prestamos']; ?> préstamos</span></td>
-                                    </tr>
-                                <?php $pos++; endwhile;
-                            else: ?>
-                                <tr><td colspan="4" class="texto-vacio-est">Sin datos por grupo en este periodo.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -317,14 +264,13 @@ if ($vista === 'general') {
                 </form>
             </div>
 
-            <?php if (!empty($grupos_agrupados)): ?>
-                <div class="grid-tarjetas-grupos">
+                <?php if (!empty($grupos_agrupados)): ?>
+                        <div class="grid-tarjetas-grupos">
                     <?php foreach ($grupos_agrupados as $nombre_grupo => $info_grupo): ?>
                         <div class="tarjeta-grupo-est">
                             <div class="encabezado-grupo-est">
                                 <div>
                                     <h3 class="titulo-grupo-est">Grupo <?php echo htmlspecialchars($nombre_grupo); ?></h3>
-                                    <span class="sub-grupo-est">Piso: <?php echo htmlspecialchars($info_grupo['piso']); ?></span>
                                 </div>
                                 <div class="resumen-badges-grupo">
                                     <span class="badge-grupo-alumnas">👩‍🎓 <?php echo count($info_grupo['alumnas']); ?> alumnas</span>
@@ -340,6 +286,7 @@ if ($vista === 'general') {
                                             <th>Matrícula</th>
                                             <th>Alumna</th>
                                             <th>Familia</th>
+                                            <th class="centrado">Piso</th>
                                             <th class="centrado">Total</th>
                                             <th class="centrado">Devueltos</th>
                                             <th class="centrado">Activos</th>
@@ -347,9 +294,9 @@ if ($vista === 'general') {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $pos = 1;
-                                        $medallas = [1 => '🥇', 2 => '🥈', 3 => '🥉'];
-                                        foreach ($info_grupo['alumnas'] as $al):
+                                            $pos = 1;
+                                            $medallas = [1 => '🥇', 2 => '🥈', 3 => '🥉'];
+                                            foreach ($info_grupo['alumnas'] as $al):
                                             $total_al = (int)$al['total_libros'];
                                             $icono_pos = ($total_al > 0 && isset($medallas[$pos])) ? $medallas[$pos] : $pos;
                                         ?>
@@ -358,6 +305,7 @@ if ($vista === 'general') {
                                                 <td><small class="matricula-est"><?php echo htmlspecialchars($al['matricula']); ?></small></td>
                                                 <td><strong><?php echo htmlspecialchars($al['nombre']); ?></strong></td>
                                                 <td><?php echo htmlspecialchars($al['familia']); ?></td>
+                                                <td class="centrado"><?php echo htmlspecialchars($al['piso']); ?></td>
                                                 <td class="centrado">
                                                     <?php if ($total_al > 0): ?>
                                                         <span class="badge-total-lecturas"><?php echo $total_al; ?></span>
