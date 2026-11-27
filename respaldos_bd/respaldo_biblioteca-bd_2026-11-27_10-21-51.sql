@@ -1,5 +1,5 @@
 -- Respaldo Automatico de Base de Datos: biblioteca-bd
--- Fecha de generacion: 27/11/2026 08:20:53
+-- Fecha de generacion: 27/11/2026 10:21:51
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `alumnos`;
@@ -16,7 +16,7 @@ CREATE TABLE `alumnos` (
   `Renovación` date DEFAULT NULL,
   PRIMARY KEY (`id_Alumnos`),
   UNIQUE KEY `Matricula` (`Matricula`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `alumnos` VALUES("1", "SUL-26-001", "Itzel", "Matínez", "López", "Hna. Rosario", "Sta. Adela", "3", "502", NULL);
 INSERT INTO `alumnos` VALUES("2", "SUL-26-002", "Abril de la Cruz", "", "", "Hna. Griseida", "Sta. Bernardita", "2", "501", NULL);
@@ -28,6 +28,7 @@ INSERT INTO `alumnos` VALUES("8", "SUL-26-008", "Aslinn", "Alejo", "Santos", "Hn
 INSERT INTO `alumnos` VALUES("9", "SUL-26-009", "Rubi", "Cocotle", "Rodriguez", "Hna. Griseida", "Sta. Bernardita", "2", "501", NULL);
 INSERT INTO `alumnos` VALUES("10", "SUL-26-010", "Abigailda", "Juárez", "", "Hna. Roberta", "Sta. Irene", "4", "3°N", NULL);
 INSERT INTO `alumnos` VALUES("11", "SUL-26-011", "Guadalupe", "Ramírez", "Sánchez", "Hna. Gabriela", "Sta. Rita", "3", "602", NULL);
+INSERT INTO `alumnos` VALUES("12", "SUL-26-012", "Abril", "de la Cruz", "Galindo", "Hna. Griseida", "Sta.Bernardita", "2", "501", NULL);
 
 DROP TABLE IF EXISTS `inventario`;
 CREATE TABLE `inventario` (
@@ -61,7 +62,7 @@ CREATE TABLE `libros` (
 INSERT INTO `libros` VALUES("1", "A ninguna de las tres", "Fernando calderon", "Novela y Narrativa", "\'Porrúa", "970-07-0221-9", "1972", "México", "Español", "22cm,b/n pág.159", "Romanticismo.-siglo XIX.-literatura mexicana", "5", "3", "3", "862.5/ C35");
 INSERT INTO `libros` VALUES("2", "Al faro", "Virginia Woolf", "Novela y Narrativa", "Porrúa", "970-07-1400-0", "1927", "Reino Unido", "Español", "22cm,b/n pág.228", "Modernismo.-siglo XX.-literatura modernista", "5", "3", "2", "823.91/ W66");
 INSERT INTO `libros` VALUES("3", "Al polo norte", "Emilio Salgari", "Aventuras y Juvenil", "Porrúa", "968-432-469-4", "1898", "Italia", "Español", "22cm,b/n pág.151", "Romanticismo.-siglo XIX.-literatura de aventuras", "5", "4", "1", NULL);
-INSERT INTO `libros` VALUES("4", "Alemania", "Enrique Heine", "Novela y Narrativa", "Porrúa", "968-452-469-2", "1991", "Alemania", "Español", "22cm,b/n pág.181", "Romanticismo.-siglo XIX.-literatura alemana", "5", "4", "1", NULL);
+INSERT INTO `libros` VALUES("4", "Alemania", "Enrique Heine", "Novela y Narrativa", "Porrúa", "968-452-469-2", "1991", "Alemania", "Español", "22cm,b/n pág.181", "Romanticismo.-siglo XIX.-literatura alemana", "10", "9", "1", "");
 INSERT INTO `libros` VALUES("5", "Alicia en el pais de las maravillas", "Lewis Carroll", "Novela y Narrativa", "Porrúa", "970-07-6752-3", "1865", "Reino Unido", "Español", "22cm,b/n pág.230", "Romanticismo.-siglo XIX.-literatura inglesa", "5", "5", "0", NULL);
 INSERT INTO `libros` VALUES("6", "Almacén de antigüedades", "Carlos Dickens", "Novela y Narrativa", "Porrúa", "968-452-754-3", "1841", "Reino Unido", "Español", "22cm,b/n pág.351", "Realismo.-Siglo XIX.-literatura inglesa", "5", "5", "0", NULL);
 INSERT INTO `libros` VALUES("7", "Amadis de Gaula", "Arturo Souto", "Novela y Narrativa", "Porrúa", "970-07-1563-9", "1508", "España", "Español", "22cm,b/n pág.307", "Edad Media.-siglos XIV y XV.-literatura española", "5", "5", "0", NULL);

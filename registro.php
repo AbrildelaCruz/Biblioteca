@@ -16,6 +16,9 @@ require_once 'conexion.php';
     <link rel="icon" type="image/png" href="logobiblioteca.png">
 </head>
 <body class="body2">
+    <div class="fondo-animado-wrapper">
+        <div class="fondo-animado-img"></div>
+        <div class="fondo-animado-capa"></div>
 
     <div class="dashboard-layout">
         
