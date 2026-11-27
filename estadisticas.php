@@ -207,9 +207,10 @@ if ($vista === 'general') {
                 <p class="subtitulo-estadisticas">Periodo: <strong><?php echo $titulo_periodo; ?></strong> • Biblioteca Sullivan</p>
             </div>
 
-            <div class="tabs-vista-est">
+             <div class="tabs-vista-est">
                 <a href="estadisticas.php?vista=general&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'general' ? 'activo' : ''; ?>">📊 General</a>
                 <a href="estadisticas.php?vista=grupos&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'grupos' ? 'activo' : ''; ?>">🏫 Grupos</a>
+                <a href="estadisticas.php?vista=generaciones&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'generaciones' ? 'activo' : ''; ?>">🎖️ Generaciones</a>
             </div>
 
             <div class="filtros-periodo">
