@@ -1,5 +1,5 @@
 -- Respaldo Automatico de Base de Datos: biblioteca-bd
--- Fecha de generacion: 26/11/2026 10:28:29
+-- Fecha de generacion: 27/11/2026 08:11:44
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `alumnos`;
@@ -16,17 +16,18 @@ CREATE TABLE `alumnos` (
   `Renovación` date DEFAULT NULL,
   PRIMARY KEY (`id_Alumnos`),
   UNIQUE KEY `Matricula` (`Matricula`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `alumnos` VALUES("1", "SUL-26-001", "Itzel Martinez", "", "", "Hna. Rosario", "Sta. Adela", "3", "502", NULL);
+INSERT INTO `alumnos` VALUES("1", "SUL-26-001", "Itzel", "Matínez", "López", "Hna. Rosario", "Sta. Adela", "3", "502", NULL);
 INSERT INTO `alumnos` VALUES("2", "SUL-26-002", "Abril de la Cruz", "", "", "Hna. Griseida", "Sta. Bernardita", "2", "501", NULL);
 INSERT INTO `alumnos` VALUES("3", "SUL-26-003", "Heidy Vanessa", "", "", "Hna. Griseida", "Sta. Bernardita", "2", "501", NULL);
 INSERT INTO `alumnos` VALUES("4", "SUL-26-004", "Sara", "", "", "Hna. Aneli", "Sta. Mónica", "5", "1°Q", NULL);
 INSERT INTO `alumnos` VALUES("5", "SUL-26-005", "Alexa Merino", "", "", "Hna. Lucia", "Sta. Mariana", "6", "202", NULL);
-INSERT INTO `alumnos` VALUES("6", "SUL-26-006", "Rubi Cocotle Rodriguez", "", "", "Hna. Griseida", "Sta.Bernardita", "2", "507", NULL);
 INSERT INTO `alumnos` VALUES("7", "SUL-26-007", "Maria del Pilar", "", "", "Hna. Rosa", "Sta. Emili", "6", "1°A", NULL);
 INSERT INTO `alumnos` VALUES("8", "SUL-26-008", "Aslinn", "Alejo", "Santos", "Hna.Alma", "Sta. Natalia", "4", "501", NULL);
 INSERT INTO `alumnos` VALUES("9", "SUL-26-009", "Rubi", "Cocotle", "Rodriguez", "Hna. Griseida", "Sta. Bernardita", "2", "501", NULL);
+INSERT INTO `alumnos` VALUES("10", "SUL-26-010", "Abigailda", "Juárez", "", "Hna. Roberta", "Sta. Irene", "4", "3°N", NULL);
+INSERT INTO `alumnos` VALUES("11", "SUL-26-011", "Guadalupe", "Ramírez", "Sánchez", "Hna. Gabriela", "Sta. Rita", "3", "602", NULL);
 
 DROP TABLE IF EXISTS `inventario`;
 CREATE TABLE `inventario` (
@@ -57,8 +58,8 @@ CREATE TABLE `libros` (
   PRIMARY KEY (`id_libro`)
 ) ENGINE=InnoDB AUTO_INCREMENT=307 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `libros` VALUES("1", "A ninguna de las tres", "Fernando calderon", "Novela y Narrativa", "\'Porrúa", "970-07-0221-9", "1972", "México", "Español", "22cm,b/n pág.159", "Romanticismo.-siglo XIX.-literatura mexicana", "5", "4", "2", "862.5/ C35");
-INSERT INTO `libros` VALUES("2", "Al faro", "Virginia Woolf", "Novela y Narrativa", "Porrúa", "970-07-1400-0", "1927", "Reino Unido", "Español", "22cm,b/n pág.228", "Modernismo.-siglo XX.-literatura modernista", "5", "4", "1", "823.91/ W66");
+INSERT INTO `libros` VALUES("1", "A ninguna de las tres", "Fernando calderon", "Novela y Narrativa", "\'Porrúa", "970-07-0221-9", "1972", "México", "Español", "22cm,b/n pág.159", "Romanticismo.-siglo XIX.-literatura mexicana", "5", "3", "3", "862.5/ C35");
+INSERT INTO `libros` VALUES("2", "Al faro", "Virginia Woolf", "Novela y Narrativa", "Porrúa", "970-07-1400-0", "1927", "Reino Unido", "Español", "22cm,b/n pág.228", "Modernismo.-siglo XX.-literatura modernista", "5", "3", "2", "823.91/ W66");
 INSERT INTO `libros` VALUES("3", "Al polo norte", "Emilio Salgari", "Aventuras y Juvenil", "Porrúa", "968-432-469-4", "1898", "Italia", "Español", "22cm,b/n pág.151", "Romanticismo.-siglo XIX.-literatura de aventuras", "5", "4", "1", NULL);
 INSERT INTO `libros` VALUES("4", "Alemania", "Enrique Heine", "Novela y Narrativa", "Porrúa", "968-452-469-2", "1991", "Alemania", "Español", "22cm,b/n pág.181", "Romanticismo.-siglo XIX.-literatura alemana", "5", "4", "1", NULL);
 INSERT INTO `libros` VALUES("5", "Alicia en el pais de las maravillas", "Lewis Carroll", "Novela y Narrativa", "Porrúa", "970-07-6752-3", "1865", "Reino Unido", "Español", "22cm,b/n pág.230", "Romanticismo.-siglo XIX.-literatura inglesa", "5", "5", "0", NULL);
@@ -381,7 +382,7 @@ CREATE TABLE `prestamos` (
   KEY `id_alumnos` (`id_alumnos`),
   KEY `id_profesores` (`id_profesores`),
   KEY `id_libros` (`id_libro`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `prestamos` VALUES("1", NULL, "8", "3", "1", "Prestado", "2026-10-20", "2026-10-20", "2026-11-03", "Excelente", NULL);
 INSERT INTO `prestamos` VALUES("2", NULL, "12", "12", "1", "Prestado", "2026-10-22", "2026-10-31", "2026-11-03", "Excelente", NULL);
@@ -415,6 +416,8 @@ INSERT INTO `prestamos` VALUES("29", "7", NULL, "2", "1", "Prestado", "2026-11-1
 INSERT INTO `prestamos` VALUES("30", "1", NULL, "1", "1", "Prestado", "2026-11-23", "2026-12-23", NULL, "Renovado", "2");
 INSERT INTO `prestamos` VALUES("31", NULL, "22", "305", "1", "Prestado", "2026-11-23", "2026-12-02", "2026-11-23", "Perdido", "0");
 INSERT INTO `prestamos` VALUES("32", "5", NULL, "3", "1", "Apartado", "2026-11-24", "2026-11-26", NULL, NULL, "0");
+INSERT INTO `prestamos` VALUES("33", "10", NULL, "1", "1", "Prestado", "2026-11-26", "2026-12-05", NULL, NULL, "0");
+INSERT INTO `prestamos` VALUES("34", "11", NULL, "2", "1", "Prestado", "2026-11-26", "2026-12-05", NULL, NULL, "0");
 
 DROP TABLE IF EXISTS `profesores`;
 CREATE TABLE `profesores` (
