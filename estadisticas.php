@@ -14,6 +14,10 @@ if (!in_array($periodo, ['todo', 'mes', 'trimestre', 'anio'], true)) {
     $periodo = 'todo';
 }
 $grupo_filtro = trim($_GET['grupo'] ?? '');
+$grado_filtro = trim($_GET['grado'] ?? '');
+if (!in_array($grado_filtro, ['', '1', '2', '3', '4', '5'], true)) {
+    $grado_filtro = '';
+}
 
 $filtro_where = "";
 $filtro_on = "";
@@ -99,7 +103,12 @@ if ($vista === 'general') {
     $res_lg = $conexion->query("SELECT DISTINCT COALESCE(NULLIF(TRIM(Grupo), ''), 'Sin Grupo') AS grupo FROM alumnos ORDER BY grupo ASC");
     if ($res_lg) {
         while ($g = $res_lg->fetch_assoc()) {
-            $lista_grupos[] = $g['grupo'];
+            $ng_lista = $g['grupo'];
+            preg_match('/^([1-5])/', $ng_lista, $m_lista);
+            $grado_lista = $m_lista[1] ?? '';
+            if ($grado_filtro === '' || $grado_lista === $grado_filtro) {
+                $lista_grupos[] = $ng_lista;
+            }
         }
     }
 
@@ -121,9 +130,14 @@ if ($vista === 'general') {
     if ($res_gr) {
         while ($f = $res_gr->fetch_assoc()) {
             $ng = $f['grupo'];
+            preg_match('/^([1-5])/', $ng, $m_grado);
+            $grado_actual = $m_grado[1] ?? '';
+
+            if ($grado_filtro !== '' && $grado_actual !== $grado_filtro) continue;
             if ($grupo_filtro !== '' && $ng !== $grupo_filtro) continue;
+
             if (!isset($grupos_agrupados[$ng])) {
-                $grupos_agrupados[$ng] = ['piso' => $f['piso'], 'total_prestamos' => 0, 'alumnas' => []];
+                $grupos_agrupados[$ng] = ['total_prestamos' => 0, 'alumnas' => []];
             }
             $grupos_agrupados[$ng]['total_prestamos'] += (int)$f['total_libros'];
             $grupos_agrupados[$ng]['alumnas'][] = $f;
@@ -248,11 +262,38 @@ if ($vista === 'general') {
 
         <?php else: ?>
 
+            <?php
+            $grados_villa = [
+                '1' => ['titulo' => '1° Grado', 'nivel' => 'Secundaria'],
+                '2' => ['titulo' => '2° Grado', 'nivel' => 'Secundaria'],
+                '3' => ['titulo' => '3° Grado', 'nivel' => 'Secundaria'],
+                '4' => ['titulo' => '4° Grado', 'nivel' => 'Bachillerato'],
+                '5' => ['titulo' => '5° Grado', 'nivel' => 'Bachillerato'],
+            ];
+            ?>
+
+            <div class="barra-grados-est">
+                <a href="estadisticas.php?vista=grupos&periodo=<?php echo urlencode($periodo); ?>"
+                   class="ficha-grado-est <?php echo $grado_filtro === '' ? 'activa' : ''; ?>">
+                    🏫 Todos los Grados
+                </a>
+                <?php foreach ($grados_villa as $num_g => $datos_g): ?>
+                    <a href="estadisticas.php?vista=grupos&periodo=<?php echo urlencode($periodo); ?>&grado=<?php echo $num_g; ?>"
+                       class="ficha-grado-est <?php echo $grado_filtro === $num_g ? 'activa' : ''; ?>">
+                        🎓 <?php echo $datos_g['titulo']; ?>
+                        <span class="nivel-grado-tag">(<?php echo $datos_g['nivel']; ?>)</span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+
             <div class="barra-filtro-grupo-inline">
-                <span class="label-filtro-grupo">🏫 Desglose individual por Grupo y Alumna</span>
+                <span class="label-filtro-grupo">
+                    <?php echo ($grado_filtro !== '') ? "🎓 Grupos de {$grados_villa[$grado_filtro]['titulo']} ({$grados_villa[$grado_filtro]['nivel']})" : "🏫 Desglose individual por Grupo y Alumna"; ?>
+                </span>
                 <form method="GET" action="estadisticas.php">
                     <input type="hidden" name="vista" value="grupos">
                     <input type="hidden" name="periodo" value="<?php echo htmlspecialchars($periodo); ?>">
+                    <input type="hidden" name="grado" value="<?php echo htmlspecialchars($grado_filtro); ?>">
                     <select name="grupo" class="select-grupo-est" onchange="this.form.submit()">
                         <option value="">Mostrar todos los grupos</option>
                         <?php foreach ($lista_grupos as $grp): ?>
@@ -264,8 +305,8 @@ if ($vista === 'general') {
                 </form>
             </div>
 
-                <?php if (!empty($grupos_agrupados)): ?>
-                        <div class="grid-tarjetas-grupos">
+            <?php if (!empty($grupos_agrupados)): ?>
+                <div class="grid-tarjetas-grupos">
                     <?php foreach ($grupos_agrupados as $nombre_grupo => $info_grupo): ?>
                         <div class="tarjeta-grupo-est">
                             <div class="encabezado-grupo-est">
@@ -294,9 +335,9 @@ if ($vista === 'general') {
                                     </thead>
                                     <tbody>
                                         <?php
-                                            $pos = 1;
-                                            $medallas = [1 => '🥇', 2 => '🥈', 3 => '🥉'];
-                                            foreach ($info_grupo['alumnas'] as $al):
+                                        $pos = 1;
+                                        $medallas = [1 => '🥇', 2 => '🥈', 3 => '🥉'];
+                                        foreach ($info_grupo['alumnas'] as $al):
                                             $total_al = (int)$al['total_libros'];
                                             $icono_pos = ($total_al > 0 && isset($medallas[$pos])) ? $medallas[$pos] : $pos;
                                         ?>
@@ -324,7 +365,7 @@ if ($vista === 'general') {
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
-                <div class="panel-ranking"><p class="texto-vacio-est">No hay alumnas o grupos registrados para mostrar.</p></div>
+                <div class="panel-ranking"><p class="texto-vacio-est">No hay grupos registrados en este grado todavía.</p></div>
             <?php endif; ?>
 
         <?php endif; ?>
