@@ -134,9 +134,10 @@ if ($vista === 'general') {
         IFNULL(NULLIF(TRIM(a.Familia), ''), '-') AS familia,
         COUNT(p.id_prestamo) AS total_libros,
         SUM(CASE WHEN p.fecha_devolucion_real IS NOT NULL AND IFNULL(p.estado_libro, '') != 'Perdido' THEN 1 ELSE 0 END) AS devueltos,
-        SUM(CASE WHEN p.fecha_devolucion_real IS NULL AND p.id_prestamo IS NOT NULL THEN 1 ELSE 0 END) AS activos
+        SUM(CASE WHEN p.fecha_devolucion_real IS NULL THEN 1 ELSE 0 END) AS activos
         FROM alumnos a
-        LEFT JOIN prestamos p ON a.id_Alumnos = p.id_alumnos $filtro_on
+        INNER JOIN prestamos p ON a.id_Alumnos = p.id_alumnos
+        WHERE 1=1 $filtro_where
         GROUP BY a.id_Alumnos
         ORDER BY grupo ASC, total_libros DESC, nombre ASC");
 
