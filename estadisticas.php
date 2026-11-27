@@ -67,15 +67,14 @@ if ($anio_filtro > 0 && $mes_filtro > 0) {
 function obtenerGradoVilla($grupo) {
     $g = trim($grupo);
     if (preg_match('/^([1-6])\d{2}/', $g, $m)) {
-        return ((int)$m >= 5) ? '5' : '4';
+        return ((int)$m[1] >= 5) ? '5' : '4';
     }
     if (preg_match('/^([1-3])/', $g, $m)) {
-        return $m;
+        return $m[1];
     }
     return '';
 }
 
-// Cálculo automático de generación según ciclo escolar (inicia en agosto)
 $ciclo_base = ((int)date('n') >= 8) ? $anio_actual : ($anio_actual - 1);
 $grados_villa = [
     '1' => ['titulo' => '1° Grado', 'nivel' => 'Secundaria', 'gen' => ($ciclo_base - 1989) - 1],
@@ -207,7 +206,7 @@ if ($vista === 'general') {
                 <p class="subtitulo-estadisticas">Periodo: <strong><?php echo $titulo_periodo; ?></strong> • Biblioteca Sullivan</p>
             </div>
 
-             <div class="tabs-vista-est">
+            <div class="tabs-vista-est">
                 <a href="estadisticas.php?vista=general&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'general' ? 'activo' : ''; ?>">📊 General</a>
                 <a href="estadisticas.php?vista=grupos&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'grupos' ? 'activo' : ''; ?>">🏫 Grupos</a>
                 <a href="estadisticas.php?vista=generaciones&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>" class="btn-vista-est <?php echo $vista === 'generaciones' ? 'activo' : ''; ?>">🎖️ Generaciones</a>
@@ -243,7 +242,8 @@ if ($vista === 'general') {
 
             <button type="button" class="btn-imprimir" onclick="window.print()">🖨️ Imprimir</button>
         </div>
-           <?php if ($vista === 'general'): ?>
+
+        <?php if ($vista === 'general'): ?>
 
             <div class="grid-rankings">
                 <div class="panel-ranking">
@@ -320,17 +320,7 @@ if ($vista === 'general') {
                 </div>
             </div>
 
-        <?php else: ?>
-
-            <?php
-            $grados_villa = [
-                '1' => ['titulo' => '1° Grado', 'nivel' => 'Secundaria'],
-                '2' => ['titulo' => '2° Grado', 'nivel' => 'Secundaria'],
-                '3' => ['titulo' => '3° Grado', 'nivel' => 'Secundaria'],
-                '4' => ['titulo' => '4° Grado', 'nivel' => 'Bachillerato'],
-                '5' => ['titulo' => '5° Grado', 'nivel' => 'Bachillerato'],
-            ];
-            ?>
+        <?php elseif ($vista === 'grupos'): ?>
 
             <div class="barra-grados-est">
                 <a href="estadisticas.php?vista=grupos&anio=<?php echo $anio_filtro; ?>&mes=<?php echo $mes_filtro; ?>"
@@ -393,7 +383,7 @@ if ($vista === 'general') {
                                             <th class="centrado">Devueltos</th>
                                             <th class="centrado">Activos</th>
                                         </tr>
-                                    </thead>
+                                         </thead>
                                     <tbody>
                                         <?php
                                         $pos = 1;
@@ -422,6 +412,59 @@ if ($vista === 'general') {
             <?php else: ?>
                 <div class="panel-ranking"><p class="texto-vacio-est">No hay lecturas registradas en este grado o periodo.</p></div>
             <?php endif; ?>
+
+        <?php else: ?>
+
+            <div class="grid-tarjetas-grupos">
+                <?php foreach ($generaciones_ranking as $num_g => $info_gen): ?>
+                    <div class="tarjeta-grupo-est">
+                        <div class="encabezado-grupo-est">
+                            <div>
+                                <h3 class="titulo-grupo-est">🎖️ Generación <?php echo $info_gen['gen']; ?></h3>
+                                <span class="sub-grupo-est"><?php echo $info_gen['titulo'] . ' • ' . $info_gen['nivel']; ?></span>
+                            </div>
+                            <div class="resumen-badges-grupo">
+                                <span class="badge-grupo-total">📚 <?php echo $info_gen['total_prestamos']; ?> libros</span>
+                            </div>
+                        </div>
+
+                        <div class="tabla-responsiva">
+                            <table class="tabla-mini">
+                                <thead>
+                                    <tr>
+                                        <th class="centrado">Lugar</th>
+                                        <th>Matrícula</th>
+                                        <th>Alumna</th>
+                                        <th>Grupo</th>
+                                        <th class="centrado">Total</th>
+                                        <th class="centrado">Devueltos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (!empty($info_gen['alumnas'])):
+                                        $pos = 1;
+                                        $medallas = [1 => '🥇 1°', 2 => '🥈 2°', 3 => '🥉 3°'];
+                                        foreach (array_slice($info_gen['alumnas'], 0, 5) as $al):
+                                            $icono_pos = $medallas[$pos] ?? ($pos . '°');
+                                    ?>
+                                        <tr>
+                                            <td class="medalla"><?php echo $icono_pos; ?></td>
+                                            <td><small class="matricula-est"><?php echo htmlspecialchars($al['matricula']); ?></small></td>
+                                            <td><strong><?php echo htmlspecialchars($al['nombre']); ?></strong></td>
+                                            <td><?php echo htmlspecialchars($al['grupo']); ?></td>
+                                            <td class="centrado"><span class="badge-total-lecturas"><?php echo (int)$al['total_libros']; ?> libros</span></td>
+                                            <td class="centrado texto-devuelto-est"><?php echo (int)$al['devueltos']; ?></td>
+                                        </tr>
+                                    <?php $pos++; endforeach;
+                                    else: ?>
+                                        <tr><td colspan="6" class="texto-vacio-est">Sin lecturas registradas en esta generación.</td></tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
         <?php endif; ?>
 
