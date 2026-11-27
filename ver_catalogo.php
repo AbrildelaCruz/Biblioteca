@@ -77,22 +77,22 @@ $resultado = $stmt->get_result();
         </select>
     </div>
 
-    <div class="tabla-responsiva" style="max-width: 1320px;">
+    <div class="tabla-responsiva contenedor-catalogo">
         <table class="tabla-datos tabla-catalogo">
             <thead>
                 <tr>
-                    <th style="text-align: center;">N°</th>
+                    <th class="col-num">N°</th>
                     <th>Título</th>
                     <th>Autor</th>
                     <th>Categoría</th>
                     <th>Editorial</th>
                     <th>ISBN</th>
-                    <th style="text-align: center;">Año</th>
-                    <th>Clasificación</th>
-                    <th style="text-align: center;">Totales</th>
-                    <th style="text-align: center;">Disponibles</th>
-                    <th style="text-align: center;">Prestados</th>
-                    <th style="text-align: center;">Acciones</th>
+                    <th class="col-anio">Año</th>
+                    <th>Clasif.</th>
+                    <th class="col-stock">Total</th>
+                    <th class="col-stock">Disp.</th>
+                    <th class="col-stock">Prest.</th>
+                    <th class="col-acciones">Acciones</th>
                 </tr>
             </thead>
             <tbody id="tabla-cuerpo-libros">
@@ -102,20 +102,20 @@ $resultado = $stmt->get_result();
                         $clasif = $fila['Clasificación'] ?? $fila['clasificacion'] ?? '-';
                         ?>
                         <tr>
-                            <td style="font-weight: bold; text-align: center;"><?php echo $num; ?></td>
+                            <td class="col-num"><?php echo $num; ?></td>
                             <td><strong><?php echo htmlspecialchars($fila['Titulo']); ?></strong></td>
                             <td><?php echo htmlspecialchars($fila['Autor']); ?></td>
                             <td><span class="badge-categoria"><?php echo htmlspecialchars($fila['Categoria'] ?? 'Novela y Narrativa'); ?></span></td>
                             <td><?php echo htmlspecialchars($fila['Editorial']); ?></td>
-                            <td style="white-space: nowrap; font-family: monospace; font-size: 13px;"><?php echo htmlspecialchars($fila['ISBN'] ?? '-'); ?></td>
-                            <td style="text-align: center;"><?php echo htmlspecialchars($fila['ano'] ?? '-'); ?></td>
-                            <td style="white-space: nowrap;"><?php echo htmlspecialchars($clasif); ?></td>
-                            <td style="text-align: center; font-weight: 600;"><?php echo $fila['Ejemplares_totales'] ?? 0; ?></td>
-                            <td style="text-align: center; color: #16A34A; font-weight: bold;"><?php echo $fila['Ejemplares_disponibles'] ?? 0; ?></td>
-                            <td style="text-align: center; color: #DC3545; font-weight: 600;"><?php echo $fila['Ejemplares_prestados'] ?? 0; ?></td>
-                            <td style="text-align: center;">
-                                <a href="catalogo.php?editar_id=<?php echo $fila['id_libro']; ?>" class="btn-editar">✏️ Editar</a>
-                                <a href="catalogo.php?eliminar_id=<?php echo $fila['id_libro']; ?>" class="btn-eliminar"
+                            <td class="col-isbn"><?php echo htmlspecialchars($fila['ISBN'] ?? '-'); ?></td>
+                            <td class="col-anio"><?php echo htmlspecialchars($fila['ano'] ?? '-'); ?></td>
+                            <td class="col-clasif"><?php echo htmlspecialchars($clasif); ?></td>
+                            <td class="col-stock" style="font-weight: 600;"><?php echo $fila['Ejemplares_totales'] ?? 0; ?></td>
+                            <td class="col-stock" style="color: #16A34A; font-weight: bold;"><?php echo $fila['Ejemplares_disponibles'] ?? 0; ?></td>
+                            <td class="col-stock" style="color: #DC3545; font-weight: 600;"><?php echo $fila['Ejemplares_prestados'] ?? 0; ?></td>
+                            <td class="col-acciones">
+                                <a href="catalogo.php?editar_id=<?php echo $fila['id_libro']; ?>" class="btn-editar" title="Editar">✏️ Editar</a>
+                                <a href="catalogo.php?eliminar_id=<?php echo $fila['id_libro']; ?>" class="btn-eliminar" title="Eliminar"
                                     onclick="return confirm('¿Seguro que deseas eliminar este libro?');">🗑️ Eliminar</a>
                             </td>
                         </tr>
